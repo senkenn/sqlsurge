@@ -1,0 +1,9 @@
+ignorePaths:
+  - settings.json
+  - extensions.json
+  - "*.svg"
+  - package.json
+words:
+  - lockb
+  - sqls
+  - sqlsurge

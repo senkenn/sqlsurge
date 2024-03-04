@@ -1,0 +1,52 @@
+{
+	"name": "sqlsurge",
+	"description": "SQL Language Server Extension for Visual Studio Code",
+	"license": "MIT",
+	"version": "0.0.1",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/senkenn/vscode-sqls"
+	},
+	"bugs": {
+		"url": "https://github.com/senkenn/vscode-sqls"
+	},
+	"publisher": "senken",
+	"categories": ["Programming Languages"],
+	"keywords": ["multi-root ready"],
+	"engines": {
+		"vscode": "^1.85.2"
+	},
+	"activationEvents": ["workspaceContains:**/*.sql", "onLanguage:sql"],
+	"main": "./out/extension.js",
+	"contributes": {
+		"configuration": {
+			"type": "object",
+			"title": "sqls",
+			"properties": {
+				"go.languageServerFlags": {
+					"type": "array",
+					"default": [],
+					"description": "Flags like -trace and -log to be used while running the language server."
+				}
+			}
+		}
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "esbuild src/extension.ts --bundle --external:vscode --platform=node --outfile=out/extension.js",
+		"watch": "bun run compile --sourcemap --watch"
+	},
+	"devDependencies": {
+		"@biomejs/biome": "^1.5.3",
+		"@types/node": "^20.11.24",
+		"@types/vscode": "^1.85.2",
+		"cspell": "^8.5.0",
+		"esbuild": "^0.20.1",
+		"lefthook": "^1.6.4",
+		"typescript": "^5.3.3"
+	},
+	"dependencies": {
+		"vscode-languageclient": "^9.0.1"
+	},
+	"packageManager": "bun@1.0.29"
+}
