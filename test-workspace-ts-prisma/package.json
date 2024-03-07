@@ -1,0 +1,10 @@
+{
+  "name": "test-workspace-ts-prisma",
+  "devDependencies": {
+    "prisma": "^5.10.2",
+    "ts-node": "^10.9.2"
+  },
+  "dependencies": {
+    "@prisma/client": "5.10.2"
+  }
+}
