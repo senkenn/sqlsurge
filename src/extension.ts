@@ -19,17 +19,16 @@ export async function activate(context: ExtensionContext) {
 	};
 
 	const clientOptions: LanguageClientOptions = {
-		documentSelector: [
-			{ scheme: "file", language: "sql", pattern: "**/*.sql" },
-		],
+		documentSelector: [{ language: "sql", pattern: "**/*.sql" }], // TODO: scheme: "file" is needed?
 	};
 
 	client = new LanguageClient("sqls", serverOptions, clientOptions);
 	client.start();
 
-	// virtual html/css files
+	// virtual sql files
+	const originalScheme = "sqlsurge";
 	const virtualDocuments = new Map<string, string>();
-	vscode.workspace.registerTextDocumentContentProvider("mdcf", {
+	vscode.workspace.registerTextDocumentContentProvider(originalScheme, {
 		provideTextDocumentContent: (uri) => {
 			return virtualDocuments.get(uri.fsPath);
 		},
@@ -43,11 +42,10 @@ export async function activate(context: ExtensionContext) {
 			context: vscode.CompletionContext,
 		) {
 			const block = {
-				blockRange: [457, 481],
-				codeRange: [465, 477],
-				content: "<div>\n</div>",
+				codeRange: [128, 128 + 19],
+				content: "SELECT * FROM city;",
 				vfileName:
-					"/home/senken/personal/markdown-code-features/vscode-extension/test-workspace/md.md@3.html",
+					"/home/senken/personal/markdown-code-features/vscode-extension/test-workspace/index.ts@1.sql",
 			};
 
 			// Delegate LSP
@@ -60,7 +58,7 @@ export async function activate(context: ExtensionContext) {
 			virtualDocuments.set(block.vfileName, vContent);
 
 			// trigger completion on virtual file
-			const vdocUriString = `mdcf://${block.vfileName}`;
+			const vdocUriString = `${originalScheme}://${block.vfileName}`;
 			const vdocUri = vscode.Uri.parse(vdocUriString);
 			console.log(vdocUri);
 			return vscode.commands.executeCommand<vscode.CompletionList>(
@@ -73,7 +71,7 @@ export async function activate(context: ExtensionContext) {
 	};
 
 	context.subscriptions.push(
-		vscode.languages.registerCompletionItemProvider("markdown", completion),
+		vscode.languages.registerCompletionItemProvider("typescript", completion),
 	);
 }
 
