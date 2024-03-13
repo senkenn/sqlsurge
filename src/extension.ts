@@ -15,7 +15,6 @@ export async function activate(context: ExtensionContext) {
 	const sqlsInPATH = await findSqlsInPath();
 	const serverOptions: ServerOptions = {
 		command: sqlsInPATH.fsPath,
-
 		args: [...config.flags],
 	};
 
@@ -26,6 +25,7 @@ export async function activate(context: ExtensionContext) {
 	};
 
 	client = new LanguageClient("sqls", serverOptions, clientOptions);
+	client.start();
 
 	// virtual html/css files
 	const virtualDocuments = new Map<string, string>();
@@ -45,35 +45,30 @@ export async function activate(context: ExtensionContext) {
 			const block = {
 				blockRange: [457, 481],
 				codeRange: [465, 477],
-				lang: "html",
 				content: "<div>\n</div>",
-				index: 3,
 				vfileName:
 					"/home/senken/personal/markdown-code-features/vscode-extension/test-workspace/md.md@3.html",
 			};
 
 			// Delegate LSP
-			if (block.lang === "html" || block.lang === "css") {
-				// update virtual content
-				const prefix = document
-					.getText()
-					.slice(0, block.codeRange[0])
-					.replace(/[^\n]/g, " ");
-				const vContent = prefix + block.content;
-				// console.log("[mdcf:comp]", block.vfileName, vContent);
-				virtualDocuments.set(block.vfileName, vContent);
+			// update virtual content
+			const prefix = document
+				.getText()
+				.slice(0, block.codeRange[0])
+				.replace(/[^\n]/g, " ");
+			const vContent = prefix + block.content;
+			virtualDocuments.set(block.vfileName, vContent);
 
-				// trigger completion on virtual file
-				const vdocUriString = `mdcf://${block.vfileName}`;
-				// console.log("[mdcf:comp]", vdocUriString);
-				const vdocUri = vscode.Uri.parse(vdocUriString);
-				return vscode.commands.executeCommand<vscode.CompletionList>(
-					"vscode.executeCompletionItemProvider",
-					vdocUri,
-					position,
-					context.triggerCharacter,
-				);
-			}
+			// trigger completion on virtual file
+			const vdocUriString = `mdcf://${block.vfileName}`;
+			const vdocUri = vscode.Uri.parse(vdocUriString);
+			console.log(vdocUri);
+			return vscode.commands.executeCommand<vscode.CompletionList>(
+				"vscode.executeCompletionItemProvider",
+				vdocUri,
+				position,
+				context.triggerCharacter,
+			);
 		},
 	};
 

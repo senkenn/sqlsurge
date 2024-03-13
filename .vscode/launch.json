@@ -6,7 +6,7 @@
 			"type": "extensionHost",
 			"request": "launch",
 			"args": [
-				"--disable-extensions",
+				"--profile-temp",
 				"--extensionDevelopmentKind=node",
 				"--extensionDevelopmentPath=${workspaceFolder}"
 			],
