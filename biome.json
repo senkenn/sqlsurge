@@ -11,7 +11,14 @@
 	"linter": {
 		"enabled": true,
 		"rules": {
-			"recommended": true
+			"recommended": true,
+			"suspicious": {
+				"noExplicitAny": "warn"
+			},
+			"style": {
+				"noParameterAssign": "warn",
+				"noNonNullAssertion": "warn"
+			}
 		}
 	},
 	"json": {
