@@ -13,13 +13,13 @@ interface LanguageServerConfig {
 export let client: LanguageClient;
 
 export async function startSqlsClient() {
-	const sqlsConfig = vscode.workspace.getConfiguration("sqls");
+	const sqlsConfig = vscode.workspace.getConfiguration("sqlsurge");
 	const config: LanguageServerConfig = {
 		flags: sqlsConfig.languageServerFlags || [],
 	};
 	const sqlsInPATH = await findSqlsInPath();
 	const serverOptions: ServerOptions = {
-		command: sqlsInPATH.fsPath,
+		command: sqlsInPATH!.fsPath,
 		args: [...config.flags],
 	};
 
@@ -50,7 +50,7 @@ async function fileExists(path: vscode.Uri) {
 	try {
 		await vscode.workspace.fs.stat(path);
 		return true;
-	} catch (err) {
+	} catch (err: any) {
 		if (err.code === "ENOENT" || err.code === "FileNotFound") {
 			return false;
 		}

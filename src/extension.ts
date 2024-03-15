@@ -9,7 +9,7 @@ import {
 import { client, startSqlsClient } from "./startSqlsClient";
 
 export async function activate(context: vscode.ExtensionContext) {
-	startSqlsClient();
+	startSqlsClient().then(console.log).catch(console.error);
 
 	const originalScheme = "sqlsurge";
 	const virtualContents = new Map<string, string[]>(); // TODO: May not be needed
