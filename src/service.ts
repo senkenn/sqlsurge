@@ -1,7 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
 import { blue, bold, gray, green } from "colorette";
-// import ts, { LanguageService, ScriptSnapshot, SourceFile, TextChangeRange, createDocumentRegistry } from "typescript";
 import ts from "typescript";
 
 export interface IncrementalSnapshot extends ts.IScriptSnapshot {

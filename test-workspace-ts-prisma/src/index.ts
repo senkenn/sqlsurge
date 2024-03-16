@@ -3,10 +3,11 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-	const city = await prisma.$queryRaw`SELECT * FROM city WHERE id = 1;`;
-	// const city2 = await prisma.city.findMany();
+	const city = await prisma.$queryRaw`SELECT * FROM city WHERE ID = 1;`;
+	const city2 =
+		await prisma.$queryRaw`INSERT INTO city (Name, CountryCode, District, Population) VALUES ('Test', 'TST', 'Test', 1000);`;
 	console.log(city);
-	// console.log(city2);
+	console.log(city2);
 }
 
 main()
