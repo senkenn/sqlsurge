@@ -14,7 +14,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	const originalScheme = "sqlsurge";
 	const virtualContents = new Map<string, string[]>(); // TODO: May not be needed
 	const services = new Map<string, IncrementalLanguageService>();
-	const registory = ts.createDocumentRegistry();
+	const registry = ts.createDocumentRegistry();
 
 	// virtual sql files
 	const virtualDocuments = new Map<string, string>();
@@ -114,7 +114,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			undefined,
 			getWorkspaceContent,
 		);
-		return createIncrementalLanguageService(host, registory);
+		return createIncrementalLanguageService(host, registry);
 	}
 
 	function refresh(
@@ -144,12 +144,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		);
 		for (const vfileName of vFileNames) {
 			service.deleteSnapshot(vfileName);
-			// virtualDocuments.delete(vfileName);
-			// for (const vkey of virtualDocuments.keys()) {
-			//   if (vkey.startsWith(vfileName)) {
-			//     virtualDocuments.delete(vkey);
-			//   }
-			// }
 		}
 		virtualContents.set(fileName, vfileNames);
 		console.timeEnd(refresh.name);

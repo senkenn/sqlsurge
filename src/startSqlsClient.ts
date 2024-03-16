@@ -19,7 +19,7 @@ export async function startSqlsClient() {
 	};
 	const sqlsInPATH = await findSqlsInPath();
 	const serverOptions: ServerOptions = {
-		command: sqlsInPATH!.fsPath,
+		command: sqlsInPATH!.fsPath, // TODO: add showMessage if path is not found
 		args: [...config.flags],
 	};
 
