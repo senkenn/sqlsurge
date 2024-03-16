@@ -1,6 +1,6 @@
 import * as ts from "typescript";
 import * as vscode from "vscode";
-import { extractSqlList, getVirtualFileName } from "./getSqlList";
+import { SqlNodes, extractSqlList, getVirtualFileName } from "./getSqlList";
 import {
 	IncrementalLanguageService,
 	createIncrementalLanguageService,
@@ -33,24 +33,12 @@ export async function activate(context: vscode.ExtensionContext) {
 		) {
 			const offset = document.offsetAt(position);
 			const service = getOrCreateLanguageService(document.uri)!;
-			const blocks = refresh(service, document.fileName, document.getText(), [
-				{
-					start: offset,
-					end: offset + 1,
-				},
-			]);
-			const block = blocks.find(({ lang, codeRange: [start, end] }) => {
-				if (!lang) return false;
+			const blocks = refresh(service, document.fileName, document.getText());
+			const block = blocks.find(({ codeRange: [start, end] }) => {
 				// in range
 				return start <= offset && offset <= end;
 			});
 			if (!block) return [];
-			// const block = {
-			// 	codeRange: [128, 128 + 19],
-			// 	content: "SELECT * FROM city;",
-			// 	vfileName:
-			// 		"/home/senken/personal/markdown-code-features/vscode-extension/test-workspace/index.ts@1.sql",
-			// };
 
 			// Delegate LSP
 			// update virtual content
@@ -59,15 +47,14 @@ export async function activate(context: vscode.ExtensionContext) {
 				.slice(0, block.codeRange[0])
 				.replace(/[^\n]/g, " ");
 			const vContent = prefix + block.content;
-			virtualDocuments.set(block.vfileName, vContent);
+			virtualDocuments.set(block.vFileName, vContent);
 
 			// trigger completion on virtual file
-			const vdocUriString = `${originalScheme}://${block.vfileName}`;
-			const vdocUri = vscode.Uri.parse(vdocUriString);
-			console.log(vdocUri);
+			const vDocUriString = `${originalScheme}://${block.vFileName}`;
+			const vDocUri = vscode.Uri.parse(vDocUriString);
 			return vscode.commands.executeCommand<vscode.CompletionList>(
 				"vscode.executeCompletionItemProvider",
-				vdocUri,
+				vDocUri,
 				position,
 				context.triggerCharacter,
 			);
@@ -103,9 +90,9 @@ export async function activate(context: vscode.ExtensionContext) {
 			fileNames = options.fileNames;
 		}
 
-		const getWorkspaceContent = (fpath: string) => {
+		const getWorkspaceContent = (filePath: string) => {
 			return vscode.workspace.textDocuments
-				.find((doc) => doc.uri.fsPath.endsWith(fpath))
+				.find((doc) => doc.uri.fsPath.endsWith(filePath))
 				?.getText();
 		};
 		const host = createIncrementalLanguageServiceHost(
@@ -121,40 +108,44 @@ export async function activate(context: vscode.ExtensionContext) {
 		service: IncrementalLanguageService,
 		fileName: string,
 		rawContent: string,
-		_ranges: { start: number; end: number }[] | undefined,
-	) {
+	): (SqlNodes & { vFileName: string })[] {
 		console.time(refresh.name);
-		const sqlList = extractSqlList(rawContent);
-		const lastVirtualFileNames = virtualContents.get(fileName) ?? [];
-		// update virtual files
-		const vfileNames = sqlList.map((block) => {
-			const virtualFileName = `${fileName}@${getVirtualFileName(block)}`;
-			const prefix = rawContent
-				.slice(0, block.codeRange[0])
-				.replace(/[^\n]/g, " ");
-			service.writeSnapshot(
-				virtualFileName,
-				ts.ScriptSnapshot.fromString(prefix + block.content),
-			);
-			return virtualFileName;
-		});
-		// remove unused virtual files
-		const vFileNames = lastVirtualFileNames.filter(
-			(vfileName) => !vfileNames.includes(vfileName),
-		);
-		for (const vfileName of vFileNames) {
-			service.deleteSnapshot(vfileName);
+		try {
+			const sqlNodes = extractSqlList(rawContent);
+			const lastVirtualFileNames = virtualContents.get(fileName) ?? [];
+			// update virtual files
+			const vFileNames = sqlNodes.map((sqlNode) => {
+				const virtualFileName = `${fileName}@${getVirtualFileName(sqlNode)}`;
+				const prefix = rawContent
+					.slice(0, sqlNode.codeRange[0])
+					.replace(/[^\n]/g, " ");
+				service.writeSnapshot(
+					virtualFileName,
+					ts.ScriptSnapshot.fromString(prefix + sqlNode.content),
+				);
+				return virtualFileName;
+			});
+
+			// remove unused virtual files
+			lastVirtualFileNames
+				.filter((vFileName) => !vFileNames.includes(vFileName))
+				.map((vFileName) => {
+					service.deleteSnapshot(vFileName);
+				});
+			virtualContents.set(fileName, vFileNames);
+			console.timeEnd(refresh.name);
+			return sqlNodes.map((block, idx) => {
+				return {
+					...block,
+					vFileName: vFileNames[idx],
+					index: idx,
+				};
+			});
+		} catch (e: any) {
+			// show error notification
+			vscode.window.showErrorMessage(`Error on refresh: ${e.message}`);
+			return [];
 		}
-		virtualContents.set(fileName, vfileNames);
-		console.timeEnd(refresh.name);
-		return sqlList.map((block, idx) => {
-			return {
-				...block,
-				// vfileName:  getVirtualFileName(block),
-				vfileName: vfileNames[idx],
-				index: idx,
-			};
-		});
 	}
 }
 

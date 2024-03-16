@@ -1,46 +1,47 @@
-export const langToExtMap: Record<string, string> = {
-	sql: ".sql",
-};
+import ts from "typescript";
 
-const regex = new RegExp(
-	/```(?<type>[^\n]*)?\n(?<content>[.\s\S\n]*?)\n```/gmu,
-);
 type Range = [from: number, to: number];
-export type CodeBlock = {
-	blockRange: Range;
+export type SqlNodes = {
 	codeRange: Range;
 	content: string;
 	fileName: string | undefined;
-	lang: string | undefined;
 	index: number;
 };
 
-export function extractSqlList(text: string) {
-	const blocks: Array<CodeBlock> = [];
-	for (const match of text.matchAll(regex)) {
-		const { content, type } = match.groups! as {
-			content: string;
-			type?: string;
-		};
-		const start = match.index!;
-		const end = start + Array.from(match[0]).length;
-		const codeStart = start + 3 + (type ? Array.from(type).length : 0) + 1;
-		const codeEnd = codeStart + Array.from(content).length;
-		const [lang, fileName] = type?.split(":") ?? [undefined, undefined];
-		blocks.push({
-			blockRange: [start, end],
-			codeRange: [codeStart, codeEnd],
-			lang,
-			content,
-			fileName,
-			index: blocks.length,
-		});
+export function extractSqlList(sourceTxt: string): SqlNodes[] {
+	const sourceFile = ts.createSourceFile(
+		"unusedFileName",
+		sourceTxt,
+		ts.ScriptTarget.Latest, // TODO: re-consider this it should be the same as the vscode lsp
+	);
+	const sqlNodes: SqlNodes[] = [];
+	ts.forEachChild<void>(sourceFile, visit);
+	return sqlNodes;
+
+	/**
+	 * visit nodes
+	 * If find a tagged template expression with name "$queryRaw", push it to blocksNode
+	 */
+	function visit(node: ts.Node): void {
+		if (
+			ts.isTaggedTemplateExpression(node) &&
+			ts.isPropertyAccessExpression(node.tag) &&
+			node.tag.name.text === "$queryRaw" &&
+			ts.isNoSubstitutionTemplateLiteral(node.template)
+		) {
+			sqlNodes.push({
+				codeRange: [node.template.pos + 1, node.template.end], // +1 is to remove the first back quote
+				content: node.template.rawText ?? "",
+				fileName: undefined,
+				index: sqlNodes.length,
+			});
+		}
+		ts.forEachChild<void>(node, visit);
 	}
-	return blocks;
 }
 
-export function getVirtualFileName(block: CodeBlock) {
-	const ext = langToExtMap[block.lang ?? ""] ?? ".txt";
+export function getVirtualFileName(block: SqlNodes) {
+	const ext = ".sql";
 	if (block.fileName) {
 		return block.fileName.endsWith(ext)
 			? block.fileName
