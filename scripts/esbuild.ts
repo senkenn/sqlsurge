@@ -20,7 +20,7 @@ const options: BuildOptions = {
     format: 'cjs',
     platform: 'node',
     target: 'ESNext',
-    tsconfig: './src/tsconfig.json',
+    tsconfig: './tsconfig.json',
     sourcemap: process.argv.includes('--sourcemap'),
     minify: process.argv.includes('--minify'),
     plugins: [
