@@ -33,7 +33,7 @@
 	},
 	"scripts": {
 		"vscode:prepublish": "npm run compile",
-		"compile": "esbuild src/extension.ts --bundle --external:vscode --platform=node --outfile=out/extension.js",
+		"compile": "bunx tsx esbuild.ts",
 		"watch": "bun run compile --sourcemap --watch"
 	},
 	"devDependencies": {
@@ -43,6 +43,7 @@
 		"cspell": "^8.5.0",
 		"esbuild": "^0.20.1",
 		"lefthook": "^1.6.4",
+		"tsx": "^4.7.1",
 		"typescript": "^5.3.3"
 	},
 	"dependencies": {
