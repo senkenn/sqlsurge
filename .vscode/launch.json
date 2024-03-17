@@ -10,11 +10,11 @@
             "type": "extensionHost",
             "request": "launch",
             "args": [
-                "--extensionDevelopmentPath=${workspaceFolder}/vscode-extension",
+                "--extensionDevelopmentPath=${workspaceFolder}",
                 "--disable-extensions",
-                "${workspaceFolder}/vscode-extension/test-workspace"
+                "${workspaceFolder}/test-workspace"
             ],
-            "outFiles": ["${workspaceFolder}/vscode-extension/out/**/*.js"],
+            "outFiles": ["${workspaceFolder}/out/**/*.js"],
             "skipFiles": [
                 "<node_internals>/**",
                 "**/node_modules/**",
