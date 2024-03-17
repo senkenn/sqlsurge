@@ -66,7 +66,6 @@
   },
   "devDependencies": {
     "@mdx-js/mdx": "^2.3.0",
-    "@mizchi/mdcf-core": "workspace:*",
     "@types/glob": "^8.1.0",
     "@types/mocha": "^10.0.1",
     "@types/node": "^18.16.19",

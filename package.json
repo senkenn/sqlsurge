@@ -1,12 +1,8 @@
 {
   "private": true,
-  "devDependencies": {
-    "@types/node": "^20.5.0",
-    "ts-node": "^10.9.1",
-    "typescript": "^5.1.6"
-  },
+  "devDependencies": {  },
   "scripts": {
-    "esbuild:watch": "cd vscode-extension && pnpm run esbuild:watch"
+    "esbuild:watch": "cd vscode-extension && pnpm clean && pnpm run esbuild:watch"
   },
   "version": "0.0.2"
 }
