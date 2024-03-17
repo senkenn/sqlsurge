@@ -1,0 +1,28 @@
+# Foo mdx language server
+
+import App from "./App";
+
+export function Hello(props: { name: string }) {
+  return <div>hello</div>;
+}
+
+<App name={1}>
+  <div>hello</div>
+</App>
+
+<Hello />
+
+```ts:xxx.ts
+console.log("hello");
+
+export const xxx = {};
+```
+
+```ts
+import { xxx } from "./foo.mdx@xxx";
+
+console.log("", xxx);
+console.log(11);
+let x: number = "";
+
+```

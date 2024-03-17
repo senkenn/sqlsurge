@@ -1,29 +1,16 @@
-# sqlsurge
+# Markdown Code Features (MDCF)
 
-[sqlsurge](https://marketplace.visualstudio.com/items?itemName=senken.sqlsurge) is a Visual Studio Code extension designed to enhance the SQL development experience. It allows you to work with raw SQL queries within various file types, not just SQL files. This extension is built on the [sqls](https://github.com/lighttiger2505/sqls) language server.
+Support diagnostics and completion in markdown code block
 
-## Features
+https://marketplace.visualstudio.com/items?itemName=mizchi.markdown-code-features
 
-- Auto Completion tables and table columns
-- Quick info symbol
-- Supporting raw SQL query of [Prisma](https://www.prisma.io/docs/orm/prisma-client/queries/raw-database-access/raw-queries) in TypeScript.
+- `vscode-extension`: TSIA
+- `cli`: type checker to md/mdx
+- `core`: markdown logics and rollup plugins
+- `example`: demo of cli
 
-## Requirements
-
-- sqls ([Installation Guide](https://github.com/sqls-server/sqls?tab=readme-ov-file#installation))
-
-To verify the installation of sqls, run `sqls -v` in your terminal:
+## Setup as workspaces
 
 ```bash
-$ sqls -v
-sqls version Version:0.2.28, Revision:HEAD
+$ pnpm install
 ```
-
-## Notes
-
-- To get syntax highlighting for raw SQL queries from Prisma, install the Prisma official extension.
-
-## TODOs
-
-- [ ] Add support for [SQLx](https://github.com/launchbadge/sqlx) in Rust
-- [ ] Extend support to custom raw SQL queries, not just Prisma and SQLx

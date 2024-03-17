@@ -12,6 +12,12 @@
                 "kind": "build",
                 "isDefault": true
             }
+        },
+        {
+            "label": "compile:test",
+            "type": "npm",
+            "script": "compile:test",
+            "problemMatcher": "$tsc"
         }
     ]
 }

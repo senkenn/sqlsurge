@@ -1,18 +1,28 @@
 {
-	"version": "0.2.0",
-	"configurations": [
-		{
-			"name": "🧩 Debug Extension",
-			"type": "extensionHost",
-			"request": "launch",
-			"args": [
-				"--profile-temp",
-				"--extensionDevelopmentKind=node",
-				"--extensionDevelopmentPath=${workspaceFolder}"
-			],
-			"outFiles": ["${workspaceFolder}/out/**/*.js"],
-			"preLaunchTask": "npm: watch",
-			"sourceMapRenames": true
-		}
-	]
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Dev",
+            "type": "extensionHost",
+            "request": "launch",
+            "args": [
+                "--extensionDevelopmentPath=${workspaceFolder}/vscode-extension",
+                "--disable-extensions",
+                "${workspaceFolder}/vscode-extension/test-workspace"
+            ],
+            "outFiles": ["${workspaceFolder}/vscode-extension/out/**/*.js"],
+            "skipFiles": [
+                "<node_internals>/**",
+                "**/node_modules/**",
+                "**/resources/app/out/vs/**",
+                "**/.vscode-insiders/extensions/",
+                "**/.vscode/extensions/"
+            ],
+            "sourceMaps": true,
+            "env": {
+                "VSCODE_DEBUG_MODE": "true"
+            },
+            "preLaunchTask": "${defaultBuildTask}"
+        }
+    ]
 }

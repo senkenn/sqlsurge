@@ -1,0 +1,14 @@
+{
+    "editor.formatOnSave": true,
+    "mdx.experimentalLanguageServer": true,
+    "[typescript]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "rome.rome"
+    },
+    "[typescriptreact]": {
+        "editor.formatOnSave": true,
+        "editor.defaultFormatter": "rome.rome"
+    },
+
+    "eslint.validate": ["typescript", "json", "jsonc", "markdown"]
+}
