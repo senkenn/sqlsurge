@@ -27,3 +27,4 @@ sqls version Version:0.2.28, Revision:HEAD
 
 - [ ] Add support for [SQLx](https://github.com/launchbadge/sqlx) in Rust
 - [ ] Extend support to custom raw SQL queries, not just Prisma and SQLx
+- [ ] Auto install sqls if not found
