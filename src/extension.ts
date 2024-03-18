@@ -1,8 +1,12 @@
 import * as ts from "typescript";
 import * as vscode from "vscode";
-import { SqlNodes, extractSqlList, getVirtualFileName } from "./getSqlList";
 import {
-	IncrementalLanguageService,
+	type SqlNodes,
+	extractSqlList,
+	getVirtualFileName,
+} from "./getSqlList";
+import {
+	type IncrementalLanguageService,
 	createIncrementalLanguageService,
 	createIncrementalLanguageServiceHost,
 } from "./service";
@@ -111,6 +115,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		rawContent: string,
 	): (SqlNodes & { vFileName: string })[] {
 		console.time(refresh.name);
+		console.log("refresh", fileName);
 		try {
 			const sqlNodes = extractSqlList(rawContent);
 			const lastVirtualFileNames = virtualContents.get(fileName) ?? [];

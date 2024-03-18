@@ -6,7 +6,6 @@
 		/* Basic Options */
 		"target": "ES2022",
 		"module": "commonjs",
-		"allowImportingTsExtensions": true,
 
 		/* Strict Type-Checking Options */
 		"strict": true,
