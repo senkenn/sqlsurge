@@ -13,7 +13,7 @@ const options: BuildOptions = {
     entryPoints: ['src/extension.ts'],
     bundle: true,
     metafile: process.argv.includes('--metafile'),
-    outdir: './out/src',
+    outdir: './out',
     external: [
         'vscode',
     ],
