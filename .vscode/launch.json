@@ -6,15 +6,15 @@
 			"type": "extensionHost",
 			"request": "launch",
 			"args": [
+				"--profile-temp",
 				"--extensionDevelopmentPath=${workspaceFolder}",
-				"--disable-extensions",
 				"${workspaceFolder}/test-workspace-ts-prisma"
 			],
 			"outFiles": ["${workspaceFolder}/out/**/*.js"],
 			"skipFiles": [
 				"<node_internals>/**",
 				"**/node_modules/**",
-				"**/resources/app/out/vs/**",
+				"**/resources/app/out/vs/**", // NOTE: output filename to debug console instead of extensionHostProcess.js:147
 				"**/.vscode-insiders/extensions/",
 				"**/.vscode/extensions/"
 			],

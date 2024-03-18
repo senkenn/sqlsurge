@@ -42,7 +42,7 @@
 		"vscode:prepublish": "bun esbuild:base --minify",
 		"clean": "npx rimraf -rf ./out",
 		"build": "bun esbuild:base --minify --sourcemap",
-		"esbuild:base": "tsx scripts/esbuild.ts",
+		"esbuild:base": "tsx esbuild.ts",
 		"esbuild:watch": "bun esbuild:base --sourcemap --watch",
 		"esbuild:analyze": "bun esbuild:base --minify --metafile --analyze && esbuild-visualizer --metadata ./meta.json --open",
 		"compile:test": "bun clean && tsc -b ./test/tsconfig.json",

@@ -14,7 +14,6 @@ import { client, startSqlsClient } from "./startSqlsClient";
 
 export async function activate(context: vscode.ExtensionContext) {
 	startSqlsClient().then(console.log).catch(console.error);
-	console.log("Congratulations, your extension 'sqlsurge' is now active!");
 
 	const originalScheme = "sqlsurge";
 	const virtualContents = new Map<string, string[]>(); // TODO: May not be needed
@@ -115,7 +114,6 @@ export async function activate(context: vscode.ExtensionContext) {
 		rawContent: string,
 	): (SqlNodes & { vFileName: string })[] {
 		console.time(refresh.name);
-		console.log("refresh", fileName);
 		try {
 			const sqlNodes = extractSqlList(rawContent);
 			const lastVirtualFileNames = virtualContents.get(fileName) ?? [];
