@@ -1,12 +1,30 @@
 {
 	"compilerOptions": {
+		"composite": true,
+		"sourceMap": true,
+
+		/* Basic Options */
+		"target": "ES2022",
 		"module": "commonjs",
-		"target": "es2019",
-		"lib": ["ES2019"],
-		"outDir": "out",
-		"rootDir": "src",
-		"sourceMap": true
-	},
-	"include": ["src"],
-	"exclude": ["node_modules", "out", ".docker"]
+
+		/* Strict Type-Checking Options */
+		"strict": true,
+
+		/* Additional Checks */
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+
+		/* Module Resolution Options */
+		"moduleResolution": "node",
+		"esModuleInterop": true,
+		"resolveJsonModule": true,
+
+		/* Experimental Options */
+		"experimentalDecorators": true,
+		"emitDecoratorMetadata": true,
+
+		/* Advanced Options */
+		"forceConsistentCasingInFileNames": true,
+		"skipLibCheck": true
+	}
 }

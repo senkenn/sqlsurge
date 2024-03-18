@@ -7,3 +7,6 @@ words:
   - lockb
   - sqls
   - sqlsurge
+  - lefthook
+  - esbuild
+  - vscodeignore

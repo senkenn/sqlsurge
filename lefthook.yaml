@@ -3,11 +3,11 @@
 #   Refer for explanation to following link:
 #   https://github.com/evilmartians/lefthook/blob/master/docs/configuration.md
 #
-pre-push:
-  commands:
-    packages-audit:
-      tags: security
-      run: npm audit
+# pre-push:
+#   commands:
+#     packages-audit:
+#       tags: security
+#       run: bunx audit
 
 pre-commit:
   parallel: true
@@ -15,9 +15,9 @@ pre-commit:
     biome:
       glob: "*.{js,ts,jsx,tsx,json,css,scss}"
       run: |
-        npx biome check --apply {staged_files} && git add {staged_files}
+        bunx biome check --apply {staged_files} && git add {staged_files}
     cspell:
       glob: "*"
       run: |
         # check file name
-        git diff --name-only --cached | npx cspell --no-progress --show-context stdin --cache
+        git diff --name-only --cached | bunx cspell --no-progress --show-context stdin --cache
