@@ -1,8 +1,12 @@
 import * as ts from "typescript";
 import * as vscode from "vscode";
-import { SqlNodes, extractSqlList, getVirtualFileName } from "./getSqlList";
 import {
-	IncrementalLanguageService,
+	type SqlNodes,
+	extractSqlList,
+	getVirtualFileName,
+} from "./getSqlList";
+import {
+	type IncrementalLanguageService,
 	createIncrementalLanguageService,
 	createIncrementalLanguageServiceHost,
 } from "./service";

@@ -3,6 +3,9 @@
 	"description": "SQL Language Server Extension for Visual Studio Code",
 	"license": "MIT",
 	"version": "0.0.1",
+	"displayName": "sqlsurge",
+	"private": true,
+	"preview": true,
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/senkenn/sqlsurge"
@@ -11,12 +14,16 @@
 		"url": "https://github.com/senkenn/sqlsurge"
 	},
 	"publisher": "senken",
-	"categories": ["Programming Languages"],
 	"keywords": ["multi-root ready"],
+	"categories": ["Programming Languages"],
 	"engines": {
 		"vscode": "^1.85.2"
 	},
-	"activationEvents": ["workspaceContains:**/*.sql", "onLanguage:sql"],
+	"activationEvents": [
+		"onLanguage:sql",
+		"onLanguage:typescript",
+		"onLanguage:javascript"
+	],
 	"main": "./out/extension.js",
 	"contributes": {
 		"configuration": {
@@ -32,21 +39,30 @@
 		}
 	},
 	"scripts": {
-		"vscode:prepublish": "npm run compile",
-		"compile": "bunx tsx esbuild.ts",
-		"watch": "bun run compile --sourcemap --watch"
+		"vscode:prepublish": "bun esbuild:base --minify",
+		"clean": "npx rimraf -rf ./out",
+		"build": "bun esbuild:base --minify --sourcemap",
+		"esbuild:base": "tsx esbuild.ts",
+		"esbuild:watch": "bun esbuild:base --sourcemap --watch",
+		"esbuild:analyze": "bun esbuild:base --minify --metafile --analyze && esbuild-visualizer --metadata ./meta.json --open",
+		"compile:test": "bun clean && tsc -b ./test/tsconfig.json",
+		"test": "bun compile:test && node ./out/test/runTests.js",
+		"package": "vsce package --no-dependencies",
+		"publish": "vsce publish --no-dependencies"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.5.3",
 		"@types/node": "^20.11.24",
 		"@types/vscode": "^1.85.2",
-		"cspell": "^8.5.0",
-		"esbuild": "^0.20.1",
-		"lefthook": "^1.6.4",
+		"@vscode/test-electron": "^2.3.3",
+		"@vscode/vsce": "^2.19.0",
+		"colorette": "^2.0.20",
+		"cspell": "^8.6.0",
+		"esbuild": "^0.18.11",
+		"esbuild-visualizer": "^0.4.1",
+		"lefthook": "^1.6.7",
 		"tsx": "^4.7.1",
-		"typescript": "^5.3.3"
-	},
-	"dependencies": {
+		"typescript": "^5.3.3",
 		"vscode-languageclient": "^9.0.1"
 	},
 	"packageManager": "bun@1.0.29"
