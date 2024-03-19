@@ -36,7 +36,24 @@
 					"description": "Flags like -trace and -log to be used while running the language server."
 				}
 			}
-		}
+		},
+		"grammars": [
+			{
+				"injectTo": [
+					"source.js",
+					"source.ts",
+					"source.js.jsx",
+					"source.jsx",
+					"source.tsx",
+					"source.vue"
+				],
+				"scopeName": "source.ts.prismaClientRawSQL",
+				"path": "./syntaxes/prismaClientRawSQL.json",
+				"embeddedLanguages": {
+					"meta.embedded.block.sql": "sql"
+				}
+			}
+		]
 	},
 	"scripts": {
 		"vscode:prepublish": "bun esbuild:base --minify",
