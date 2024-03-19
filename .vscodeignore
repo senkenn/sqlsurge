@@ -1,5 +1,6 @@
 **
 !resources
+!syntaxes
 !LICENSE*
 !out/extension.js
 !package.json
