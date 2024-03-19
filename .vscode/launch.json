@@ -7,10 +7,10 @@
 			"request": "launch",
 			"args": [
 				"--profile-temp",
-				"--extensionDevelopmentPath=${workspaceFolder}",
-				"${workspaceFolder}/test-workspace-ts-prisma"
+				"--extensionDevelopmentPath=${workspaceFolder}/vsce",
+				"${workspaceFolder}/vsce/test-workspace-ts-prisma"
 			],
-			"outFiles": ["${workspaceFolder}/out/**/*.js"],
+			"outFiles": ["${workspaceFolder}/vsce/out/**/*.js"],
 			"skipFiles": [
 				"<node_internals>/**",
 				"**/node_modules/**",

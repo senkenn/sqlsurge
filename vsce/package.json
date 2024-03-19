@@ -1,0 +1,83 @@
+{
+	"name": "sqlsurge",
+	"description": "SQL Language Server Extension for Visual Studio Code",
+	"license": "MIT",
+	"version": "0.2.1",
+	"displayName": "sqlsurge",
+	"private": true,
+	"preview": true,
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/senkenn/sqlsurge"
+	},
+	"bugs": {
+		"url": "https://github.com/senkenn/sqlsurge"
+	},
+	"publisher": "senken",
+	"keywords": ["multi-root ready"],
+	"categories": ["Programming Languages"],
+	"engines": {
+		"vscode": "^1.85.2"
+	},
+	"activationEvents": [
+		"onLanguage:sql",
+		"onLanguage:typescript",
+		"onLanguage:javascript"
+	],
+	"main": "./out/extension.js",
+	"scripts": {
+		"vscode:prepublish": "bun esbuild:base --minify",
+		"clean": "npx rimraf -rf ./out",
+		"build": "bun esbuild:base --minify --sourcemap",
+		"esbuild:base": "tsx esbuild.ts",
+		"esbuild:watch": "bun esbuild:base --sourcemap --watch",
+		"esbuild:analyze": "bun esbuild:base --minify --metafile --analyze && esbuild-visualizer --metadata ./meta.json --open",
+		"compile:test": "bun clean && tsc -b ./test/tsconfig.json",
+		"test": "bun compile:test && node ./out/test/runTests.js",
+		"package": "vsce package --no-dependencies",
+		"publish": "vsce publish --no-dependencies"
+	},
+	"contributes": {
+		"configuration": {
+			"type": "object",
+			"title": "sqls",
+			"properties": {
+				"go.languageServerFlags": {
+					"type": "array",
+					"default": [],
+					"description": "Flags like -trace and -log to be used while running the language server."
+				}
+			}
+		},
+		"grammars": [
+			{
+				"injectTo": [
+					"source.js",
+					"source.ts",
+					"source.js.jsx",
+					"source.jsx",
+					"source.tsx",
+					"source.vue"
+				],
+				"scopeName": "source.ts.prismaClientRawSQL",
+				"path": "./syntaxes/prismaClientRawSQL.json",
+				"embeddedLanguages": {
+					"meta.embedded.block.sql": "sql"
+				}
+			}
+		]
+	},
+	"devDependencies": {
+		"@senken/sql-extraction-ts": "workspace:*",
+		"@types/node": "^20.11.24",
+		"@types/vscode": "^1.85.2",
+		"@vscode/test-electron": "^2.3.3",
+		"@vscode/vsce": "^2.19.0",
+		"colorette": "^2.0.20",
+		"esbuild": "^0.18.11",
+		"esbuild-visualizer": "^0.4.1",
+		"tsx": "^4.7.1",
+		"vscode-languageclient": "^9.0.1"
+	},
+	"packageManager": "bun@1.0.29"
+}
