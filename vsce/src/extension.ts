@@ -1,10 +1,10 @@
-import * as ts from "typescript";
-import * as vscode from "vscode";
 import {
 	type SqlNodes,
 	extractSqlList,
 	getVirtualFileName,
-} from "./getSqlList";
+} from "@senken/sql-extraction-ts";
+import * as ts from "typescript";
+import * as vscode from "vscode";
 import {
 	type IncrementalLanguageService,
 	createIncrementalLanguageService,
@@ -13,7 +13,7 @@ import {
 import { client, startSqlsClient } from "./startSqlsClient";
 
 export async function activate(context: vscode.ExtensionContext) {
-	startSqlsClient().then(console.log).catch(console.error);
+	startSqlsClient().catch(console.error);
 
 	const originalScheme = "sqlsurge";
 	const virtualContents = new Map<string, string[]>(); // TODO: May not be needed

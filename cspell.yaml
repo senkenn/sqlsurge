@@ -4,9 +4,10 @@ ignorePaths:
   - "*.svg"
   - package.json
 words:
+  - esbuild
+  - lefthook
   - lockb
+  - senken
   - sqls
   - sqlsurge
-  - lefthook
-  - esbuild
   - vscodeignore
