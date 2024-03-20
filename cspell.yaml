@@ -9,5 +9,7 @@ words:
   - lockb
   - senken
   - sqls
+  - sqlx
   - sqlsurge
+  - todos
   - vscodeignore
