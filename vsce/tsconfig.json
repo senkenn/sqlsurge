@@ -1,30 +1,12 @@
 {
 	"compilerOptions": {
-		"composite": true,
-		"sourceMap": true,
-
-		/* Basic Options */
-		"target": "ES2022",
-		"module": "commonjs",
-
-		/* Strict Type-Checking Options */
-		"strict": true,
-
-		/* Additional Checks */
-		"noImplicitReturns": true,
-		"noFallthroughCasesInSwitch": true,
-
-		/* Module Resolution Options */
-		"moduleResolution": "node",
-		"esModuleInterop": true,
-		"resolveJsonModule": true,
-
-		/* Experimental Options */
-		"experimentalDecorators": true,
-		"emitDecoratorMetadata": true,
-
-		/* Advanced Options */
-		"forceConsistentCasingInFileNames": true,
-		"skipLibCheck": true
-	}
+		"baseUrl": ".",
+		"rootDir": "../",
+		"outDir": "out"
+		// "paths": {
+		// 	"@senken/sql-extraction-ts": ["../sql-extraction/ts/src"]
+		// }
+	},
+	"include": ["./src/**/*.ts", "../sql-extraction/ts/src/**/*.ts"],
+	"extends": "../tsconfig.json"
 }

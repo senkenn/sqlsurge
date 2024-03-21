@@ -20,5 +20,6 @@
 	},
 	"[yaml]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
-	}
+	},
+	"rust-analyzer.linkedProjects": ["./sql-extraction/rs/Cargo.toml"]
 }

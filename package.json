@@ -1,7 +1,7 @@
 {
 	"workspaces": ["vsce", "sql-extraction/*"],
 	"scripts": {
-		"vsce:watch": "cd vsce && bun esbuild:watch"
+		"vsce:watch": "make gen-wasm-for-extension && cd sql-extraction/ts && bun build && cd vsce && bun esbuild:watch"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^1.6.1",

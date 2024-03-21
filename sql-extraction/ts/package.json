@@ -1,7 +1,7 @@
 {
 	"name": "@senken/sql-extraction-ts",
 	"private": true,
-	"main": "src/index.ts",
+	"main": "out/index.js",
 	"scripts": {
 		"build": "tsc"
 	}

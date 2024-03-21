@@ -44,6 +44,8 @@ async function findSqlsInPath(): Promise<vscode.Uri | undefined> {
 			return sqls;
 		}
 	}
+
+	return;
 }
 
 async function fileExists(path: vscode.Uri) {
