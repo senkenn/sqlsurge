@@ -1,12 +1,8 @@
 {
 	"compilerOptions": {
-		"baseUrl": ".",
-		"rootDir": "../",
-		"outDir": "out"
-		// "paths": {
-		// 	"@senken/sql-extraction-ts": ["../sql-extraction/ts/src"]
-		// }
+		"outDir": "out",
+		"esModuleInterop": false
 	},
-	"include": ["./src/**/*.ts", "../sql-extraction/ts/src/**/*.ts"],
+	"include": ["src"],
 	"extends": "../tsconfig.json"
 }

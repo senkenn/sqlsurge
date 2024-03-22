@@ -4,7 +4,7 @@
 		{
 			"type": "npm",
 			"script": "vsce:watch",
-			"problemMatcher": "$esbuild-watch",
+			"problemMatcher": "$ts-webpack-watch",
 			"isBackground": true,
 			"group": {
 				"kind": "build",

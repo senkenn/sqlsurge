@@ -67,7 +67,6 @@
 		]
 	},
 	"devDependencies": {
-		"@senken/sql-extraction-ts": "workspace:*",
 		"@types/node": "^20.11.24",
 		"@types/vscode": "^1.85.2",
 		"@vscode/test-electron": "^2.3.3",
