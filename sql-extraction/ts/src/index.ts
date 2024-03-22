@@ -1,4 +1,4 @@
-import ts from "typescript";
+import * as ts from "typescript";
 
 type Range = [from: number, to: number];
 export type SqlNodes = {

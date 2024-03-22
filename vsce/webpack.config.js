@@ -26,6 +26,15 @@ const extensionConfig = {
 	resolve: {
 		// support reading TypeScript and JavaScript files, 📖 -> https://github.com/TypeStrong/ts-loader
 		extensions: [".ts", ".js"],
+		alias: {
+			"sql-extraction-ts": path.resolve(
+				__dirname,
+				"..",
+				"sql-extraction",
+				"ts",
+				"src",
+			),
+		},
 	},
 	module: {
 		rules: [

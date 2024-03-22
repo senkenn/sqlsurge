@@ -1,6 +1,10 @@
+import {
+	type SqlNodes,
+	extractSqlList,
+	getVirtualFileName,
+} from "sql-extraction-ts";
 import * as ts from "typescript";
 import * as vscode from "vscode";
-import { type SqlNodes, extractSqlList, getVirtualFileName } from "./index";
 import {
 	type IncrementalLanguageService,
 	createIncrementalLanguageService,

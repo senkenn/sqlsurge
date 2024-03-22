@@ -1,5 +1,3 @@
 {
-	"name": "@senken/sql-extraction-ts",
-	"private": true,
-	"main": "out/index.js"
+	"name": "@senken/sql-extraction-ts"
 }
