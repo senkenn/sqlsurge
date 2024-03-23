@@ -30,6 +30,7 @@
 			"request": "launch",
 			"args": [
 				"--profile-temp",
+				"--install-extension=rust-lang.rust-analyzer",
 				"--extensionDevelopmentPath=${workspaceFolder}/vsce",
 				"${workspaceFolder}/vsce/test-workspace-rs-sqlx"
 			],

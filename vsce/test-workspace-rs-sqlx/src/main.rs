@@ -20,7 +20,6 @@ struct Todo {
     done: bool,
 }
 
-
 #[tokio::main(flavor = "current_thread")]
 async fn main() -> anyhow::Result<()> {
     let args = Args::from_args_safe()?;
@@ -82,7 +81,8 @@ WHERE id = $1
 
 async fn list_todos(pool: &PgPool) -> anyhow::Result<()> {
     // query_as!に書き変え
-    let recs = sqlx::query_as!(Todo,
+    let recs = sqlx::query_as!(
+        Todo,
         r#"
 SELECT id, description, done
 FROM todos

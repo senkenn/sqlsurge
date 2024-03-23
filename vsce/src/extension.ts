@@ -14,9 +14,7 @@ import { client, startSqlsClient } from "./startSqlsClient";
 
 export async function activate(context: vscode.ExtensionContext) {
 	startSqlsClient().catch(console.error);
-	const { add } = await import("../sql-extraction-rs");
-	console.log(add(1, 2));
-
+	const { extract_sql_list } = await import("../sql-extraction-rs");
 	const originalScheme = "sqlsurge";
 	const virtualContents = new Map<string, string[]>(); // TODO: May not be needed
 	const services = new Map<string, IncrementalLanguageService>();
@@ -39,6 +37,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		) {
 			const offset = document.offsetAt(position);
 			const service = getOrCreateLanguageService(document.uri)!;
+			console.log(document.fileName);
 			const blocks = refresh(service, document.fileName, document.getText());
 			const block = blocks.find(({ codeRange: [start, end] }) => {
 				// in range
@@ -68,7 +67,10 @@ export async function activate(context: vscode.ExtensionContext) {
 	};
 
 	context.subscriptions.push(
-		vscode.languages.registerCompletionItemProvider("typescript", completion),
+		vscode.languages.registerCompletionItemProvider(
+			["typescript", "rust"],
+			completion,
+		),
 	);
 
 	function getOrCreateLanguageService(uri: vscode.Uri) {
@@ -117,7 +119,13 @@ export async function activate(context: vscode.ExtensionContext) {
 	): (SqlNodes & { vFileName: string })[] {
 		console.time(refresh.name);
 		try {
-			const sqlNodes = extractSqlList(rawContent);
+			let sqlNodes: SqlNodes[] = [];
+			if (fileName.endsWith(".ts")) {
+				sqlNodes = extractSqlList(rawContent);
+			} else if (fileName.endsWith(".rs")) {
+				const sqlNodes = extract_sql_list(rawContent);
+				console.log(sqlNodes);
+			}
 			const lastVirtualFileNames = virtualContents.get(fileName) ?? [];
 			// update virtual files
 			const vFileNames = sqlNodes.map((sqlNode) => {

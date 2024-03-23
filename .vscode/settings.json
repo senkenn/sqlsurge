@@ -21,5 +21,8 @@
 	"[yaml]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode"
 	},
-	"rust-analyzer.linkedProjects": ["./sql-extraction/rs/Cargo.toml"]
+	"rust-analyzer.linkedProjects": [
+		"./sql-extraction/rs/Cargo.toml",
+		"./vsce/test-workspace-rs-sqlx/Cargo.toml"
+	]
 }
