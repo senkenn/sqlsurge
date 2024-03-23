@@ -16,6 +16,7 @@
 	"publisher": "senken",
 	"keywords": ["multi-root ready"],
 	"categories": ["Programming Languages"],
+	"icon": "resources/sqlsurge-icon.png",
 	"engines": {
 		"vscode": "^1.85.2"
 	},
