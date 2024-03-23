@@ -29,8 +29,8 @@
 	"scripts": {
 		"vscode:prepublish": "bun esbuild:base --minify",
 		"clean": "npx rimraf -rf ./out",
-		"compile": "webpack",
-		"watch": "webpack --watch",
+		"compile": "bun clean && webpack",
+		"watch": "bun clean && webpack --watch",
 		"package": "webpack --mode production --devtool hidden-source-map",
 		"watch-tests": "tsc -p . -w",
 		"test": "tsc -p . && node ./dist/test/runTest.js",
