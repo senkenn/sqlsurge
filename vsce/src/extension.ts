@@ -1,8 +1,4 @@
-import {
-	type SqlNodes,
-	extractSqlList,
-	getVirtualFileName,
-} from "sql-extraction-ts";
+import { type SqlNodes, extractSqlListTs } from "sql-extraction-ts";
 import * as ts from "typescript";
 import * as vscode from "vscode";
 import {
@@ -121,7 +117,7 @@ export async function activate(context: vscode.ExtensionContext) {
 		try {
 			let sqlNodes: SqlNodes[] = [];
 			if (fileName.endsWith(".ts")) {
-				sqlNodes = extractSqlList(rawContent);
+				sqlNodes = extractSqlListTs(rawContent);
 			} else if (fileName.endsWith(".rs")) {
 				const sqlNodes = extract_sql_list(rawContent);
 				console.log(sqlNodes);
@@ -129,7 +125,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			const lastVirtualFileNames = virtualContents.get(fileName) ?? [];
 			// update virtual files
 			const vFileNames = sqlNodes.map((sqlNode) => {
-				const virtualFileName = `${fileName}@${getVirtualFileName(sqlNode)}`;
+				const virtualFileName = `${fileName}@${sqlNode.index}.sql`;
 				const prefix = rawContent
 					.slice(0, sqlNode.codeRange[0])
 					.replace(/[^\n]/g, " ");

@@ -1,14 +1,13 @@
-import * as ts from "typescript";
+import ts from "typescript";
 
 type Range = [from: number, to: number];
 export type SqlNodes = {
 	codeRange: Range;
 	content: string;
-	fileName: string | undefined;
 	index: number;
 };
 
-export function extractSqlList(sourceTxt: string): SqlNodes[] {
+export function extractSqlListTs(sourceTxt: string): SqlNodes[] {
 	const sourceFile = ts.createSourceFile(
 		"unusedFileName",
 		sourceTxt,
@@ -32,20 +31,9 @@ export function extractSqlList(sourceTxt: string): SqlNodes[] {
 			sqlNodes.push({
 				codeRange: [node.template.pos + 1, node.template.end], // +1 is to remove the first back quote
 				content: node.template.rawText ?? "",
-				fileName: undefined,
 				index: sqlNodes.length,
 			});
 		}
 		ts.forEachChild<void>(node, visit);
 	}
-}
-
-export function getVirtualFileName(block: SqlNodes) {
-	const ext = ".sql";
-	if (block.fileName) {
-		return block.fileName.endsWith(ext)
-			? block.fileName
-			: `${block.fileName}${ext}`;
-	}
-	return `${block.index}${ext}`;
 }
