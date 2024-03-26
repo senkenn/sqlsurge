@@ -28,7 +28,7 @@
 	],
 	"main": "./out/extension.js",
 	"scripts": {
-		"vscode:prepublish": "bun esbuild:base --minify",
+		"vscode:prepublish": "bun compile --mode production",
 		"clean": "npx rimraf -rf ./out",
 		"compile": "bun clean && webpack",
 		"watch": "bun clean && webpack --watch",
