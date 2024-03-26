@@ -8,8 +8,6 @@ import {
 } from "./service";
 import { client, startSqlsClient } from "./startSqlsClient";
 
-import * as zod from "zod";
-
 export async function activate(context: vscode.ExtensionContext) {
 	startSqlsClient().catch(console.error);
 	const { extract_sql_list } = await import("../sql-extraction-rs");
