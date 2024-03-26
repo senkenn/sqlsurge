@@ -49,12 +49,7 @@ async fn main() -> anyhow::Result<()> {
 }
 
 async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
-    let rec = sqlx::query!(
-        r#"
-INSERT INTO todos ( description )
-VALUES ( $1 )
-RETURNING id
-        "#,
+    let rec = sqlx::query!("INSERT INTO todos ( description ) VALUES ( $1 ) RETURNING id",
         description
     )
     .fetch_one(pool)

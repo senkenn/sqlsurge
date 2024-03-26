@@ -1,8 +1,13 @@
 #![allow(unused_imports)]
 use quote::quote;
+use serde::{Deserialize, Serialize};
+use std::collections::HashMap;
+use std::ffi::c_long;
+use syn::spanned::Spanned;
 use syn::visit::{self, Visit};
 use syn::File;
 use wasm_bindgen::prelude::wasm_bindgen;
+use wasm_bindgen::JsValue;
 
 // get function name: https://stackoverflow.com/a/63904992
 #[allow(unused_macros)]
@@ -22,15 +27,33 @@ macro_rules! function {
     }};
 }
 
+#[derive(Serialize, Debug)]
+struct Position {
+    line: usize,
+    column: usize,
+}
+
+#[derive(Serialize, Debug)]
+struct Range {
+    start: Position,
+    end: Position,
+}
+
+#[derive(Serialize, Debug)]
+struct SqlNode {
+    code_range: Range,
+    content: String,
+}
+
+type SerializedSqlNodeList = Vec<String>;
+
 struct QueryVisitor {
-    sql_list: Vec<String>,
+    sql_node_list: SerializedSqlNodeList,
 }
 
 impl<'ast> QueryVisitor {
-    // other methods...
-
-    fn into_sql_list(self) -> Vec<String> {
-        self.sql_list
+    fn into_sql_node_list(self) -> SerializedSqlNodeList {
+        self.sql_node_list
     }
 }
 
@@ -44,10 +67,12 @@ impl<'ast> Visit<'ast> for QueryVisitor {
                 // get tokens
                 let tokens = &mac.tokens;
                 #[cfg(debug_assertions)]
-                println!("Found sqlx::query!: {}", tokens.to_string());
+                println!("{} Found sqlx::query!: {}", function!(), tokens.to_string());
 
                 // search literal and concat
-                let mut lit_str = String::new();
+                let mut sql_lit = String::new();
+                let mut start = Position { line: 0, column: 0 };
+                let mut end = Position { line: 0, column: 0 };
                 for token in tokens.clone() {
                     // get only Literal(Literal) from TokenTree
                     let lit = match token {
@@ -55,26 +80,67 @@ impl<'ast> Visit<'ast> for QueryVisitor {
                         _ => continue,
                     };
                     #[cfg(debug_assertions)]
-                    println!("{:?}", lit);
+                    println!("{} lit: {:?}", function!(), lit);
+                    println!("{} lit span start: {:?}", function!(), lit.span().start());
+                    println!("{} lit span end: {:?}", function!(), lit.span().end());
+
+                    start = Position {
+                        line: lit.span().start().line,
+                        column: lit.span().start().column,
+                    };
+                    end = Position {
+                        line: lit.span().end().line,
+                        column: lit.span().end().column,
+                    };
 
                     // concat lit
-                    lit_str.push_str(&lit.to_string());
+                    sql_lit.push_str(&lit.to_string());
                 }
-                // If query is surrounded by "" or r#""# then remove it and trim the spaces
-                if lit_str.starts_with("r#\"") {
-                    lit_str = lit_str
+                // If query is surrounded by "" or r#""# then remove it
+                if sql_lit.starts_with("r#\"") {
+                    sql_lit = sql_lit
                         .trim_start_matches("r#\"")
                         .trim_end_matches("\"#")
                         .to_string();
-                } else if lit_str.starts_with("\"") {
-                    lit_str = lit_str
+
+                    // adjust position and if "\n" is included in the sql_lit, then add 1 to start line
+                    start.column += 3 + if let Some(_) = sql_lit.find("\n") {
+                        1
+                    } else {
+                        0
+                    };
+                    end.column -= 2; // remove '"#'
+                } else if sql_lit.starts_with("\"") {
+                    sql_lit = sql_lit
                         .trim_start_matches("\"")
                         .trim_end_matches("\"")
                         .to_string();
+
+                    // remove '"'
+                    start.column += 1;
                 }
 
-                // println!("{}", lit_str);
-                self.sql_list.push(lit_str);
+                let sql_node = SqlNode {
+                    code_range: Range {
+                        start: Position {
+                            line: start.line,
+                            column: start.column,
+                        },
+                        end: Position {
+                            line: end.line,
+                            column: end.column,
+                        },
+                    },
+                    content: sql_lit.clone(),
+                };
+
+                #[cfg(debug_assertions)]
+                println!("{} lit_str: {}", function!(), sql_lit);
+                println!("{} sql_node: {:?}", function!(), sql_node);
+
+                // serialize sql_node to json and push
+                let sql_node_str = serde_json::to_string(&sql_node).unwrap();
+                self.sql_node_list.push(sql_node_str);
             }
         }
 
@@ -90,14 +156,14 @@ impl<'ast> Visit<'ast> for QueryVisitor {
 }
 
 #[wasm_bindgen]
-pub fn extract_sql_list(source_txt: &str) -> Vec<String> {
+pub fn extract_sql_list(source_txt: &str) -> SerializedSqlNodeList {
     let ast: File = syn::parse_file(source_txt).unwrap();
     let mut query_visitor = QueryVisitor {
-        sql_list: Vec::new(),
+        sql_node_list: Vec::<String>::new(),
     };
     query_visitor.visit_file(&ast);
 
-    query_visitor.into_sql_list()
+    query_visitor.into_sql_node_list()
 }
 
 #[cfg(test)]
@@ -105,7 +171,7 @@ mod tests {
     use super::*;
 
     #[test]
-    fn it_works_sqlx_query_one_query_single_line() {
+    fn found_sqlx_query_one_query_single_line() {
         let result = extract_sql_list(
             &quote! {
                 async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
@@ -124,7 +190,7 @@ mod tests {
     }
 
     #[test]
-    fn it_works_sqlx_query_multi_queries_with_single_line() {
+    fn found_sqlx_query_multi_queries_with_single_line() {
         let result = extract_sql_list(
             &quote! {
                 async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
@@ -155,7 +221,7 @@ mod tests {
     }
 
     #[test]
-    fn it_works_sqlx_query_one_queries_with_multi_line() {
+    fn found_sqlx_query_one_queries_with_multi_line() {
         let result = extract_sql_list(
             &quote! {
                     async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
@@ -188,7 +254,7 @@ mod tests {
     }
 
     #[test]
-    fn it_works_sqlx_query_multi_queries_with_multi_line() {
+    fn found_sqlx_query_multi_queries_with_multi_line() {
         let result = extract_sql_list(
             &quote! {
                 async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
@@ -242,7 +308,7 @@ mod tests {
     }
 
     #[test]
-    fn it_works_sqlx_query_as_one_query_single_line() {
+    fn found_sqlx_query_as_one_query_single_line() {
         let result = extract_sql_list(
             &quote! {
                 async fn list_todos(pool: &PgPool) -> anyhow::Result<()> {

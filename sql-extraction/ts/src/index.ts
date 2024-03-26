@@ -1,10 +1,9 @@
-import ts from "typescript";
+import * as ts from "typescript";
 
 type Range = [from: number, to: number];
 export type SqlNodes = {
 	codeRange: Range;
 	content: string;
-	index: number;
 };
 
 export function extractSqlListTs(sourceTxt: string): SqlNodes[] {
@@ -31,7 +30,6 @@ export function extractSqlListTs(sourceTxt: string): SqlNodes[] {
 			sqlNodes.push({
 				codeRange: [node.template.pos + 1, node.template.end], // +1 is to remove the first back quote
 				content: node.template.rawText ?? "",
-				index: sqlNodes.length,
 			});
 		}
 		ts.forEachChild<void>(node, visit);
