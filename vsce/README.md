@@ -15,6 +15,15 @@ SQLx Example in Rust:
   - [Prisma](https://www.prisma.io/docs/orm/prisma-client/queries/raw-database-access/raw-queries) in TypeScript
   - [SQLx](https://github.com/launchbadge/sqlx) in Rust
 
+VSCode's quick suggestion(auto completion) in strings is disabled by default.
+It can be enabled by adding the following setting to settings.json.
+
+```json
+"editor.quickSuggestions": {
+    "strings": true
+}
+```
+
 ## Requirements
 
 - **sqls** ([Installation Guide](https://github.com/sqls-server/sqls?tab=readme-ov-file#installation))
