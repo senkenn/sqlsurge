@@ -34,8 +34,9 @@ You should verify the sqls's path is valid with `sqls -v`, and configure the dat
 
 - [x] Support for Prisma in TypeScript
 - [x] Support for SQLx in Rust
-- [ ] Quick info symbol
+- [ ] Format SQL
+- [ ] Show quick info symbol
 - [ ] Support to custom raw SQL queries, not just Prisma and SQLx
-- [ ] Auto install sqls if not found
-- [ ] SQL query Execution
-- [ ] sqls config view for database connection
+- [ ] Install sqls automatically if not found
+- [ ] Execute SQL query
+- [ ] Show sqls config with tree view
