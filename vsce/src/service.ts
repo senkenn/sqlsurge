@@ -1,7 +1,7 @@
-import fs from "node:fs";
-import path from "node:path";
+import * as fs from "node:fs";
+import * as path from "node:path";
 import { blue, bold, gray, green } from "colorette";
-import ts from "typescript";
+import * as ts from "typescript";
 
 export interface IncrementalSnapshot extends ts.IScriptSnapshot {
 	/** If snapshot analyzed by typeChecker, it will be true */

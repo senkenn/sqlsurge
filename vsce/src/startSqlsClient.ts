@@ -1,9 +1,9 @@
-import { delimiter } from "path";
+import { delimiter } from "node:path";
 import * as vscode from "vscode";
 import {
 	LanguageClient,
-	LanguageClientOptions,
-	ServerOptions,
+	type LanguageClientOptions,
+	type ServerOptions,
 } from "vscode-languageclient/node";
 
 interface LanguageServerConfig {
@@ -44,6 +44,8 @@ async function findSqlsInPath(): Promise<vscode.Uri | undefined> {
 			return sqls;
 		}
 	}
+
+	return;
 }
 
 async function fileExists(path: vscode.Uri) {

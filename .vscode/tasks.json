@@ -3,8 +3,8 @@
 	"tasks": [
 		{
 			"type": "npm",
-			"script": "esbuild:watch",
-			"problemMatcher": "$esbuild-watch",
+			"script": "vsce:watch",
+			"problemMatcher": "$ts-webpack-watch",
 			"isBackground": true,
 			"group": {
 				"kind": "build",

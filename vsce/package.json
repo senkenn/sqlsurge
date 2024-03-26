@@ -1,0 +1,82 @@
+{
+	"name": "sqlsurge",
+	"description": "SQL Language Server Extension for Visual Studio Code",
+	"license": "MIT",
+	"version": "0.2.1",
+	"displayName": "sqlsurge",
+	"private": true,
+	"preview": true,
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/senkenn/sqlsurge"
+	},
+	"bugs": {
+		"url": "https://github.com/senkenn/sqlsurge"
+	},
+	"publisher": "senken",
+	"keywords": ["multi-root ready"],
+	"categories": ["Programming Languages"],
+	"icon": "resources/sqlsurge-icon.png",
+	"engines": {
+		"vscode": "^1.85.2"
+	},
+	"activationEvents": [
+		"onLanguage:sql",
+		"onLanguage:typescript",
+		"onLanguage:javascript",
+		"onLanguage:rust"
+	],
+	"main": "./out/extension.js",
+	"scripts": {
+		"vscode:prepublish": "bun esbuild:base --minify",
+		"clean": "npx rimraf -rf ./out",
+		"compile": "bun clean && webpack",
+		"watch": "bun clean && webpack --watch",
+		"package": "webpack --mode production --devtool hidden-source-map",
+		"watch-tests": "tsc -p . -w",
+		"test": "tsc -p . && node ./dist/test/runTest.js",
+		"publish": "vsce publish --no-dependencies"
+	},
+	"contributes": {
+		"configuration": {
+			"type": "object",
+			"title": "sqls",
+			"properties": {
+				"go.languageServerFlags": {
+					"type": "array",
+					"default": [],
+					"description": "Flags like -trace and -log to be used while running the language server."
+				}
+			}
+		},
+		"grammars": [
+			{
+				"injectTo": [
+					"source.js",
+					"source.ts",
+					"source.js.jsx",
+					"source.jsx",
+					"source.tsx",
+					"source.vue"
+				],
+				"scopeName": "source.ts.prismaClientRawSQL",
+				"path": "./syntaxes/prismaClientRawSQL.json",
+				"embeddedLanguages": {
+					"meta.embedded.block.sql": "sql"
+				}
+			}
+		]
+	},
+	"devDependencies": {
+		"@types/node": "^20.11.24",
+		"@types/vscode": "^1.85.2",
+		"@vscode/test-electron": "^2.3.3",
+		"@vscode/vsce": "^2.19.0",
+		"colorette": "^2.0.20",
+		"ts-loader": "^9.5.1",
+		"vscode-languageclient": "^9.0.1",
+		"webpack": "^5.91.0",
+		"webpack-cli": "^5.1.4"
+	},
+	"packageManager": "bun@1.0.29"
+}
