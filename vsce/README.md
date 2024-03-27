@@ -1,6 +1,6 @@
 # sqlsurge
 
-[sqlsurge](https://marketplace.visualstudio.com/items?itemName=senken.sqlsurge) is a Visual Studio Code extension using for [sqls](https://github.com/lighttiger2505/sqls) for SQL language server. It works just **NOT ONLY with SQL files, but also with RAW SQL QUERIES on other languages such as TypeScript and Rust**.
+[sqlsurge](https://marketplace.visualstudio.com/items?itemName=senken.sqlsurge) is a Visual Studio Code extension for SQL language server using [sqls](https://github.com/lighttiger2505/sqls). It works just **NOT ONLY with SQL files, but also with RAW SQL QUERIES on other languages such as TypeScript and Rust**.
 
 Prisma Example in TypeScript:
 ![Alt text](resources/screenshot-ts.png)
