@@ -3,5 +3,6 @@
 !syntaxes
 !LICENSE*
 !out/extension.js
+!out/*.wasm
 !package.json
 !README.md

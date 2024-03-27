@@ -2,7 +2,4 @@ out
 node_modules
 client/server
 .vscode-test
-
-# esbuild visualizer
-stats.html
-meta.json
+*vsix
