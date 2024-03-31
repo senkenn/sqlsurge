@@ -2,10 +2,8 @@
 	"compilerOptions": {
 		"outDir": "out",
 		"esModuleInterop": false,
-		"paths": {
-			"sql-extraction-ts": ["../sql-extraction/ts/src"]
-		}
+		"rootDir": "src"
 	},
-	"include": ["src", "../sql-extraction/ts/src"],
+	"include": ["src"],
 	"extends": "../tsconfig.json"
 }

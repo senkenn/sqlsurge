@@ -1,4 +1,5 @@
 {
+	"private": true,
 	"workspaces": ["vsce", "sql-extraction/*"],
 	"scripts": {
 		"vsce:watch": "make gen-wasm-for-extension && cd vsce && bun watch"

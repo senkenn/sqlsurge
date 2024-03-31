@@ -1,4 +1,4 @@
-import { type SqlNodes, extractSqlListTs } from "sql-extraction-ts";
+import { type SqlNodes, extractSqlListTs } from "@senken/sql-extraction-ts";
 import * as ts from "typescript";
 import * as vscode from "vscode";
 import {
