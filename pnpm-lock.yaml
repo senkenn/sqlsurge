@@ -21,10 +21,15 @@ importers:
         specifier: ^5.4.2
         version: 5.4.3
 
+  sql-extraction/rs: {}
+
   sql-extraction/ts: {}
 
   vsce:
     devDependencies:
+      '@senken/sql-extraction-rs':
+        specifier: workspace:*
+        version: link:../sql-extraction/rs
       '@senken/sql-extraction-ts':
         specifier: workspace:*
         version: link:../sql-extraction/ts

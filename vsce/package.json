@@ -32,7 +32,7 @@
 		"clean": "node -e 'fs.rmSync(`out`, {recursive:true, force:true})'",
 		"compile": "pnpm clean && webpack",
 		"watch": "pnpm clean && webpack --watch",
-		"test": "tsc -p . && node ./out/test/runTest.js",
+		"test": "pnpm compile && tsc -p tsconfig.test.json && node ./out/test/runTest.js",
 		"watch-tests": "tsc -p . -w",
 		"package": "pnpm vsce package --no-dependencies",
 		"publish": "pnpm vsce publish --no-dependencies"
@@ -69,6 +69,7 @@
 	},
 	"devDependencies": {
 		"@senken/sql-extraction-ts": "workspace:*",
+		"@senken/sql-extraction-rs": "workspace:*",
 		"@types/jest": "^29.5.12",
 		"@types/node": "^20.11.24",
 		"@types/vscode": "^1.85.2",

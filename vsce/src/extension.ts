@@ -1,3 +1,4 @@
+import { extractSqlListRs } from "@senken/sql-extraction-rs";
 import { type SqlNodes, extractSqlListTs } from "@senken/sql-extraction-ts";
 import * as ts from "typescript";
 import * as vscode from "vscode";
@@ -10,7 +11,6 @@ import { client, startSqlsClient } from "./startSqlsClient";
 
 export async function activate(context: vscode.ExtensionContext) {
 	startSqlsClient().catch(console.error);
-	const { extract_sql_list } = await import("../sql-extraction-rs");
 
 	const originalScheme = "sqlsurge";
 	const virtualContents = new Map<string, string[]>(); // TODO: May not be needed
@@ -26,7 +26,7 @@ export async function activate(context: vscode.ExtensionContext) {
 	});
 
 	const completion = {
-		provideCompletionItems(
+		async provideCompletionItems(
 			document: vscode.TextDocument,
 			position: vscode.Position,
 			_token: vscode.CancellationToken,
@@ -67,7 +67,7 @@ export async function activate(context: vscode.ExtensionContext) {
 			}
 
 			if (document.languageId === "rust") {
-				const sqlNodes = refreshRust(
+				const sqlNodes = await refreshRust(
 					getOrCreateLanguageService(document.uri)!,
 					document,
 				);
@@ -219,15 +219,15 @@ export async function activate(context: vscode.ExtensionContext) {
 		content: string;
 	};
 
-	function refreshRust(
+	async function refreshRust(
 		service: IncrementalLanguageService,
 		document: vscode.TextDocument,
-	): (SqlNodeRust & { vFileName: string })[] {
+	): Promise<(SqlNodeRust & { vFileName: string })[]> {
 		console.time(refresh.name);
 		const fileName = document.fileName;
 		const rawContent = document.getText();
 		try {
-			const sqlNodes = extract_sql_list(rawContent);
+			const sqlNodes = await extractSqlListRs(rawContent);
 			console.log(JSON.parse(sqlNodes[0]));
 			const lastVirtualFileNames = virtualContents.get(fileName) ?? [];
 			// update virtual files
