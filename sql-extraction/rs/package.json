@@ -1,0 +1,10 @@
+{
+  "name": "@senken/sql-extraction-rs",
+  "main": "./out/index.js",
+  "scripts": {
+    "prepublishOnly": "pnpm build",
+    "build:rs": "wasm-pack build --target bundler --release",
+    "clean": "rm -rf ./pkg ./out",
+    "build": "pnpm build:rs && tsc -p ."
+  }
+}

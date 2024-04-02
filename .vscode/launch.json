@@ -1,52 +1,52 @@
 {
-	"version": "0.2.0",
-	"configurations": [
-		{
-			"name": "🧩 Debug-ts",
-			"type": "extensionHost",
-			"request": "launch",
-			"args": [
-				"--profile-temp",
-				"--extensionDevelopmentPath=${workspaceFolder}/vsce",
-				"${workspaceFolder}/vsce/test-workspace-ts-prisma"
-			],
-			"outFiles": ["${workspaceFolder}/vsce/out/**/*.js"],
-			"skipFiles": [
-				"<node_internals>/**",
-				"**/node_modules/**",
-				"**/resources/app/out/vs/**", // NOTE: output filename to debug console instead of extensionHostProcess.js:147
-				"**/.vscode-insiders/extensions/",
-				"**/.vscode/extensions/"
-			],
-			"sourceMaps": true,
-			"env": {
-				"VSCODE_DEBUG_MODE": "true"
-			},
-			"preLaunchTask": "${defaultBuildTask}"
-		},
-		{
-			"name": "🧩 Debug-rs",
-			"type": "extensionHost",
-			"request": "launch",
-			"args": [
-				"--profile-temp",
-				"--install-extension=rust-lang.rust-analyzer",
-				"--extensionDevelopmentPath=${workspaceFolder}/vsce",
-				"${workspaceFolder}/vsce/test-workspace-rs-sqlx"
-			],
-			"outFiles": ["${workspaceFolder}/vsce/out/**/*.js"],
-			"skipFiles": [
-				"<node_internals>/**",
-				"**/node_modules/**",
-				"**/resources/app/out/vs/**", // NOTE: output filename to debug console instead of extensionHostProcess.js:147
-				"**/.vscode-insiders/extensions/",
-				"**/.vscode/extensions/"
-			],
-			"sourceMaps": true,
-			"env": {
-				"VSCODE_DEBUG_MODE": "true"
-			},
-			"preLaunchTask": "${defaultBuildTask}"
-		}
-	]
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "🧩 Debug-ts",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--profile-temp",
+        "--extensionDevelopmentPath=${workspaceFolder}/vsce",
+        "${workspaceFolder}/vsce/test-workspace-ts-prisma"
+      ],
+      "outFiles": ["${workspaceFolder}/vsce/out/**/*.js"],
+      "skipFiles": [
+        "<node_internals>/**",
+        "**/node_modules/**",
+        "**/resources/app/out/vs/**", // NOTE: output filename to debug console instead of extensionHostProcess.js:147
+        "**/.vscode-insiders/extensions/",
+        "**/.vscode/extensions/"
+      ],
+      "sourceMaps": true,
+      "env": {
+        "VSCODE_DEBUG_MODE": "true"
+      },
+      "preLaunchTask": "${defaultBuildTask}"
+    },
+    {
+      "name": "🧩 Debug-rs",
+      "type": "extensionHost",
+      "request": "launch",
+      "args": [
+        "--profile-temp",
+        "--install-extension=rust-lang.rust-analyzer",
+        "--extensionDevelopmentPath=${workspaceFolder}/vsce",
+        "${workspaceFolder}/vsce/test-workspace-rs-sqlx"
+      ],
+      "outFiles": ["${workspaceFolder}/vsce/out/**/*.js"],
+      "skipFiles": [
+        "<node_internals>/**",
+        "**/node_modules/**",
+        "**/resources/app/out/vs/**", // NOTE: output filename to debug console instead of extensionHostProcess.js:147
+        "**/.vscode-insiders/extensions/",
+        "**/.vscode/extensions/"
+      ],
+      "sourceMaps": true,
+      "env": {
+        "VSCODE_DEBUG_MODE": "true"
+      },
+      "preLaunchTask": "${defaultBuildTask}"
+    }
+  ]
 }
