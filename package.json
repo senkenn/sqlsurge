@@ -1,14 +1,14 @@
 {
-	"private": true,
-	"workspaces": ["vsce", "sql-extraction/*"],
-	"scripts": {
-		"build:pkg": "pnpm -F @senken/sql-extraction-ts run build && pnpm -F @senken/sql-extraction-rs run build",
-		"vsce:watch": "pnpm build:pkg && pnpm i && pnpm -F sqlsurge run watch"
-	},
-	"devDependencies": {
-		"@biomejs/biome": "^1.6.1",
-		"cspell": "^8.6.0",
-		"lefthook": "^1.6.7",
-		"typescript": "^5.4.2"
-	}
+  "private": true,
+  "workspaces": ["vsce", "sql-extraction/*"],
+  "scripts": {
+    "build:pkg": "pnpm -F @senken/sql-extraction-ts run build && pnpm -F @senken/sql-extraction-rs run build",
+    "vsce:watch": "pnpm build:pkg && pnpm i && pnpm -F sqlsurge run watch"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.6.1",
+    "cspell": "^8.6.0",
+    "lefthook": "^1.6.7",
+    "typescript": "^5.4.2"
+  }
 }

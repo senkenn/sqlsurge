@@ -1,8 +1,8 @@
 {
-	"name": "@senken/sql-extraction-ts",
-	"main": "./out/index.js",
-	"scripts": {
-		"prepublishOnly": "pnpm build",
-		"build": "tsc -p ."
-	}
+  "name": "@senken/sql-extraction-ts",
+  "main": "./out/index.js",
+  "scripts": {
+    "prepublishOnly": "pnpm build",
+    "build": "tsc -p ."
+  }
 }
