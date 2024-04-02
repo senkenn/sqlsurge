@@ -33,6 +33,7 @@
     "compile": "pnpm clean && webpack",
     "watch": "pnpm clean && webpack --watch",
     "test": "pnpm compile && tsc -p tsconfig.test.json && node ./out/test/runTest.js",
+    "test:bg": "xvfb-run pnpm test",
     "watch-tests": "tsc -p . -w",
     "package": "pnpm vsce package --no-dependencies",
     "publish": "pnpm vsce publish --no-dependencies"
