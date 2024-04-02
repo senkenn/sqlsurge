@@ -1,15 +1,15 @@
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-			"type": "npm",
-			"script": "vsce:watch",
-			"problemMatcher": "$ts-webpack-watch",
-			"isBackground": true,
-			"group": {
-				"kind": "build",
-				"isDefault": true
-			}
-		}
-	]
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "npm",
+      "script": "vsce:watch",
+      "problemMatcher": "$ts-webpack-watch",
+      "isBackground": true,
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    }
+  ]
 }
