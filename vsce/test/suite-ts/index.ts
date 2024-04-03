@@ -1,6 +1,6 @@
-import { runCLI } from "jest";
-
 import * as path from "node:path";
+import type { Config } from "@jest/types";
+import { runCLI } from "jest";
 
 export async function run(
   testsRoot: string,
@@ -10,13 +10,14 @@ export async function run(
 
   console.info(`Running Jest tests from ${projectRootPath} ...`);
 
-  const test = await runCLI(
-    {
-      testMatch: ["<rootDir>/out/test/suite-ts/*.test.js"],
-      testEnvironment: "./test/vscode-environment.ts",
-    } as any,
-    [projectRootPath],
-  );
+  const config = {
+    testMatch: ["<rootDir>/out/test/suite-ts/*.test.js"],
+    testEnvironment: "./test/vscode-environment.ts",
+  } as Config.Argv;
+
+  const test = await runCLI(config, [projectRootPath]);
+
+  // exit 1 if tests failed
   if (test.results.numFailedTestSuites > 0) {
     process.exit(1);
   }
