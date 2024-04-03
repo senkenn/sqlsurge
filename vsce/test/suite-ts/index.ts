@@ -6,12 +6,17 @@ export async function run(
   testsRoot: string,
   reportTestResults: (error?: Error, failures?: number) => void,
 ): Promise<void> {
-  const projectRootPath = path.resolve(__dirname, "../../");
-  const config = path.join(projectRootPath, "jest.config.js");
+  const projectRootPath = path.resolve(__dirname, "../../..");
 
   console.info(`Running Jest tests from ${projectRootPath} ...`);
 
-  const test = await runCLI({ config } as any, [projectRootPath]);
+  const test = await runCLI(
+    {
+      testMatch: ["<rootDir>/out/test/suite-ts/*.test.js"],
+      testEnvironment: "./test/vscode-environment.ts",
+    } as any,
+    [projectRootPath],
+  );
   if (test.results.numFailedTestSuites > 0) {
     process.exit(1);
   }

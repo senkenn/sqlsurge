@@ -8,23 +8,33 @@ async function main() {
     // Passed to `--extensionDevelopmentPath`
     const extensionDevelopmentPath = path.resolve(__dirname, "..", "..");
 
-    // The path to test runner
-    // Passed to --extensionTestsPath
-    const extensionTestsPath = path.resolve(__dirname, "index");
-
-    const workspacePath = path.resolve(
+    const workspacePathTs = path.resolve(
       __dirname,
       "..",
       "..",
       "test-workspace-ts-prisma",
     );
+    const workspacePathRs = path.resolve(
+      __dirname,
+      "..",
+      "..",
+      "test-workspace-rs-sqlx",
+    );
 
     // Download VS Code, unzip it and run the integration test
+    // ts
     await runTests({
       extensionDevelopmentPath,
-      extensionTestsPath,
-      launchArgs: ["--disable-extensions", workspacePath],
+      extensionTestsPath: path.resolve(__dirname, "suite-ts", "index"),
+      launchArgs: ["--disable-extensions", workspacePathTs],
     });
+
+    // rs
+    // await runTests({
+    //   extensionDevelopmentPath,
+    //   extensionTestsPath: path.resolve(__dirname, "suite-rs", "index"),
+    //   launchArgs: ["--disable-extensions", workspacePathRs],
+    // });
   } catch (err) {
     console.error("Failed to run tests", err);
     process.exit(1);

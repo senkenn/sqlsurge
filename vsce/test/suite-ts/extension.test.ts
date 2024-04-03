@@ -1,6 +1,6 @@
 import * as path from "node:path";
 import * as vscode from "vscode";
-import { sleep } from "./helper";
+import { sleep } from "../helper";
 
 const wsPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
 if (!wsPath) {
