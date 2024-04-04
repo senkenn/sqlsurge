@@ -1,0 +1,3 @@
+packages:
+  - vsce
+  - sql-extraction/*
