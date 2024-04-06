@@ -10,7 +10,7 @@ runs:
       with:
         go-version: "1.22.2"
     - name: Install sqls
-      run: go install github.com/lighttiger2505/sqls@latest
+      run: go install github.com/sqls-server/sqls@latest
       shell: bash
 
     - uses: Swatinem/rust-cache@v2
