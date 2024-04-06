@@ -51,8 +51,11 @@ jobs:
       #     restore-keys: |
       #       ${{ runner.os }}-pnpm-store-
 
-      - name: Install dependencies
+      - name: Install npm dependencies
         run: pnpm i
+
+      - name: Install wasm-pack
+        run: cargo install wasm-pack
 
       - name: Build
         run: pnpm build:pkg && pnpm i
