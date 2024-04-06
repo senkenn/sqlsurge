@@ -14,6 +14,8 @@ runs:
       shell: bash
 
     - uses: Swatinem/rust-cache@v2
+      with:
+        workspaces: "sql-extraction/rs -> sql-extraction/rs/target"
 
       # - name: Setup docker (missing on MacOS)
       #   if: runner.os == 'macos'
