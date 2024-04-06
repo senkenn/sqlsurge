@@ -1,6 +1,6 @@
 import * as path from "node:path";
 import * as vscode from "vscode";
-import { sleep } from "./helper";
+import { sleep } from "../helper";
 
 const wsPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
 if (!wsPath) {
@@ -15,7 +15,7 @@ describe("Prisma Completion Test", () => {
     const editor = await vscode.window.showTextDocument(doc);
 
     // Wait for server activation
-    await sleep(1000);
+    await sleep(2000);
 
     const pos = new vscode.Position(5, 44);
     editor.selection = new vscode.Selection(pos, pos);
@@ -39,7 +39,7 @@ describe("Prisma Completion Test", () => {
     const editor = await vscode.window.showTextDocument(doc);
 
     // Wait for server activation
-    await sleep(1000);
+    await sleep(2000);
 
     const pos = new vscode.Position(13, 10);
     editor.selection = new vscode.Selection(pos, pos);

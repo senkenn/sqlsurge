@@ -1,13 +1,7 @@
-#![allow(unused_imports)]
-use quote::quote;
-use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
-use std::ffi::c_long;
-use syn::spanned::Spanned;
+use serde::Serialize;
 use syn::visit::{self, Visit};
 use syn::File;
 use wasm_bindgen::prelude::wasm_bindgen;
-use wasm_bindgen::JsValue;
 
 // get function name: https://stackoverflow.com/a/63904992
 #[allow(unused_macros)]
@@ -29,8 +23,8 @@ macro_rules! function {
 
 #[derive(Serialize, Debug)]
 struct Position {
-    line: usize,
-    column: usize,
+    line: usize,   // 1-indexed
+    column: usize, // 1-indexed
 }
 
 #[derive(Serialize, Debug)]
@@ -109,7 +103,7 @@ impl<'ast> Visit<'ast> for QueryVisitor {
                     } else {
                         0
                     };
-                    end.column -= 2; // remove '"#'
+                    end.column -= 2 - 1; // -2 for "#, +1 to convert 0-indexed into 1-indexed
                 } else if sql_lit.starts_with("\"") {
                     sql_lit = sql_lit
                         .trim_start_matches("\"")
@@ -118,6 +112,7 @@ impl<'ast> Visit<'ast> for QueryVisitor {
 
                     // remove '"'
                     start.column += 1;
+                    end.column -= 1 - 1; // -1 for '"', +1 to convert 0-indexed into 1-indexed
                 }
 
                 let sql_node = SqlNode {
@@ -169,181 +164,236 @@ pub fn extract_sql_list(source_txt: &str) -> SerializedSqlNodeList {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use pretty_assertions::assert_eq;
 
     #[test]
     fn found_sqlx_query_one_query_single_line() {
         let result = extract_sql_list(
-            &quote! {
-                async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
-                    let rec = sqlx::query!("SELECT "id", name, population FROM city;", description)
-                    .fetch_one(pool)
-                    .await?;
+            r#"
+async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
+    let rec = sqlx::query!("INSERT INTO todos ( description ) VALUES ( $1 ) RETURNING id",
+        description
+    )
+    .fetch_one(pool)
+    .await?;
 
-                    Ok(rec.id)
-                }
-            }
-            .to_string(),
+    Ok(rec.id)
+}
+        "#,
         );
         println!("{} result: {:?}", function!(), result);
+        let expected = serde_json::to_string(&SqlNode {
+            code_range: Range {
+                start: Position {
+                    line: 3,
+                    column: 28,
+                },
+                end: Position {
+                    line: 3,
+                    column: 89,
+                },
+            },
+            content: "INSERT INTO todos ( description ) VALUES ( $1 ) RETURNING id".to_string(),
+        })
+        .unwrap();
+
         assert_eq!(result.len(), 1);
-        assert_eq!(result[0], "SELECT \"id\", name, population FROM city;");
+        assert_eq!(result[0], expected);
     }
 
     #[test]
     fn found_sqlx_query_multi_queries_with_single_line() {
         let result = extract_sql_list(
-            &quote! {
-                async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
-                    let rec = sqlx::query!("SELECT "id", name, population FROM city id = $1;", id)
-                    .fetch_one(pool)
-                    .await?;
+            r#"
+async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
+    let rec = sqlx::query!("SELECT id \"id\", description, done FROM todos ORDER BY id")
+        .fetch_one(pool)
+        .await?;
 
-                    // write test insert query
-                    let rec = sqlx::query!("INSERT INTO todos ( description ) VALUES ( $1 ) RETURNING id", description)
-                    .fetch_one(pool)
-                    .await?;
+    // write test insert query
+    let rec = sqlx::query!("INSERT INTO todos ( description ) VALUES ( $1 ) RETURNING id", description)
+        .fetch_one(pool)
+        .await?;
 
-                    Ok(rec.id)
-                }
-            }
-            .to_string(),
+    Ok(rec.id)
+}
+            "#,
         );
         println!("{} result: {:?}", function!(), result);
+        let expected1 = serde_json::to_string(&SqlNode {
+            code_range: Range {
+                start: Position {
+                    line: 3,
+                    column: 28,
+                },
+                end: Position {
+                    line: 3,
+                    column: 87,
+                },
+            },
+            content: "SELECT id \\\"id\\\", description, done FROM todos ORDER BY id".to_string(),
+        })
+        .unwrap();
+
+        let expected2 = serde_json::to_string(&SqlNode {
+            code_range: Range {
+                start: Position {
+                    line: 8,
+                    column: 28,
+                },
+                end: Position {
+                    line: 8,
+                    column: 89,
+                },
+            },
+            content: "INSERT INTO todos ( description ) VALUES ( $1 ) RETURNING id".to_string(),
+        })
+        .unwrap();
+
         assert_eq!(result.len(), 2);
-        assert_eq!(
-            result[0],
-            "SELECT \"id\", name, population FROM city id = $1;"
-        );
-        assert_eq!(
-            result[1],
-            "INSERT INTO todos ( description ) VALUES ( $1 ) RETURNING id"
-        );
+        assert_eq!(result[0], expected1);
+        assert_eq!(result[1], expected2);
     }
 
     #[test]
     fn found_sqlx_query_one_queries_with_multi_line() {
         let result = extract_sql_list(
-            &quote! {
-                    async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
-                        let rec = sqlx::query!(
-            r#"
-                INSERT INTO "todos" ( description )
-                VALUES ( $1 )
-                RETURNING id
-                        "#,
-                            description
-                        )
-                        .fetch_one(pool)
-                        .await?;
+            r##"
+async fn complete_todo(pool: &PgPool, id: i64) -> anyhow::Result<bool> {
+    let rows_affected = sqlx::query!(
+        r#"
+UPDATE todos
+SET done = TRUE
+WHERE id = $1
+        "#,
+        id
+    )
+    .execute(pool)
+    .await?
+    .rows_affected();
 
-                        Ok(rec.id)
-                    }
-                }
-            .to_string(),
+    Ok(rows_affected > 0)
+}
+            "##,
         );
         println!("{} result: {:?}", function!(), result);
         assert_eq!(result.len(), 1);
-        assert_eq!(
-            result[0],
-            r#"
-                INSERT INTO "todos" ( description )
-                VALUES ( $1 )
-                RETURNING id
-                        "#
-        );
+
+        let expected = serde_json::to_string(&SqlNode {
+            code_range: Range {
+                start: Position {
+                    line: 4,
+                    column: 12,
+                },
+                end: Position { line: 8, column: 9 },
+            },
+            content: "\nUPDATE todos\nSET done = TRUE\nWHERE id = $1\n        ".to_string(),
+        })
+        .unwrap();
+        assert_eq!(result[0], expected,);
     }
 
     #[test]
     fn found_sqlx_query_multi_queries_with_multi_line() {
         let result = extract_sql_list(
-            &quote! {
-                async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
-                    let rec = sqlx::query!(r#"
-                INSERT INTO "todos" ( description )
-                VALUES ( $1 )
-                RETURNING id
-                        "#,
-                            description
-                        )
-                        .fetch_one(pool)
-                        .await?;
+            r##"
+async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
+    let rec = sqlx::query!(r#"
+INSERT INTO "todos" ( description )
+VALUES ( $1 )
+RETURNING id
+        "#,
+            description
+        )
+        .fetch_one(pool)
+        .await?;
 
-                    // write test insert query
-                    let rec = sqlx::query!(r#"
-                UPDATE todos
-                SET done = TRUE
-                WHERE id = $1
-                        "#,
-                            description
-                        )
-                        .fetch_one(pool)
-                        .await?;
+    // write test insert query
+    let rec = sqlx::query!(r#"
+            UPDATE todos
+            SET done = TRUE
+            WHERE id = $1
+            "#,
+            description
+        )
+        .fetch_one(pool)
+        .await?;
 
-                    Ok(rec.id)
-                }
-            }
-            .to_string(),
+    Ok(rec.id)
+}
+            "##,
         );
         println!("{} result: {:?}", function!(), result);
         assert_eq!(result.len(), 2);
-        assert_eq!(
-            result[0],
-            r#"
-                INSERT INTO "todos" ( description )
-                VALUES ( $1 )
-                RETURNING id
-                        "#
-        );
-        for (i, char) in result[1].chars().enumerate() {
-            assert_eq!(char, result[1].chars().nth(i).unwrap());
-        }
-        assert_eq!(
-            result[1],
-            r#"
-                UPDATE todos
-                SET done = TRUE
-                WHERE id = $1
-                        "#
-        );
+        let expected1 = serde_json::to_string(&SqlNode {
+            code_range: Range {
+                start: Position {
+                    line: 3,
+                    column: 31,
+                },
+                end: Position { line: 7, column: 9 },
+            },
+            content:
+                "\nINSERT INTO \"todos\" ( description )\nVALUES ( $1 )\nRETURNING id\n        "
+                    .to_string(),
+        })
+        .unwrap();
+        assert_eq!(result[0], expected1);
+
+        let expected2 = serde_json::to_string(&SqlNode {
+            code_range: Range {
+                start: Position {
+                    line: 14,
+                    column: 31,
+                },
+                end: Position { line: 18, column: 13 },
+            },
+            content: "\n            UPDATE todos\n            SET done = TRUE\n            WHERE id = $1\n            ".to_string(),
+        }).unwrap();
+        assert_eq!(result[1], expected2);
     }
 
     #[test]
     fn found_sqlx_query_as_one_query_single_line() {
         let result = extract_sql_list(
-            &quote! {
-                async fn list_todos(pool: &PgPool) -> anyhow::Result<()> {
-                    let recs = sqlx::query_as!(
-                        Todo,
-                        r#"
-                SELECT id, description, done
-                FROM todos
-                ORDER BY id
-                        "#
-                    )
-                    .fetch_all(pool)
-                    .await?;
+            r##"
+async fn list_todos(pool: &PgPool) -> anyhow::Result<()> {
+    let recs = sqlx::query_as!(
+        Todo,
+        r#"
+SELECT id, description, done
+FROM todos
+ORDER BY id
+        "#
+    )
+    .fetch_all(pool)
+    .await?;
 
-                    for rec in recs {
-                        println!(
-                            "- [{}] {}: {}",
-                            if rec.done { "x" } else { " " },
-                            rec.id,
-                            &rec.description,
-                        );
-                    }
-                }
-            }
-            .to_string(),
+    for rec in recs {
+        println!(
+            "- [{}] {}: {}",
+            if rec.done { "x" } else { " " },
+            rec.id,
+            &rec.description,
+        );
+    }
+}
+            "##,
         );
         println!("{} result: {:?}", function!(), result);
         assert_eq!(result.len(), 1);
-        assert_eq!(
-            result[0],
-            r#"
-                SELECT id, description, done
-                FROM todos
-                ORDER BY id
-                        "#
-        );
+        let expected = serde_json::to_string(&SqlNode {
+            code_range: Range {
+                start: Position {
+                    line: 5,
+                    column: 12,
+                },
+                end: Position { line: 9, column: 9 },
+            },
+            content: "\nSELECT id, description, done\nFROM todos\nORDER BY id\n        "
+                .to_string(),
+        })
+        .unwrap();
+        assert_eq!(result[0], expected);
     }
 }
