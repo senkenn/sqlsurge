@@ -15,7 +15,7 @@ describe("Prisma Completion Test", () => {
     const editor = await vscode.window.showTextDocument(doc);
 
     // Wait for server activation
-    await sleep(8000);
+    await sleep(1000);
 
     const pos = new vscode.Position(5, 44);
     editor.selection = new vscode.Selection(pos, pos);
@@ -30,7 +30,7 @@ describe("Prisma Completion Test", () => {
     const { label, kind } = actualCompletionList.items[0];
     expect(label).toBe("SELECT");
     expect(kind).toBe(vscode.CompletionItemKind.Keyword);
-  }, 10000);
+  });
 
   test('Should be completed "VALUES" with $queryRaw multi line', async () => {
     const filePath = path.resolve(wsPath, "src", "index.ts");
@@ -39,7 +39,7 @@ describe("Prisma Completion Test", () => {
     const editor = await vscode.window.showTextDocument(doc);
 
     // Wait for server activation
-    await sleep(8000);
+    await sleep(1000);
 
     const pos = new vscode.Position(13, 10);
     editor.selection = new vscode.Selection(pos, pos);
@@ -54,5 +54,5 @@ describe("Prisma Completion Test", () => {
     const { label, kind } = actualCompletionList.items[0];
     expect(label).toBe("VALUES");
     expect(kind).toBe(vscode.CompletionItemKind.Keyword);
-  }, 10000);
+  });
 });
