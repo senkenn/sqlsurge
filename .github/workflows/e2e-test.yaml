@@ -1,0 +1,27 @@
+name: E2E Tests
+
+on: pull_request
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup
+
+      - name: Install wasm-pack
+        run: cargo install wasm-pack
+
+      - name: Build
+        run: pnpm build:pkg && pnpm i
+
+      - run: xvfb-run -a pnpm -F sqlsurge test
+        if: runner.os == 'Linux'
+
+      - run: pnpm -F sqlsurge test
+        if: runner.os != 'Linux'
