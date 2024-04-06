@@ -17,7 +17,7 @@ describe("SQLx Completion Test", () => {
     // Wait for server activation
     await sleep(2000);
 
-    const pos = new vscode.Position(51, 34);
+    const pos = new vscode.Position(52, 15);
     editor.selection = new vscode.Selection(pos, pos);
     const actualCompletionList =
       await vscode.commands.executeCommand<vscode.CompletionList>(
@@ -39,9 +39,9 @@ describe("SQLx Completion Test", () => {
     const editor = await vscode.window.showTextDocument(doc);
 
     // Wait for server activation
-    await sleep(1000);
+    await sleep(2000);
 
-    const pos = new vscode.Position(64, 3);
+    const pos = new vscode.Position(65, 3);
     editor.selection = new vscode.Selection(pos, pos);
     const actualCompletionList =
       await vscode.commands.executeCommand<vscode.CompletionList>(
@@ -63,9 +63,9 @@ describe("SQLx Completion Test", () => {
     const editor = await vscode.window.showTextDocument(doc);
 
     // Wait for server activation
-    await sleep(1000);
+    await sleep(2000);
 
-    const pos = new vscode.Position(83, 8);
+    const pos = new vscode.Position(84, 8);
     editor.selection = new vscode.Selection(pos, pos);
     const actualCompletionList =
       await vscode.commands.executeCommand<vscode.CompletionList>(
