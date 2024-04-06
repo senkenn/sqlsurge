@@ -60,5 +60,8 @@ jobs:
       - name: Build
         run: pnpm build:pkg && pnpm i
 
-      - name: Test
-        run: pnpm -F sqlsurge test
+      - run: xvfb-run -a pnpm -F sqlsurge test
+        if: runner.os != 'Linux'
+
+      - run: pnpm -F sqlsurge test
+        if: runner.os == 'Linux'
