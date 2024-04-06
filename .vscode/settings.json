@@ -26,7 +26,8 @@
     "./vsce/test-workspace-rs-sqlx/Cargo.toml"
   ],
   "github-actions.workflows.pinned.workflows": [
-    ".github/workflows/e2e-test.yaml"
+    ".github/workflows/e2e-test.yaml",
+    ".github/workflows/rust-test.yaml"
   ],
   "github-actions.workflows.pinned.refresh.interval": 3,
   "github-actions.workflows.pinned.refresh.enabled": true
