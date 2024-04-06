@@ -15,4 +15,4 @@ jobs:
       - uses: ./.github/actions/setup
 
       - name: Run tests
-        run: pnpm -F @senken/sqls-extract-rs exec cargo test
+        run: pnpm -F @senken/sql-extraction-rs exec cargo test
