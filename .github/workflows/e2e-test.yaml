@@ -12,47 +12,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # - name: Setup docker (missing on MacOS)
-      #   if: runner.os == 'macos'
-      #   run: |
-      #     # Reference: https://github.com/actions/runner-images/issues/17#issuecomment-1537238473
-
-      #     brew install docker
-      #     colima start
-
-      #     # For testcontainers to find the Colima socket
-      #     # https://github.com/abiosoft/colima/blob/main/docs/FAQ.md#cannot-connect-to-the-docker-daemon-at-unixvarrundockersock-is-the-docker-daemon-running
-      #     sudo ln -sf $HOME/.colima/default/docker.sock /var/run/docker.sock
-
-      # - name: Start up DBs
-      #   run: docker compose up -d
-
-      - name: Install Rust
-        run: rustup toolchain install stable --profile minimal
-
-      - uses: Swatinem/rust-cache@v2
-
-      - uses: pnpm/action-setup@v3
-        name: Install pnpm
-        with:
-          version: 8
-          run_install: false
-
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-      # - uses: actions/cache@v4
-      #   name: Setup pnpm cache
-      #   with:
-      #     path: ${{ env.STORE_PATH }}
-      #     key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-pnpm-store-
-
-      - name: Install npm dependencies
-        run: pnpm i
+      - uses: ./.github/actions/setup
 
       - name: Install wasm-pack
         run: cargo install wasm-pack

@@ -1,0 +1,18 @@
+name: Rust Unit Test
+
+on: pull_request
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup
+
+      - name: Run tests
+        run: pnpm -F @senken/sqls-extract-rs exec cargo test
