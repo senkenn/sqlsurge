@@ -9,13 +9,24 @@ runs:
     - uses: actions/setup-go@v5
       with:
         go-version: "1.22.2"
+        cache: true
+
     - name: Install sqls
       run: go install github.com/sqls-server/sqls@latest
       shell: bash
 
-    - uses: Swatinem/rust-cache@v2
+    - uses: chetan/git-restore-mtime-action@v2 # for Rust incremental build
+
+    - name: Rust cache
+      uses: actions/cache@v4
       with:
-        workspaces: "sql-extraction/rs -> sql-extraction/rs/target"
+        path: |
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db
+          sql-extraction/rs/target/
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       # - name: Setup docker (missing on MacOS)
       #   if: runner.os == 'macos'
