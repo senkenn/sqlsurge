@@ -15,12 +15,19 @@ runs:
       run: go install github.com/sqls-server/sqls@latest
       shell: bash
 
+    # for Rust incremental build
+    - name: git-restore-mtime
+      uses: chetan/git-restore-mtime-action@v1.0
+
     - name: Rust cache
       uses: actions/cache@v4
       with:
         path: |
-          ~/.cargo/registry
-          ~/.cargo/git
+          ~/.cargo/bin/
+          ~/.cargo/registry/index/
+          ~/.cargo/registry/cache/
+          ~/.cargo/git/db
+          sql-extraction/rs/target/
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       # - name: Setup docker (missing on MacOS)
