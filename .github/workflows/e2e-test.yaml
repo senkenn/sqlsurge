@@ -17,15 +17,17 @@ jobs:
 
       - uses: ./.github/actions/setup
 
-      - name: Install wasm-pack
-        run: |
-          cargo install --version $WASM_PACK_VERSION wasm-pack
-
       - name: wasm-pack cache
         uses: actions/cache@v4
+        id: wasm-pack-cache
         with:
           path: ~/.cargo/bin/wasm-pack
           key: wasm-pack-${{ runner.os }}-${{ env.WASM_PACK_VERSION}}
+
+      - name: Install wasm-pack
+        if: steps.wasm-pack-cache.outputs.cache-hit == 'false'
+        run: |
+          cargo install --version $WASM_PACK_VERSION wasm-pack
 
       - name: Build
         run: pnpm build:pkg && pnpm i
