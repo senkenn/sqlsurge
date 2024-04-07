@@ -25,7 +25,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cargo/bin/wasm-pack
-          key: wasm-pack-${{ runner.os }}-$WASM_PACK_VERSION
+          key: wasm-pack-${{ runner.os }}-${{ env.WASM_PACK_VERSION}}
 
       - name: Build
         run: pnpm build:pkg && pnpm i
