@@ -13,9 +13,13 @@ runs:
       run: go install github.com/sqls-server/sqls@latest
       shell: bash
 
-    - uses: Swatinem/rust-cache@v2
+    - name: Rust cache
+      uses: actions/cache@v2
       with:
-        workspaces: "sql-extraction/rs -> sql-extraction/rs/target"
+        path: |
+          ~/.cargo/registry
+          ~/.cargo/git
+        key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
 
       # - name: Setup docker (missing on MacOS)
       #   if: runner.os == 'macos'

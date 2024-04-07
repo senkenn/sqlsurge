@@ -2,6 +2,9 @@ name: E2E Tests
 
 on: pull_request
 
+env:
+  WASM_PACK_VERSION: 0.12.1
+
 jobs:
   test:
     strategy:
@@ -14,9 +17,15 @@ jobs:
 
       - uses: ./.github/actions/setup
 
-      - uses: jetli/wasm-pack-action@v0.4.0
+      - name: Install wasm-pack
+        run: |
+          cargo install --version $WASM_PACK_VERSION wasm-pack
+
+      - name: wasm-pack cache
+        uses: actions/cache@v4
         with:
-          version: "v0.12.1"
+          path: ~/.cargo/bin/wasm-pack
+          key: wasm-pack-${{ runner.os }}-$WASM_PACK_VERSION
 
       - name: Build
         run: pnpm build:pkg && pnpm i
