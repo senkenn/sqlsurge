@@ -2,6 +2,9 @@ name: E2E Tests
 
 on: pull_request
 
+env:
+  WASM_PACK_VERSION: 0.12.1
+
 jobs:
   test:
     strategy:
@@ -14,8 +17,17 @@ jobs:
 
       - uses: ./.github/actions/setup
 
+      - name: wasm-pack cache
+        uses: actions/cache@v4
+        id: wasm-pack-cache
+        with:
+          path: ~/.cargo/bin/wasm-pack
+          key: wasm-pack-${{ runner.os }}-${{ env.WASM_PACK_VERSION}}
+
       - name: Install wasm-pack
-        run: cargo install wasm-pack
+        if: steps.wasm-pack-cache.outputs.cache-hit == 'false'
+        run: |
+          cargo install --version $WASM_PACK_VERSION wasm-pack
 
       - name: Build
         run: pnpm build:pkg && pnpm i
