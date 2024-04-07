@@ -14,8 +14,9 @@ jobs:
 
       - uses: ./.github/actions/setup
 
-      - name: Install wasm-pack
-        run: cargo install wasm-pack
+      - uses: jetli/wasm-pack-action@v0.4.0
+        with:
+          version: "v0.12.1"
 
       - name: Build
         run: pnpm build:pkg && pnpm i
