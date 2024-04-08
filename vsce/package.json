@@ -2,7 +2,7 @@
   "name": "sqlsurge",
   "description": "SQL Language Server Extension for Visual Studio Code",
   "license": "MIT",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "displayName": "sqlsurge",
   "private": true,
   "preview": true,
@@ -35,8 +35,8 @@
     "test": "pnpm compile && tsc -p tsconfig.test.json && node ./out/test/runTest.js",
     "test:bg": "xvfb-run pnpm test",
     "watch-tests": "tsc -p . -w",
-    "package": "pnpm vsce package --no-dependencies",
-    "publish": "pnpm vsce publish --no-dependencies"
+    "package": "vsce package --no-dependencies",
+    "publish": "vsce publish --no-dependencies"
   },
   "contributes": {
     "configuration": {
