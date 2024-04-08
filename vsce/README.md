@@ -10,7 +10,7 @@ SQLx Example in Rust:
 
 ## Features
 
-- Auto-Completion for SQL Syntaxes
+- Auto-Completion for SQL Syntax
 - Auto-Completion for Tables and Table Columns (requires sqls configuration)
 - Supporting raw SQL query
   - [Prisma](https://www.prisma.io/docs/orm/prisma-client/queries/raw-database-access/raw-queries) in TypeScript
