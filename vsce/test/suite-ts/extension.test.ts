@@ -1,3 +1,4 @@
+import { execSync } from "node:child_process";
 import * as path from "node:path";
 import * as vscode from "vscode";
 import { sleep } from "../helper";
@@ -6,6 +7,14 @@ const wsPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
 if (!wsPath) {
   throw new Error("wsPath is undefined");
 }
+
+describe("Install sqls if not found in PATH", () => {
+  test("Should find sqls in PATH", async () => {
+    const sqlsVersion = execSync("sqls --version").toString();
+    console.log(sqlsVersion);
+    expect(sqlsVersion).not.toBe("");
+  });
+});
 
 describe("Prisma Completion Test", () => {
   test('Should be completed "SELECT" with $queryRaw single line', async () => {

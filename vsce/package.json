@@ -50,6 +50,12 @@
         }
       }
     },
+    "commands": [
+      {
+        "command": "sqlsurge.installSqls",
+        "title": "sqlsurge: Install sqls"
+      }
+    ],
     "grammars": [
       {
         "injectTo": [
