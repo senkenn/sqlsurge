@@ -10,7 +10,8 @@ SQLx Example in Rust:
 
 ## Features
 
-- Auto Completion tables and table columns
+- Auto-Completion for SQL Syntaxes
+- Auto-Completion for Tables and Table Columns (requires sqls configuration)
 - Supporting raw SQL query
   - [Prisma](https://www.prisma.io/docs/orm/prisma-client/queries/raw-database-access/raw-queries) in TypeScript
   - [SQLx](https://github.com/launchbadge/sqlx) in Rust
@@ -26,17 +27,19 @@ It can be enabled by adding the following setting to settings.json.
 
 ## Requirements
 
+- **Golang** ([Installation Page](https://golang.org/doc/install))
 - **sqls** ([Installation Guide](https://github.com/sqls-server/sqls?tab=readme-ov-file#installation))
+  - There is sqls installation guide in the extension.
 
-You should verify the sqls's path is valid with `sqls -v`, and configure the database connection by `sqls config` command.
+To use completion for tables and columns, you need to configure the database connection by `sqls config` command.
 
 ## TODOs
 
 - [x] Support for Prisma in TypeScript
 - [x] Support for SQLx in Rust
+- [x] Install sqls with the command if not found
 - [ ] Format SQL
 - [ ] Show quick info symbol
 - [ ] Support to custom raw SQL queries, not just Prisma and SQLx
-- [ ] Install sqls automatically if not found
 - [ ] Execute SQL query
 - [ ] Show sqls config with tree view
