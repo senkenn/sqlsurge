@@ -12,8 +12,17 @@ runs:
         cache: true
 
     - name: Install sqls
-      run: go install github.com/sqls-server/sqls@latest
+      run: go install github.com/sqls-server/sqls@v0.2.28
       shell: bash
+
+    - name: Go module cache
+      uses: actions/cache@v4
+      with:
+        path: |
+          ~/go/pkg/mod
+        key: ${{ runner.os }}-go
+        restore-keys: |
+          ${{ runner.os }}-go
 
     - uses: chetan/git-restore-mtime-action@v2 # for Rust incremental build
 
