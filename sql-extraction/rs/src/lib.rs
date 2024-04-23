@@ -23,8 +23,8 @@ macro_rules! function {
 
 #[derive(Serialize, Debug)]
 struct Position {
-    line: usize,   // 1-indexed
-    column: usize, // 1-indexed
+    line: usize,      // 0-indexed
+    character: usize, // 0-indexed
 }
 
 #[derive(Serialize, Debug)]
@@ -65,8 +65,14 @@ impl<'ast> Visit<'ast> for QueryVisitor {
 
                 // search literal and concat
                 let mut sql_lit = String::new();
-                let mut start = Position { line: 0, column: 0 };
-                let mut end = Position { line: 0, column: 0 };
+                let mut start = Position {
+                    line: 0,
+                    character: 0,
+                };
+                let mut end = Position {
+                    line: 0,
+                    character: 0,
+                };
                 for token in tokens.clone() {
                     // get only Literal(Literal) from TokenTree
                     let lit = match token {
@@ -79,12 +85,12 @@ impl<'ast> Visit<'ast> for QueryVisitor {
                     println!("{} lit span end: {:?}", function!(), lit.span().end());
 
                     start = Position {
-                        line: lit.span().start().line,
-                        column: lit.span().start().column,
+                        line: lit.span().start().line - 1, // -1 for 1-indexed to 0-indexed
+                        character: lit.span().start().column, // column is 0-indexed
                     };
                     end = Position {
-                        line: lit.span().end().line,
-                        column: lit.span().end().column,
+                        line: lit.span().end().line - 1,    // -1 for 1-indexed to 0-indexed
+                        character: lit.span().end().column, // column is 0-indexed
                     };
 
                     // concat lit
@@ -97,33 +103,39 @@ impl<'ast> Visit<'ast> for QueryVisitor {
                         .trim_end_matches("\"#")
                         .to_string();
 
-                    // adjust position and if "\n" is included in the sql_lit, then add 1 to start line
-                    start.column += 3 + if let Some(_) = sql_lit.find("\n") {
-                        1
-                    } else {
-                        0
-                    };
-                    end.column -= 2 - 1; // -2 for "#, +1 to convert 0-indexed into 1-indexed
+                    // remove 'r#""#'
+                    let r_sharp_quote_len = "r#\"".len();
+                    let sharp_quote_len = "\"#".len();
+                    let new_line_len = "\n".len();
+
+                    // adjust position and if "\n" is included in the sql_lit, then add "\n" length to start line
+                    start.character += r_sharp_quote_len - 1 // -1 for 1-indexed to 0-indexed
+                        + if let Some(_) = sql_lit.find("\n") {
+                            new_line_len
+                        } else {
+                            0
+                        };
+                    end.character -= sharp_quote_len;
                 } else if sql_lit.starts_with("\"") {
                     sql_lit = sql_lit
                         .trim_start_matches("\"")
                         .trim_end_matches("\"")
                         .to_string();
 
-                    // remove '"'
-                    start.column += 1;
-                    end.column -= 1 - 1; // -1 for '"', +1 to convert 0-indexed into 1-indexed
+                    // remove '""'
+                    start.character += 1;
+                    end.character -= 1;
                 }
 
                 let sql_node = SqlNode {
                     code_range: Range {
                         start: Position {
                             line: start.line,
-                            column: start.column,
+                            character: start.character,
                         },
                         end: Position {
                             line: end.line,
-                            column: end.column,
+                            character: end.character,
                         },
                     },
                     content: sql_lit.clone(),
@@ -185,12 +197,12 @@ async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
         let expected = serde_json::to_string(&SqlNode {
             code_range: Range {
                 start: Position {
-                    line: 3,
-                    column: 28,
+                    line: 2,
+                    character: 28,
                 },
                 end: Position {
-                    line: 3,
-                    column: 89,
+                    line: 2,
+                    character: 88,
                 },
             },
             content: "INSERT INTO todos ( description ) VALUES ( $1 ) RETURNING id".to_string(),
@@ -223,12 +235,12 @@ async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
         let expected1 = serde_json::to_string(&SqlNode {
             code_range: Range {
                 start: Position {
-                    line: 3,
-                    column: 28,
+                    line: 2,
+                    character: 28,
                 },
                 end: Position {
-                    line: 3,
-                    column: 87,
+                    line: 2,
+                    character: 86,
                 },
             },
             content: "SELECT id \\\"id\\\", description, done FROM todos ORDER BY id".to_string(),
@@ -238,12 +250,12 @@ async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
         let expected2 = serde_json::to_string(&SqlNode {
             code_range: Range {
                 start: Position {
-                    line: 8,
-                    column: 28,
+                    line: 7,
+                    character: 28,
                 },
                 end: Position {
-                    line: 8,
-                    column: 89,
+                    line: 7,
+                    character: 88,
                 },
             },
             content: "INSERT INTO todos ( description ) VALUES ( $1 ) RETURNING id".to_string(),
@@ -282,10 +294,13 @@ WHERE id = $1
         let expected = serde_json::to_string(&SqlNode {
             code_range: Range {
                 start: Position {
-                    line: 4,
-                    column: 12,
+                    line: 3,
+                    character: 11,
                 },
-                end: Position { line: 8, column: 9 },
+                end: Position {
+                    line: 7,
+                    character: 8,
+                },
             },
             content: "\nUPDATE todos\nSET done = TRUE\nWHERE id = $1\n        ".to_string(),
         })
@@ -328,10 +343,13 @@ RETURNING id
         let expected1 = serde_json::to_string(&SqlNode {
             code_range: Range {
                 start: Position {
-                    line: 3,
-                    column: 31,
+                    line: 2,
+                    character: 30,
                 },
-                end: Position { line: 7, column: 9 },
+                end: Position {
+                    line: 6,
+                    character: 8,
+                },
             },
             content:
                 "\nINSERT INTO \"todos\" ( description )\nVALUES ( $1 )\nRETURNING id\n        "
@@ -343,10 +361,10 @@ RETURNING id
         let expected2 = serde_json::to_string(&SqlNode {
             code_range: Range {
                 start: Position {
-                    line: 14,
-                    column: 31,
+                    line: 13,
+                    character: 30,
                 },
-                end: Position { line: 18, column: 13 },
+                end: Position { line: 17, character: 12 },
             },
             content: "\n            UPDATE todos\n            SET done = TRUE\n            WHERE id = $1\n            ".to_string(),
         }).unwrap();
@@ -354,7 +372,7 @@ RETURNING id
     }
 
     #[test]
-    fn found_sqlx_query_as_one_query_single_line() {
+    fn found_sqlx_query_as_one_query_multi_line() {
         let result = extract_sql_list(
             r##"
 async fn list_todos(pool: &PgPool) -> anyhow::Result<()> {
@@ -385,10 +403,13 @@ ORDER BY id
         let expected = serde_json::to_string(&SqlNode {
             code_range: Range {
                 start: Position {
-                    line: 5,
-                    column: 12,
+                    line: 4,
+                    character: 11,
                 },
-                end: Position { line: 9, column: 9 },
+                end: Position {
+                    line: 8,
+                    character: 8,
+                },
             },
             content: "\nSELECT id, description, done\nFROM todos\nORDER BY id\n        "
                 .to_string(),
