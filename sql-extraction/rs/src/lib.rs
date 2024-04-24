@@ -104,14 +104,12 @@ impl<'ast> Visit<'ast> for QueryVisitor {
                         .to_string();
 
                     // remove 'r#""#'
+                    // adjust position and if "\n" is included in the sql_lit, then add "\n" length to start line
                     let r_sharp_quote_len = "r#\"".len();
                     let sharp_quote_len = "\"#".len();
-                    let new_line_len = "\n".len();
-
-                    // adjust position and if "\n" is included in the sql_lit, then add "\n" length to start line
                     start.character += r_sharp_quote_len - 1 // -1 for 1-indexed to 0-indexed
                         + if let Some(_) = sql_lit.find("\n") {
-                            new_line_len
+                            "\n".len()
                         } else {
                             0
                         };
