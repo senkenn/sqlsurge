@@ -30,7 +30,7 @@ jobs:
           cargo install --version $WASM_PACK_VERSION wasm-pack
 
       - name: Build
-        run: pnpm build:pkg && pnpm i
+        run: pnpm build:pkg
 
       - run: xvfb-run -a pnpm -F sqlsurge test
         if: runner.os == 'Linux'

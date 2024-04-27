@@ -1,0 +1,7 @@
+{
+  "name": "@senken/config",
+  "main": "out/index.js",
+  "scripts": {
+    "build": "tsc"
+  }
+}

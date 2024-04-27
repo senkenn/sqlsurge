@@ -6,5 +6,8 @@
     "build:rs": "wasm-pack build --target bundler --release",
     "clean": "rm -rf ./pkg ./out",
     "build": "pnpm build:rs && tsc -p ."
+  },
+  "devDependencies": {
+    "@senken/config": "workspace:*"
   }
 }

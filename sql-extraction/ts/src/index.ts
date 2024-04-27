@@ -1,19 +1,5 @@
+import type { SqlNode } from "@senken/config";
 import * as ts from "typescript";
-
-// TODO: DI
-export type SqlNode = {
-  code_range: {
-    start: {
-      line: number; // 0-based
-      character: number; // 0-based
-    };
-    end: {
-      line: number; // 0-based
-      character: number; // 0-based
-    };
-  };
-  content: string;
-};
 
 export function extractSqlListTs(sourceTxt: string): SqlNode[] {
   const sourceFile = ts.createSourceFile(
