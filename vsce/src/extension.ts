@@ -1,5 +1,6 @@
+import type { SqlNode } from "@senken/config";
 import { extractSqlListRs } from "@senken/sql-extraction-rs";
-import { type SqlNode, extractSqlListTs } from "@senken/sql-extraction-ts";
+import { extractSqlListTs } from "@senken/sql-extraction-ts";
 import * as ts from "typescript";
 import * as vscode from "vscode";
 import {
@@ -181,19 +182,19 @@ export async function activate(context: vscode.ExtensionContext) {
         }
         case "rust": {
           const sqlNodesRust = await extractSqlListRs(rawContent);
-          sqlNodes = sqlNodesRust.map((sqlNodeRust) => {
+          sqlNodes = sqlNodesRust.map((sqlNode) => {
             return {
               code_range: {
                 start: {
-                  line: sqlNodeRust.code_range.start.line,
-                  character: sqlNodeRust.code_range.start.character,
+                  line: sqlNode.code_range.start.line,
+                  character: sqlNode.code_range.start.character,
                 },
                 end: {
-                  line: sqlNodeRust.code_range.end.line,
-                  character: sqlNodeRust.code_range.end.character,
+                  line: sqlNode.code_range.end.line,
+                  character: sqlNode.code_range.end.character,
                 },
               },
-              content: sqlNodeRust.content,
+              content: sqlNode.content,
             };
           });
           break;
