@@ -17,20 +17,14 @@ jobs:
 
       - uses: ./.github/actions/setup
 
-      - name: wasm-pack cache
-        uses: actions/cache@v4
-        id: wasm-pack-cache
-        with:
-          path: ~/.cargo/bin/wasm-pack
-          key: wasm-pack-${{ runner.os }}-${{ env.WASM_PACK_VERSION}}
-
-      - name: Install wasm-pack
-        if: steps.wasm-pack-cache.outputs.cache-hit != 'true'
+      - name: Install wasm-pack if not installed
         run: |
-          cargo install --version $WASM_PACK_VERSION wasm-pack
+          if [ ! -f $HOME/.cargo/bin/wasm-pack ]; then
+            cargo install --version $WASM_PACK_VERSION wasm-pack
+          fi
 
       - name: Build
-        run: pnpm build:pkg && pnpm i
+        run: pnpm build:pkg
 
       - run: xvfb-run -a pnpm -F sqlsurge test
         if: runner.os == 'Linux'

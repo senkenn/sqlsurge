@@ -1,5 +1,5 @@
 {
-  "name": "sqlsurge",
+  "name": "@senken/sqlsurge",
   "description": "SQL Language Server Extension for Visual Studio Code",
   "license": "MIT",
   "version": "0.4.1",
@@ -76,6 +76,7 @@
   },
   "devDependencies": {
     "@jest/types": "^29.6.3",
+    "@senken/config": "workspace:*",
     "@senken/sql-extraction-rs": "workspace:*",
     "@senken/sql-extraction-ts": "workspace:*",
     "@types/jest": "^29.5.12",

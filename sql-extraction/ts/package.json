@@ -4,5 +4,8 @@
   "scripts": {
     "prepublishOnly": "pnpm build",
     "build": "tsc -p ."
+  },
+  "devDependencies": {
+    "@senken/config": "workspace:*"
   }
 }
