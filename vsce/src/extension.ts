@@ -3,12 +3,13 @@ import { extractSqlListRs } from "@senken/sql-extraction-rs";
 import { extractSqlListTs } from "@senken/sql-extraction-ts";
 import * as ts from "typescript";
 import * as vscode from "vscode";
+import { command as commandInstallSqls } from "./commands/installSqls";
 import {
   type IncrementalLanguageService,
   createIncrementalLanguageService,
   createIncrementalLanguageServiceHost,
 } from "./service";
-import { client, findSqlsInPath, startSqlsClient } from "./startSqlsClient";
+import { client, startSqlsClient } from "./startSqlsClient";
 
 export async function activate(context: vscode.ExtensionContext) {
   startSqlsClient().catch(console.error);
@@ -26,52 +27,7 @@ export async function activate(context: vscode.ExtensionContext) {
     },
   });
 
-  const commands = [
-    vscode.commands.registerCommand("sqlsurge.installSqls", async () => {
-      let sqlsInPATH: vscode.Uri | undefined = undefined;
-      await vscode.window.withProgress(
-        {
-          location: vscode.ProgressLocation.Notification,
-          title: "Installing sqls...",
-        },
-        async () => {
-          vscode.window
-            .createOutputChannel("sqlsurge")
-            .appendLine("Installing sqls...");
-
-          // install sqls with command and wait for it
-          const terminal = vscode.window.createTerminal("install sqls");
-          terminal.show();
-          terminal.sendText("go install github.com/sqls-server/sqls@latest");
-          const timeout = 60 * 1000;
-          const start = Date.now();
-          while (Date.now() - start < timeout) {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            sqlsInPATH = await findSqlsInPath();
-            if (sqlsInPATH) {
-              break;
-            }
-          }
-        },
-      );
-      if (!sqlsInPATH) {
-        vscode.window.showErrorMessage("Failed to install sqls");
-        return;
-      }
-
-      // after installation
-      vscode.window
-        .createOutputChannel("sqlsurge")
-        .appendLine("sqls is installed.");
-      const actions = await vscode.window.showInformationMessage(
-        "sqls was successfully installed! Reload window to enable SQL language features.",
-        "Reload Window",
-      );
-      if (actions === "Reload Window") {
-        vscode.commands.executeCommand("workbench.action.reloadWindow");
-      }
-    }),
-  ];
+  const commands = [commandInstallSqls];
 
   const completion = {
     async provideCompletionItems(
