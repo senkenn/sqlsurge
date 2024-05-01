@@ -1,8 +1,11 @@
 import type { SqlNode } from "@senken/config";
 import { extractSqlListRs } from "@senken/sql-extraction-rs";
 import { extractSqlListTs } from "@senken/sql-extraction-ts";
+
 import * as ts from "typescript";
 import * as vscode from "vscode";
+
+import { commandFormatSqlProvider } from "./commands/formatSql";
 import { command as commandInstallSqls } from "./commands/installSqls";
 import {
   type IncrementalLanguageService,
@@ -27,7 +30,9 @@ export async function activate(context: vscode.ExtensionContext) {
     },
   });
 
-  const commands = [commandInstallSqls];
+  const commandFormatSql = await commandFormatSqlProvider(refresh);
+
+  const commands = [commandInstallSqls, commandFormatSql];
 
   const completion = {
     async provideCompletionItems(
@@ -36,9 +41,8 @@ export async function activate(context: vscode.ExtensionContext) {
       _token: vscode.CancellationToken,
       context: vscode.CompletionContext,
     ) {
-      const service = getOrCreateLanguageService(document.uri)!;
       console.log(document.fileName); // TODO: to output channel
-      const sqlNodes = await refresh(service, document);
+      const sqlNodes = await refresh(document);
       const sqlNode = sqlNodes.find(({ code_range: { start, end } }) => {
         // in range
         return (
@@ -123,13 +127,13 @@ export async function activate(context: vscode.ExtensionContext) {
   }
 
   async function refresh(
-    service: IncrementalLanguageService,
     document: vscode.TextDocument,
   ): Promise<(SqlNode & { vFileName: string })[]> {
     console.time(refresh.name); // TODO: to output channel
-    const fileName = document.fileName;
-    const rawContent = document.getText();
     try {
+      const service = getOrCreateLanguageService(document.uri)!;
+      const fileName = document.fileName;
+      const rawContent = document.getText();
       let sqlNodes: SqlNode[] = [];
       switch (document.languageId) {
         case "typescript": {

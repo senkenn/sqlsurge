@@ -80,3 +80,6 @@ describe("SQLx Completion Test", () => {
     expect(kind).toBe(vscode.CompletionItemKind.Keyword);
   });
 });
+
+// TODO: Add more test cases
+describe("Formatting Test", () => {});
