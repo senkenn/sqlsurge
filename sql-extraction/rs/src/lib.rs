@@ -1,3 +1,4 @@
+use proc_macro2::TokenTree;
 use serde::Serialize;
 use syn::visit::{self, Visit};
 use syn::File;
@@ -57,96 +58,96 @@ impl<'ast> Visit<'ast> for QueryVisitor {
     fn visit_macro(&mut self, mac: &'ast syn::Macro) {
         // print macro name
         for path_segment in &mac.path.segments {
-            if path_segment.ident == "query" || path_segment.ident == "query_as" {
-                // get tokens
-                let tokens = &mac.tokens;
-                #[cfg(debug_assertions)]
-                println!("{} Found sqlx::query!: {}", function!(), tokens.to_string());
-
-                // search literal and concat
-                let mut sql_lit = String::new();
-                let mut start = Position {
-                    line: 0,
-                    character: 0,
-                };
-                let mut end = Position {
-                    line: 0,
-                    character: 0,
-                };
-                for token in tokens.clone() {
-                    // get only Literal(Literal) from TokenTree
-                    let lit = match token {
-                        proc_macro2::TokenTree::Literal(lit) => lit,
-                        _ => continue,
-                    };
-                    #[cfg(debug_assertions)]
-                    println!("{} lit: {:?}", function!(), lit);
-                    println!("{} lit span start: {:?}", function!(), lit.span().start());
-                    println!("{} lit span end: {:?}", function!(), lit.span().end());
-
-                    start = Position {
-                        line: lit.span().start().line - 1, // -1 for 1-indexed to 0-indexed
-                        character: lit.span().start().column, // column is 0-indexed
-                    };
-                    end = Position {
-                        line: lit.span().end().line - 1,    // -1 for 1-indexed to 0-indexed
-                        character: lit.span().end().column, // column is 0-indexed
-                    };
-
-                    // concat lit
-                    sql_lit.push_str(&lit.to_string());
+            let mut sql_lit = String::new();
+            let mut sql_token: Option<TokenTree> = None;
+            if path_segment.ident == "query" {
+                for (i, token) in mac.tokens.clone().into_iter().enumerate() {
+                    if i != 0 {
+                        continue;
+                    }
+                    sql_token = Some(token);
                 }
-                // If query is surrounded by "" or r#""# then remove it
-                if sql_lit.starts_with("r#\"") {
-                    sql_lit = sql_lit
-                        .trim_start_matches("r#\"")
-                        .trim_end_matches("\"#")
-                        .to_string();
+            } else if path_segment.ident == "query_as" {
+                for (i, token) in mac.tokens.clone().into_iter().enumerate() {
+                    println!("token: {}", token);
+                    if i != 2 {
+                        continue;
+                    }
+                    sql_token = Some(token);
+                }
+            }
 
-                    // remove 'r#""#'
-                    // adjust position and if "\n" is included in the sql_lit, then add "\n" length to start line
-                    let r_sharp_quote_len = "r#\"".len();
-                    let sharp_quote_len = "\"#".len();
-                    start.character += r_sharp_quote_len - 1 // -1 for 1-indexed to 0-indexed
+            // get only Literal(Literal) from TokenTree
+            let lit = match sql_token {
+                Some(proc_macro2::TokenTree::Literal(lit)) => lit,
+                _ => continue,
+            };
+            #[cfg(debug_assertions)]
+            println!("{} lit: {:?}", function!(), lit);
+            println!("{} lit span start: {:?}", function!(), lit.span().start());
+            println!("{} lit span end: {:?}", function!(), lit.span().end());
+
+            let mut start = Position {
+                line: lit.span().start().line - 1, // -1 for 1-indexed to 0-indexed
+                character: lit.span().start().column, // column is 0-indexed
+            };
+            let mut end = Position {
+                line: lit.span().end().line - 1,    // -1 for 1-indexed to 0-indexed
+                character: lit.span().end().column, // column is 0-indexed
+            };
+
+            // concat lit
+            sql_lit.push_str(&lit.to_string());
+            // If query is surrounded by "" or r#""# then remove it
+            if sql_lit.starts_with("r#\"") {
+                sql_lit = sql_lit
+                    .trim_start_matches("r#\"")
+                    .trim_end_matches("\"#")
+                    .to_string();
+
+                // remove 'r#""#'
+                // adjust position and if "\n" is included in the sql_lit, then add "\n" length to start line
+                let r_sharp_quote_len = "r#\"".len();
+                let sharp_quote_len = "\"#".len();
+                start.character += r_sharp_quote_len - 1 // -1 for 1-indexed to 0-indexed
                         + if let Some(_) = sql_lit.find("\n") {
                             "\n".len()
                         } else {
                             0
                         };
-                    end.character -= sharp_quote_len;
-                } else if sql_lit.starts_with("\"") {
-                    sql_lit = sql_lit
-                        .trim_start_matches("\"")
-                        .trim_end_matches("\"")
-                        .to_string();
+                end.character -= sharp_quote_len;
+            } else if sql_lit.starts_with("\"") {
+                sql_lit = sql_lit
+                    .trim_start_matches("\"")
+                    .trim_end_matches("\"")
+                    .to_string();
 
-                    // remove '""'
-                    start.character += 1;
-                    end.character -= 1;
-                }
-
-                let sql_node = SqlNode {
-                    code_range: Range {
-                        start: Position {
-                            line: start.line,
-                            character: start.character,
-                        },
-                        end: Position {
-                            line: end.line,
-                            character: end.character,
-                        },
-                    },
-                    content: sql_lit.clone(),
-                };
-
-                #[cfg(debug_assertions)]
-                println!("{} lit_str: {}", function!(), sql_lit);
-                println!("{} sql_node: {:?}", function!(), sql_node);
-
-                // serialize sql_node to json and push
-                let sql_node_str = serde_json::to_string(&sql_node).unwrap();
-                self.sql_node_list.push(sql_node_str);
+                // remove '""'
+                start.character += 1;
+                end.character -= 1;
             }
+
+            let sql_node = SqlNode {
+                code_range: Range {
+                    start: Position {
+                        line: start.line,
+                        character: start.character,
+                    },
+                    end: Position {
+                        line: end.line,
+                        character: end.character,
+                    },
+                },
+                content: sql_lit.clone(),
+            };
+
+            #[cfg(debug_assertions)]
+            println!("{} lit_str: {}", function!(), sql_lit);
+            println!("{} sql_node: {:?}", function!(), sql_node);
+
+            // serialize sql_node to json and push
+            let sql_node_str = serde_json::to_string(&sql_node).unwrap();
+            self.sql_node_list.push(sql_node_str);
         }
 
         // Delegate to the default impl to visit any nested functions.
@@ -379,8 +380,9 @@ async fn list_todos(pool: &PgPool) -> anyhow::Result<()> {
         r#"
 SELECT id, description, done
 FROM todos
+WHERE id = ?
 ORDER BY id
-        "#
+        "#, 1
     )
     .fetch_all(pool)
     .await?;
@@ -405,12 +407,13 @@ ORDER BY id
                     character: 11,
                 },
                 end: Position {
-                    line: 8,
+                    line: 9,
                     character: 8,
                 },
             },
-            content: "\nSELECT id, description, done\nFROM todos\nORDER BY id\n        "
-                .to_string(),
+            content:
+                "\nSELECT id, description, done\nFROM todos\nWHERE id = ?\nORDER BY id\n        "
+                    .to_string(),
         })
         .unwrap();
         assert_eq!(result[0], expected);
