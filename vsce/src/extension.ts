@@ -1,4 +1,4 @@
-import type { SqlNode } from "@senken/config";
+import { ORIGINAL_SCHEME, type SqlNode } from "@senken/config";
 import { extractSqlListRs } from "@senken/sql-extraction-rs";
 import { extractSqlListTs } from "@senken/sql-extraction-ts";
 
@@ -7,6 +7,7 @@ import * as vscode from "vscode";
 
 import { commandFormatSqlProvider } from "./commands/formatSql";
 import { command as commandInstallSqls } from "./commands/installSqls";
+import { completionProvider } from "./completion";
 import {
   type IncrementalLanguageService,
   createIncrementalLanguageService,
@@ -17,67 +18,22 @@ import { client, startSqlsClient } from "./startSqlsClient";
 export async function activate(context: vscode.ExtensionContext) {
   startSqlsClient().catch(console.error);
 
-  const originalScheme = "sqlsurge";
   const virtualContents = new Map<string, string[]>(); // TODO: May not be needed
   const services = new Map<string, IncrementalLanguageService>();
   const registry = ts.createDocumentRegistry();
 
   // virtual sql files
   const virtualDocuments = new Map<string, string>();
-  vscode.workspace.registerTextDocumentContentProvider(originalScheme, {
+  vscode.workspace.registerTextDocumentContentProvider(ORIGINAL_SCHEME, {
     provideTextDocumentContent: (uri) => {
       return virtualDocuments.get(uri.fsPath);
     },
   });
 
+  const completion = await completionProvider(virtualDocuments, refresh);
+
   const commandFormatSql = await commandFormatSqlProvider(refresh);
-
   const commands = [commandInstallSqls, commandFormatSql];
-
-  const completion = {
-    async provideCompletionItems(
-      document: vscode.TextDocument,
-      position: vscode.Position,
-      _token: vscode.CancellationToken,
-      context: vscode.CompletionContext,
-    ) {
-      console.log(document.fileName); // TODO: to output channel
-      const sqlNodes = await refresh(document);
-      const sqlNode = sqlNodes.find(({ code_range: { start, end } }) => {
-        // in range
-        return (
-          (start.line < position.line && position.line < end.line) ||
-          (start.line === position.line &&
-            start.character <= position.character) ||
-          (end.line === position.line && position.character <= end.character)
-        );
-      });
-      if (!sqlNode) return [];
-
-      // Delegate LSP
-      // update virtual content
-      const offset = document.offsetAt(
-        new vscode.Position(
-          sqlNode.code_range.start.line,
-          sqlNode.code_range.start.character,
-        ),
-      );
-      const prefix = document.getText().slice(0, offset).replace(/[^\n]/g, " ");
-      const vContent = prefix + sqlNode.content;
-      virtualDocuments.set(sqlNode.vFileName, vContent);
-
-      // trigger completion on virtual file
-      const vDocUriString = `${originalScheme}://${sqlNode.vFileName}`;
-      const vDocUri = vscode.Uri.parse(vDocUriString);
-
-      return vscode.commands.executeCommand<vscode.CompletionList>(
-        "vscode.executeCompletionItemProvider",
-        vDocUri,
-        position,
-        context.triggerCharacter,
-      );
-    },
-  };
 
   context.subscriptions.push(
     vscode.languages.registerCompletionItemProvider(

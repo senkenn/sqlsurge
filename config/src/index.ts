@@ -11,3 +11,5 @@ export type SqlNode = {
   };
   content: string;
 };
+
+export const ORIGINAL_SCHEME = "sqlsurge";
