@@ -36,8 +36,8 @@ export async function commandFormatSqlProvider(
             return;
           }
 
-          // convert place holder to dummy 00... number if there are any place holders
-          const placeHolderRegExp = /(\$\d+)/g;
+          // convert place holder to dummy if there are any place holders such as "$1" or "?"
+          const placeHolderRegExp = /(\$\d+|\?)/g;
           const placeHolders = sqlNode.content.match(placeHolderRegExp);
           if (placeHolders) {
             sqlNode.content = sqlNode.content.replaceAll(
