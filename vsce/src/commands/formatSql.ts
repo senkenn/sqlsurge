@@ -23,19 +23,6 @@ export async function commandFormatSqlProvider(
       if (document.languageId === "rust") {
         const edit = new vscode.WorkspaceEdit();
         sqlNodes.map((sqlNode) => {
-          // skip if single line query, only support r#"..."# type
-          const fullContent = document.getText();
-          const offset = document.offsetAt(
-            new vscode.Position(
-              sqlNode.code_range.start.line,
-              sqlNode.code_range.start.character,
-            ),
-          );
-          const quote = fullContent.slice(offset - 3, offset);
-          if (quote !== 'r#"') {
-            return;
-          }
-
           // convert place holder to dummy if there are any place holders such as "$1" or "?"
           const placeHolderRegExp = /(\$\d+|\?)/g;
           const placeHolders = sqlNode.content.match(placeHolderRegExp);
