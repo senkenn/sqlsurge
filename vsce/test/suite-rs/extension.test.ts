@@ -82,7 +82,7 @@ describe("SQLx Completion Test", () => {
 });
 
 describe("Formatting Test", () => {
-  it.only("Should be formatted with command", async () => {
+  it("Should be formatted with command", async () => {
     const filePath = path.resolve(wsPath, "src", "main.rs");
     const docUri = vscode.Uri.file(filePath);
     const doc = await vscode.workspace.openTextDocument(docUri);
@@ -94,7 +94,6 @@ describe("Formatting Test", () => {
     await sleep(500);
 
     const formattedText = doc.getText();
-    console.log(formattedText);
     expect(formattedText).toMatchSnapshot();
   });
 

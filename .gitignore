@@ -1,5 +1,11 @@
-/**/out
-!/vsce/out/test/suite-rs/__snapshots__
+/**/out/*
+!/vsce/out/test
+
+/vsce/out/test/*
+!/vsce/out/test/*/
+
+/vsce/out/test/*/*
+!/vsce/out/test/*/__snapshots__
 
 node_modules
 client/server
