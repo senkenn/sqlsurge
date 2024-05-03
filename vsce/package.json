@@ -30,8 +30,8 @@
   "scripts": {
     "vscode:prepublish": "pnpm compile --mode production --devtool hidden-source-map",
     "clean": "node -e 'fs.rmSync(`out`, {recursive:true, force:true})'",
-    "compile": "pnpm clean && webpack",
-    "watch": "pnpm clean && webpack --watch",
+    "compile": "webpack",
+    "watch": "webpack --watch",
     "test": "pnpm compile && tsc -p tsconfig.test.json && node ./out/test/runTest.js",
     "test:bg": "xvfb-run pnpm test",
     "watch-tests": "tsc -p . -w",
@@ -41,12 +41,17 @@
   "contributes": {
     "configuration": {
       "type": "object",
-      "title": "sqls",
+      "title": "sqlsurge",
       "properties": {
-        "go.languageServerFlags": {
+        "sqlsurge.sqlLanguageServerFlags": {
           "type": "array",
           "default": [],
           "description": "Flags like -trace and -log to be used while running the language server."
+        },
+        "sqlsurge.formatOnSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Format SQL on save."
         }
       }
     },
@@ -54,6 +59,10 @@
       {
         "command": "sqlsurge.installSqls",
         "title": "sqlsurge: Install sqls"
+      },
+      {
+        "command": "sqlsurge.formatSql",
+        "title": "sqlsurge: Format SQL"
       }
     ],
     "grammars": [
@@ -87,6 +96,7 @@
     "colorette": "^2.0.20",
     "jest": "^29.7.0",
     "jest-environment-node": "^29.7.0",
+    "sql-formatter": "^15.3.1",
     "ts-jest": "^29.1.2",
     "ts-loader": "^9.5.1",
     "vscode-languageclient": "^9.0.1",

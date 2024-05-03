@@ -1,4 +1,12 @@
-out
+/**/out/*
+!/vsce/out/test
+
+/vsce/out/test/*
+!/vsce/out/test/*/
+
+/vsce/out/test/*/*
+!/vsce/out/test/*/__snapshots__
+
 node_modules
 client/server
 .vscode-test

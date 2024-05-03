@@ -12,6 +12,11 @@ SQLx Example in Rust:
 
 - Auto-Completion for SQL Syntax
 - Auto-Completion for Tables and Table Columns (requires sqls configuration)
+- Formatting
+
+  - command: `sqlsurge: Format SQL (command id: sqlsurge.formatSql)
+  - Format on save by default. You can also change config to off by adding `sqlsurge.formatOnSave: false` in settings.json.
+
 - Supporting raw SQL query
   - [Prisma](https://www.prisma.io/docs/orm/prisma-client/queries/raw-database-access/raw-queries) in TypeScript
   - [SQLx](https://github.com/launchbadge/sqlx) in Rust
@@ -37,8 +42,8 @@ To use completion for tables and columns, you need to configure the database con
 
 - [x] Support for Prisma in TypeScript
 - [x] Support for SQLx in Rust
-- [x] Install sqls with the command if not found
-- [ ] Format SQL
+- [x] Install guide for sqls
+- [x] Format SQL (Vanilla SQL: sqls, Raw SQL: [SQL Formatter](https://github.com/sql-formatter-org/sql-formatter))
 - [ ] Show quick info symbol
 - [ ] Support to custom raw SQL queries, not just Prisma and SQLx
 - [ ] Execute SQL query
