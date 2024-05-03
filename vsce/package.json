@@ -30,8 +30,8 @@
   "scripts": {
     "vscode:prepublish": "pnpm compile --mode production --devtool hidden-source-map",
     "clean": "node -e 'fs.rmSync(`out`, {recursive:true, force:true})'",
-    "compile": "pnpm clean && webpack",
-    "watch": "pnpm clean && webpack --watch",
+    "compile": "webpack",
+    "watch": "webpack --watch",
     "test": "pnpm compile && tsc -p tsconfig.test.json && node ./out/test/runTest.js",
     "test:bg": "xvfb-run pnpm test",
     "watch-tests": "tsc -p . -w",

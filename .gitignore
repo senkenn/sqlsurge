@@ -1,4 +1,6 @@
-out
+/**/out
+!/vsce/out/test/suite-rs/__snapshots__
+
 node_modules
 client/server
 .vscode-test

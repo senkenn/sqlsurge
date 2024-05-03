@@ -81,5 +81,23 @@ describe("SQLx Completion Test", () => {
   });
 });
 
-// TODO: Add more test cases
-describe("Formatting Test", () => {});
+describe("Formatting Test", () => {
+  it.only("Should be formatted with command", async () => {
+    const filePath = path.resolve(wsPath, "src", "main.rs");
+    const docUri = vscode.Uri.file(filePath);
+    const doc = await vscode.workspace.openTextDocument(docUri);
+    const editor = await vscode.window.showTextDocument(doc);
+
+    // execute command
+    await vscode.commands.executeCommand("sqlsurge.formatSql");
+
+    await sleep(500);
+
+    const formattedText = doc.getText();
+    console.log(formattedText);
+    expect(formattedText).toMatchSnapshot();
+  });
+
+  it("Should be formatted with save if config is enabled", () => {});
+  it("Should be NOT formatted with save if config is disabled", () => {});
+});
