@@ -8,6 +8,7 @@ import * as vscode from "vscode";
 import { commandFormatSqlProvider } from "./commands/formatSql";
 import { command as commandInstallSqls } from "./commands/installSqls";
 import { completionProvider } from "./completion";
+import { extConfig as extConfigStore, getWorkspaceConfig } from "./extConfig";
 import {
   type IncrementalLanguageService,
   createIncrementalLanguageService,
@@ -42,6 +43,24 @@ export async function activate(context: vscode.ExtensionContext) {
     ),
     ...commands,
   );
+
+  // on save event
+  vscode.workspace.onWillSaveTextDocument((event) => {
+    if (!extConfigStore.formatOnSave) {
+      console.log("formatOnSave config is disabled."); // TODO: output to channel
+      return;
+    }
+    if (event.document.languageId.match(/^(typescript|rust)$/g)) {
+      event.waitUntil(vscode.commands.executeCommand("sqlsurge.formatSql"));
+    }
+    console.log("formatted on save."); // TODO: output to channel
+  });
+
+  // update config store on change config
+  vscode.workspace.onDidChangeConfiguration(() => {
+    const config = getWorkspaceConfig();
+    extConfigStore.formatOnSave = config.formatOnSave;
+  });
 
   function getOrCreateLanguageService(uri: vscode.Uri) {
     const workspace = vscode.workspace.getWorkspaceFolder(uri);

@@ -1,3 +1,4 @@
+import { execSync } from "node:child_process";
 import * as path from "node:path";
 import * as vscode from "vscode";
 import { sleep } from "../helper";
@@ -82,6 +83,16 @@ describe("SQLx Completion Test", () => {
 });
 
 describe("Formatting Test", () => {
+  afterEach(() => {
+    // reset config
+    vscode.workspace.getConfiguration("sqlsurge").update("formatOnSave", true);
+
+    // restore file
+    const mainRsPath = path.resolve(wsPath, "src", "main.rs");
+    const settingsJsonPath = path.resolve(wsPath, ".vscode", "settings.json");
+    execSync(`git restore ${mainRsPath} ${settingsJsonPath}`);
+  });
+
   it("Should be formatted with command", async () => {
     const filePath = path.resolve(wsPath, "src", "main.rs");
     const docUri = vscode.Uri.file(filePath);
@@ -97,6 +108,33 @@ describe("Formatting Test", () => {
     expect(formattedText).toMatchSnapshot();
   });
 
-  it("Should be formatted with save if config is enabled", () => {});
-  it("Should be NOT formatted with save if config is disabled", () => {});
+  it("Should be formatted with save if config is default(enabled)", async () => {
+    const filePath = path.resolve(wsPath, "src", "main.rs");
+    const docUri = vscode.Uri.file(filePath);
+    const doc = await vscode.workspace.openTextDocument(docUri);
+    const editor = await vscode.window.showTextDocument(doc);
+
+    await vscode.workspace.save(docUri);
+
+    const formattedText = doc.getText();
+    expect(formattedText).toMatchSnapshot();
+  });
+
+  it("Should be NOT formatted with save if config is disabled", async () => {
+    const filePath = path.resolve(wsPath, "src", "main.rs");
+    const docUri = vscode.Uri.file(filePath);
+    const doc = await vscode.workspace.openTextDocument(docUri);
+    const editor = await vscode.window.showTextDocument(doc);
+
+    // change config
+    await vscode.workspace
+      .getConfiguration("sqlsurge")
+      .update("formatOnSave", false);
+    await sleep(500);
+
+    await vscode.workspace.save(docUri);
+
+    const formattedText = doc.getText();
+    expect(formattedText).toMatchSnapshot();
+  });
 });

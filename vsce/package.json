@@ -41,12 +41,17 @@
   "contributes": {
     "configuration": {
       "type": "object",
-      "title": "sqls",
+      "title": "sqlsurge",
       "properties": {
-        "go.languageServerFlags": {
+        "sqlsurge.sqlLanguageServerFlags": {
           "type": "array",
           "default": [],
           "description": "Flags like -trace and -log to be used while running the language server."
+        },
+        "sqlsurge.formatOnSave": {
+          "type": "boolean",
+          "default": true,
+          "description": "Format SQL on save."
         }
       }
     },
