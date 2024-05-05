@@ -14,7 +14,7 @@ SQLx Example in Rust:
 - Auto-Completion for Tables and Table Columns (requires sqls configuration)
 - Formatting
 
-  - command: `sqlsurge: Format SQL (command id: sqlsurge.formatSql)
+  - VSCode Command: `sqlsurge: Format SQL`
   - Format on save by default. You can also change config to off by adding `sqlsurge.formatOnSave: false` in settings.json.
 
 - Supporting raw SQL query
@@ -32,8 +32,8 @@ It can be enabled by adding the following setting to settings.json.
 
 ## Requirements
 
-- **Golang** ([Installation Page](https://golang.org/doc/install))
-- **sqls** ([Installation Guide](https://github.com/sqls-server/sqls?tab=readme-ov-file#installation))
+- [**Golang**](https://golang.org/doc/install)
+- [**sqls**](https://github.com/sqls-server/sqls?tab=readme-ov-file#installation)
   - There is sqls installation guide in the extension.
 
 To use completion for tables and columns, you need to configure the database connection by `sqls config` command.
