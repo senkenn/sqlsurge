@@ -163,7 +163,13 @@ impl<'ast> Visit<'ast> for QueryVisitor {
 
 #[wasm_bindgen]
 pub fn extract_sql_list(source_txt: &str) -> SerializedSqlNodeList {
-    let ast: File = syn::parse_file(source_txt).unwrap();
+    let ast: File = match syn::parse_file(source_txt) {
+        Ok(ast) => ast,
+        Err(err) => {
+            eprintln!("Failed to parse source code: {:?}", err);
+            return Vec::<String>::new();
+        }
+    };
     let mut query_visitor = QueryVisitor {
         sql_node_list: Vec::<String>::new(),
     };
@@ -417,5 +423,24 @@ ORDER BY id
         })
         .unwrap();
         assert_eq!(result[0], expected);
+    }
+
+    #[test]
+    fn not_found_sqlx_query_with_parsing_failure() {
+        let result = extract_sql_list(
+            // missing closing parenthesis
+            r##"
+async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
+    let rec = sqlx::query!("INSERT INTO todos ( description ) VALUES ( $1 ) RETURNING id",
+        description
+    )
+    .fetch_one(pool)
+    .await?;
+
+    Ok(rec.id)
+        "##,
+        );
+        println!("{} result: {:?}", function!(), result);
+        assert_eq!(result.len(), 0);
     }
 }
