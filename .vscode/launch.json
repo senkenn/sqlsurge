@@ -22,7 +22,8 @@
       "env": {
         "VSCODE_DEBUG_MODE": "true"
       },
-      "preLaunchTask": "${defaultBuildTask}"
+      "preLaunchTask": "${defaultBuildTask}",
+      "cwd": "${workspaceFolder}/vsce"
     },
     {
       "name": "🧩 Debug-rs",
@@ -46,7 +47,8 @@
       "env": {
         "VSCODE_DEBUG_MODE": "true"
       },
-      "preLaunchTask": "${defaultBuildTask}"
+      "preLaunchTask": "${defaultBuildTask}",
+      "cwd": "${workspaceFolder}/vsce"
     }
   ]
 }
