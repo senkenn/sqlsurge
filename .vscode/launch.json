@@ -14,7 +14,7 @@
       "skipFiles": [
         "<node_internals>/**",
         "**/node_modules/**",
-        "**/resources/app/out/vs/**", // NOTE: output filename to debug console instead of extensionHostProcess.js:147
+        "**/resources/app/out/vs/**", // output filename to debug console instead of extensionHostProcess.js:147
         "**/.vscode-insiders/extensions/",
         "**/.vscode/extensions/"
       ],
@@ -30,8 +30,7 @@
       "type": "extensionHost",
       "request": "launch",
       "args": [
-        "--profile-temp",
-        "--install-extension=rust-lang.rust-analyzer",
+        "--profile=debugging", // https://github.com/microsoft/vscode/issues/167140
         "--extensionDevelopmentPath=${workspaceFolder}/vsce",
         "${workspaceFolder}/vsce/test-workspace-rs-sqlx"
       ],
@@ -39,7 +38,7 @@
       "skipFiles": [
         "<node_internals>/**",
         "**/node_modules/**",
-        "**/resources/app/out/vs/**", // NOTE: output filename to debug console instead of extensionHostProcess.js:147
+        "**/resources/app/out/vs/**", // output filename to debug console instead of extensionHostProcess.js:147
         "**/.vscode-insiders/extensions/",
         "**/.vscode/extensions/"
       ],
