@@ -17,12 +17,6 @@ jobs:
 
       - uses: ./.github/actions/setup
 
-      - name: Install wasm-pack if not installed
-        run: |
-          if [ ! -f $HOME/.cargo/bin/wasm-pack ]; then
-            cargo install --version $WASM_PACK_VERSION wasm-pack
-          fi
-
       - name: Build
         run: pnpm build:pkg
 
