@@ -2,9 +2,6 @@ name: E2E Tests
 
 on: pull_request
 
-env:
-  WASM_PACK_VERSION: 0.12.1
-
 jobs:
   test:
     strategy:
