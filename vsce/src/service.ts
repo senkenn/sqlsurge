@@ -135,8 +135,13 @@ export function createIncrementalLanguageServiceHost(
   const tsconfigPath = ts.findConfigFile(
     path.join(projectRoot, "tsconfig.json"),
     ts.sys.fileExists,
-  )!;
-  const tsconfig = ts.readConfigFile(tsconfigPath, ts.sys.readFile);
+  );
+  const tsconfig = tsconfigPath
+    ? ts.readConfigFile(tsconfigPath, ts.sys.readFile)
+    : {
+        config: {},
+      };
+
   if (options == null) {
     const parsed = ts.parseJsonConfigFileContent(
       tsconfig.config,

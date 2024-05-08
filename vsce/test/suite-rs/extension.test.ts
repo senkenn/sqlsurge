@@ -1,4 +1,5 @@
 import { execSync } from "node:child_process";
+import * as fs from "node:fs";
 import * as path from "node:path";
 import * as vscode from "vscode";
 import { sleep } from "../helper";
@@ -7,6 +8,22 @@ const wsPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
 if (!wsPath) {
   throw new Error("wsPath is undefined");
 }
+
+const rootDir = path.resolve(wsPath, "..", "..");
+const allTsConfigPaths = execSync(
+  `find ${rootDir} -name tsconfig.json | grep -v node_modules`,
+).toString();
+const tsconfigPaths = allTsConfigPaths.split("\n").join(" ");
+
+beforeAll(() => {
+  // delete all tsconfig.json
+  execSync(`rm -rf ${tsconfigPaths}`);
+});
+
+afterAll(() => {
+  // restore tsconfig.json
+  execSync(`git restore ${tsconfigPaths}`);
+});
 
 describe("SQLx Completion Test", () => {
   test('Should be completed "INSERT" with query! single line', async () => {
