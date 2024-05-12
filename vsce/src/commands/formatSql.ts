@@ -2,7 +2,6 @@ import type { SqlNode } from "@senken/config";
 
 import { format } from "sql-formatter";
 import * as vscode from "vscode";
-import { logger } from "../outputChannel";
 
 export async function commandFormatSqlProvider(
   refresh: (
@@ -11,7 +10,7 @@ export async function commandFormatSqlProvider(
 ) {
   return vscode.commands.registerCommand("sqlsurge.formatSql", async () => {
     try {
-      logger.info("[commandFormatSqlProvider]", "Formatting...");
+      console.time("format"); // TODO: to output channel
       const editor = vscode.window.activeTextEditor;
       if (!editor) {
         return;
@@ -79,10 +78,12 @@ export async function commandFormatSqlProvider(
       });
 
       vscode.workspace.applyEdit(edit);
-      logger.info("[commandFormatSqlProvider]", "Formatted");
+      console.timeEnd("format"); // TODO: to output channel
     } catch (error) {
-      logger.error(`[commandFormatSqlProvider] ${error}`);
-      vscode.window.showErrorMessage(`[commandFormatSqlProvider] ${error}`);
+      console.error(error); // TODO: to output channel
+      vscode.window.showErrorMessage(
+        `Error on format: ${(error as any).message}`,
+      );
     }
   });
 }
