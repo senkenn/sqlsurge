@@ -9,6 +9,7 @@ import { commandFormatSqlProvider } from "./commands/formatSql";
 import { command as commandInstallSqls } from "./commands/installSqls";
 import { completionProvider } from "./completion";
 import { extConfig as extConfigStore, getWorkspaceConfig } from "./extConfig";
+import { createOutputChannel, logger } from "./outputChannel";
 import {
   type IncrementalLanguageService,
   createIncrementalLanguageService,
@@ -17,7 +18,11 @@ import {
 import { client, startSqlsClient } from "./startSqlsClient";
 
 export async function activate(context: vscode.ExtensionContext) {
-  startSqlsClient().catch(console.error);
+  createOutputChannel();
+
+  startSqlsClient().catch((err) => {
+    logger.error("[activate]", `Failed to start sqls client: ${err}`);
+  });
 
   const virtualContents = new Map<string, string[]>(); // TODO: May not be needed
   const services = new Map<string, IncrementalLanguageService>();
@@ -42,18 +47,21 @@ export async function activate(context: vscode.ExtensionContext) {
       completion,
     ),
     ...commands,
+    logger,
   );
 
   // on save event
   vscode.workspace.onWillSaveTextDocument((event) => {
-    if (!extConfigStore.formatOnSave) {
-      console.log("formatOnSave config is disabled."); // TODO: output to channel
+    // formatting
+    if (!event.document.languageId.match(/^(typescript|rust)$/g)) {
       return;
     }
-    if (event.document.languageId.match(/^(typescript|rust)$/g)) {
-      event.waitUntil(vscode.commands.executeCommand("sqlsurge.formatSql"));
+    if (!extConfigStore.formatOnSave) {
+      logger.info("[onWillSaveTextDocument]", "`formatOnSave` is false.");
+      return;
     }
-    console.log("formatted on save."); // TODO: output to channel
+    event.waitUntil(vscode.commands.executeCommand("sqlsurge.formatSql"));
+    logger.info("[onWillSaveTextDocument]", "formatted on save.");
   });
 
   // update config store on change config
@@ -104,7 +112,7 @@ export async function activate(context: vscode.ExtensionContext) {
   async function refresh(
     document: vscode.TextDocument,
   ): Promise<(SqlNode & { vFileName: string })[]> {
-    console.time(refresh.name); // TODO: to output channel
+    logger.info("[refresh]", "Refreshing...");
     try {
       const service = getOrCreateLanguageService(document.uri)!;
       const fileName = document.fileName;
@@ -163,19 +171,20 @@ export async function activate(context: vscode.ExtensionContext) {
           service.deleteSnapshot(vFileName);
         });
       virtualContents.set(fileName, vFileNames);
-      console.timeEnd(refresh.name); // TODO: to output channel
-      return sqlNodes.map((block, idx) => {
+      const sqlNodesWithVirtualDoc = sqlNodes.map((block, idx) => {
         return {
           ...block,
           vFileName: vFileNames[idx],
           index: idx,
         };
       });
-    } catch (e: any) {
-      console.error(e); // TODO: to output channel
+      logger.info("[refresh]", "Refreshed.");
+      return sqlNodesWithVirtualDoc;
+    } catch (e) {
+      logger.error("[refresh]", `${e}`);
 
       // show error notification
-      vscode.window.showErrorMessage(`Error on refresh: ${e.message}`);
+      vscode.window.showErrorMessage(`[refresh] ${e}`);
       return [];
     }
   }

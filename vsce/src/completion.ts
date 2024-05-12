@@ -1,5 +1,6 @@
 import { ORIGINAL_SCHEME, type SqlNode } from "@senken/config";
 import * as vscode from "vscode";
+import { logger } from "./outputChannel";
 
 export async function completionProvider(
   virtualDocuments: Map<string, string>,
@@ -14,7 +15,8 @@ export async function completionProvider(
       _token: vscode.CancellationToken,
       context: vscode.CompletionContext,
     ) {
-      console.log(document.fileName); // TODO: to output channel
+      logger.info("[provideCompletionItems]", "Starting completion...");
+      logger.debug("[provideCompletionItems]", "file: ", document.fileName);
       const sqlNodes = await refresh(document);
       const sqlNode = sqlNodes.find(({ code_range: { start, end } }) => {
         // in range
@@ -43,6 +45,7 @@ export async function completionProvider(
       const vDocUriString = `${ORIGINAL_SCHEME}://${sqlNode.vFileName}`;
       const vDocUri = vscode.Uri.parse(vDocUriString);
 
+      logger.info("[provideCompletionItems] Finished completion.");
       return vscode.commands.executeCommand<vscode.CompletionList>(
         "vscode.executeCompletionItemProvider",
         vDocUri,

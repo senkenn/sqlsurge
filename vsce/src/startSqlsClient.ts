@@ -5,6 +5,7 @@ import {
   type LanguageClientOptions,
   type ServerOptions,
 } from "vscode-languageclient/node";
+import { logger } from "./outputChannel";
 
 interface LanguageServerConfig {
   flags: string[];
@@ -13,6 +14,7 @@ interface LanguageServerConfig {
 export let client: LanguageClient;
 
 export async function startSqlsClient() {
+  logger.info("[startSqlsClient]", "Starting sqls client...");
   const sqlsConfig = vscode.workspace.getConfiguration("sqlsurge");
   const config: LanguageServerConfig = {
     flags: sqlsConfig.languageServerFlags || [],
@@ -66,6 +68,8 @@ export async function startSqlsClient() {
 
   client = new LanguageClient("sqls", serverOptions, clientOptions);
   client.start();
+
+  logger.info("[startSqlsClient]", "Started sqls client.");
 }
 
 export async function findSqlsInPath(): Promise<vscode.Uri | undefined> {
