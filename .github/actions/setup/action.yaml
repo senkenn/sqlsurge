@@ -43,9 +43,12 @@ runs:
           ${{ runner.os }}-cargo-
 
     - name: Install wasm-pack if not installed
-      if: steps.rust-cache.outputs.cache-hit != 'true'
       shell: bash
-      run: cargo install --version $WASM_PACK_VERSION wasm-pack
+      run: |
+        if [ ! -x "$(command -v wasm-pack)" ]; then
+          cargo install --version $WASM_PACK_VERSION wasm-pack
+        fi
+
       env:
         WASM_PACK_VERSION: ${{ inputs.wasm-pack-version }}
 
