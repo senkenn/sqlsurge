@@ -16,4 +16,4 @@ currently being supported with security updates.
 
 ## Reporting a Vulnerability
 
-If you believe you have found a security vulnerability in sqlsurge, we encourage you to let us know in [issue](https://github.com/senkenn/sqlsurge/issues) right away. We will investigate all legitimate reports and do our best to quickly fix the problem.
+If you believe you have found a security vulnerability in sqlsurge, we encourage you to let us know on [issue](https://github.com/senkenn/sqlsurge/issues) right away. We will investigate all legitimate reports and do our best to quickly fix the problem.
