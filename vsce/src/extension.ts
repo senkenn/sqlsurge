@@ -24,7 +24,7 @@ export async function activate(context: vscode.ExtensionContext) {
     logger.error("[activate]", `Failed to start sqls client: ${err}`);
   });
 
-  const virtualContents = new Map<string, string[]>(); // TODO: May not be needed
+  const virtualContents = new Map<string, string[]>(); // TODO: #58 May not be needed
   const services = new Map<string, IncrementalLanguageService>();
   const registry = ts.createDocumentRegistry();
 
