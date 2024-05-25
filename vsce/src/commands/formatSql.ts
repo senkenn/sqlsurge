@@ -2,13 +2,10 @@ import type { SqlNode } from "@senken/config";
 
 import { format } from "sql-formatter";
 import * as vscode from "vscode";
+import type { RefreshFunc } from "../interface";
 import { logger } from "../outputChannel";
 
-export async function commandFormatSqlProvider(
-  refresh: (
-    document: vscode.TextDocument,
-  ) => Promise<(SqlNode & { vFileName: string })[]>,
-) {
+export async function commandFormatSqlProvider(refresh: RefreshFunc) {
   return vscode.commands.registerCommand("sqlsurge.formatSql", async () => {
     try {
       logger.info("[commandFormatSqlProvider]", "Formatting...");

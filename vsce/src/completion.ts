@@ -1,13 +1,9 @@
 import { ORIGINAL_SCHEME, type SqlNode } from "@senken/config";
 import * as vscode from "vscode";
+import type { RefreshFunc } from "./interface";
 import { logger } from "./outputChannel";
 
-export async function completionProvider(
-  virtualDocuments: Map<string, string>,
-  refresh: (
-    document: vscode.TextDocument,
-  ) => Promise<(SqlNode & { vFileName: string })[]>,
-) {
+export async function completionProvider(refresh: RefreshFunc) {
   return {
     async provideCompletionItems(
       document: vscode.TextDocument,
@@ -17,6 +13,8 @@ export async function completionProvider(
     ) {
       logger.info("[provideCompletionItems]", "Starting completion...");
       logger.debug("[provideCompletionItems]", "file: ", document.fileName);
+      const virtualDocuments = new Map<string, string>();
+
       const sqlNodes = await refresh(document);
       const sqlNode = sqlNodes.find(({ code_range: { start, end } }) => {
         // in range

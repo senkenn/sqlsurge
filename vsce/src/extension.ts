@@ -38,7 +38,7 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const completion = vscode.languages.registerCompletionItemProvider(
     ["typescript", "rust"],
-    await completionProvider(virtualDocuments, refresh),
+    await completionProvider(refresh),
   );
   const commandFormatSql = await commandFormatSqlProvider(refresh);
 
