@@ -9,12 +9,12 @@ import { commandFormatSqlProvider } from "./commands/formatSql";
 import { command as commandInstallSqls } from "./commands/installSqls";
 import { completionProvider } from "./completion";
 import { extConfig as extConfigStore, getWorkspaceConfig } from "./extConfig";
-import { createOutputChannel, logger } from "./outputChannel";
 import {
   type IncrementalLanguageService,
   createIncrementalLanguageService,
   createIncrementalLanguageServiceHost,
-} from "./service";
+} from "./languageService";
+import { createOutputChannel, logger } from "./outputChannel";
 import { client, startSqlsClient } from "./startSqlsClient";
 
 export async function activate(context: vscode.ExtensionContext) {
@@ -24,7 +24,7 @@ export async function activate(context: vscode.ExtensionContext) {
     logger.error("[activate]", `Failed to start sqls client: ${err}`);
   });
 
-  const virtualContents = new Map<string, string[]>(); // TODO: May not be needed
+  const virtualContents = new Map<string, string[]>(); // TODO: #58 May not be needed
   const services = new Map<string, IncrementalLanguageService>();
   const registry = ts.createDocumentRegistry();
 
@@ -36,18 +36,17 @@ export async function activate(context: vscode.ExtensionContext) {
     },
   });
 
-  const completion = await completionProvider(virtualDocuments, refresh);
-
+  const completion = vscode.languages.registerCompletionItemProvider(
+    ["typescript", "rust"],
+    await completionProvider(virtualDocuments, refresh),
+  );
   const commandFormatSql = await commandFormatSqlProvider(refresh);
-  const commands = [commandInstallSqls, commandFormatSql];
 
   context.subscriptions.push(
-    vscode.languages.registerCompletionItemProvider(
-      ["typescript", "rust"],
-      completion,
-    ),
-    ...commands,
     logger,
+    completion,
+    commandInstallSqls,
+    commandFormatSql,
   );
 
   // on save event
@@ -125,22 +124,7 @@ export async function activate(context: vscode.ExtensionContext) {
         }
         case "rust": {
           const sqlNodesRust = await extractSqlListRs(rawContent);
-          sqlNodes = sqlNodesRust.map((sqlNode) => {
-            return {
-              code_range: {
-                start: {
-                  line: sqlNode.code_range.start.line,
-                  character: sqlNode.code_range.start.character,
-                },
-                end: {
-                  line: sqlNode.code_range.end.line,
-                  character: sqlNode.code_range.end.character,
-                },
-              },
-              content: sqlNode.content,
-              quotation: sqlNode.quotation,
-            };
-          });
+          sqlNodes = await extractSqlListRs(rawContent);
           break;
         }
         default:
