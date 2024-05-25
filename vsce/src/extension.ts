@@ -124,21 +124,7 @@ export async function activate(context: vscode.ExtensionContext) {
         }
         case "rust": {
           const sqlNodesRust = await extractSqlListRs(rawContent);
-          sqlNodes = sqlNodesRust.map((sqlNode) => {
-            return {
-              code_range: {
-                start: {
-                  line: sqlNode.code_range.start.line,
-                  character: sqlNode.code_range.start.character,
-                },
-                end: {
-                  line: sqlNode.code_range.end.line,
-                  character: sqlNode.code_range.end.character,
-                },
-              },
-              content: sqlNode.content,
-            };
-          });
+          sqlNodes = await extractSqlListRs(rawContent);
           break;
         }
         default:
