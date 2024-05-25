@@ -36,18 +36,17 @@ export async function activate(context: vscode.ExtensionContext) {
     },
   });
 
-  const completion = await completionProvider(virtualDocuments, refresh);
-
+  const completion = vscode.languages.registerCompletionItemProvider(
+    ["typescript", "rust"],
+    await completionProvider(virtualDocuments, refresh),
+  );
   const commandFormatSql = await commandFormatSqlProvider(refresh);
-  const commands = [commandInstallSqls, commandFormatSql];
 
   context.subscriptions.push(
-    vscode.languages.registerCompletionItemProvider(
-      ["typescript", "rust"],
-      completion,
-    ),
-    ...commands,
     logger,
+    completion,
+    commandInstallSqls,
+    commandFormatSql,
   );
 
   // on save event
