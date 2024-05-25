@@ -9,12 +9,12 @@ import { commandFormatSqlProvider } from "./commands/formatSql";
 import { command as commandInstallSqls } from "./commands/installSqls";
 import { completionProvider } from "./completion";
 import { extConfig as extConfigStore, getWorkspaceConfig } from "./extConfig";
-import { createOutputChannel, logger } from "./outputChannel";
 import {
   type IncrementalLanguageService,
   createIncrementalLanguageService,
   createIncrementalLanguageServiceHost,
-} from "./service";
+} from "./languageService";
+import { createOutputChannel, logger } from "./outputChannel";
 import { client, startSqlsClient } from "./startSqlsClient";
 
 export async function activate(context: vscode.ExtensionContext) {
