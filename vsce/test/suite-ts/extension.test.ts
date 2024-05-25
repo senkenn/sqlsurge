@@ -1,7 +1,8 @@
 import { execSync } from "node:child_process";
+import * as fs from "node:fs";
 import * as path from "node:path";
 import * as vscode from "vscode";
-import { sleep } from "../helper";
+import { resetTestWorkspace, sleep } from "../helper";
 
 const wsPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
 if (!wsPath) {
@@ -67,14 +68,11 @@ describe("Prisma Completion Test", () => {
 });
 
 describe("Formatting Test", () => {
-  afterEach(() => {
-    // reset config
-    vscode.workspace.getConfiguration("sqlsurge").update("formatOnSave", true);
-
-    // restore file
-    const mainRsPath = path.resolve(wsPath, "src", "index.ts");
-    const settingsJsonPath = path.resolve(wsPath, ".vscode", "settings.json");
-    execSync(`git restore ${mainRsPath} ${settingsJsonPath}`);
+  beforeAll(async () => {
+    await resetTestWorkspace(wsPath, path.resolve(wsPath, "src", "index.ts"));
+  });
+  afterEach(async () => {
+    await resetTestWorkspace(wsPath, path.resolve(wsPath, "src", "index.ts"));
   });
 
   it("Should be formatted with command", async () => {
@@ -100,8 +98,8 @@ describe("Formatting Test", () => {
 
     await vscode.workspace.save(docUri);
 
-    const formattedText = doc.getText();
-    expect(formattedText).toMatchSnapshot();
+    const newText = fs.readFileSync(filePath, "utf8");
+    expect(newText).toMatchSnapshot();
   });
 
   it("Should be NOT formatted with save if config is disabled", async () => {
@@ -118,7 +116,7 @@ describe("Formatting Test", () => {
 
     await vscode.workspace.save(docUri);
 
-    const formattedText = doc.getText();
-    expect(formattedText).toMatchSnapshot();
+    const newText = fs.readFileSync(filePath, "utf8");
+    expect(newText).toMatchSnapshot();
   });
 });
