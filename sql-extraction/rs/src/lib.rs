@@ -38,6 +38,7 @@ struct Range {
 struct SqlNode {
     code_range: Range,
     content: String,
+    quotation: String,
 }
 
 type SerializedSqlNodeList = Vec<String>;
@@ -95,6 +96,7 @@ impl<'ast> Visit<'ast> for QueryVisitor {
                 line: lit.span().end().line - 1,    // -1 for 1-indexed to 0-indexed
                 character: lit.span().end().column, // column is 0-indexed
             };
+            let mut quotation = String::new();
 
             // concat lit
             sql_lit.push_str(&lit.to_string());
@@ -116,6 +118,7 @@ impl<'ast> Visit<'ast> for QueryVisitor {
                             0
                         };
                 end.character -= sharp_quote_len;
+                quotation = "r#\"".to_string();
             } else if sql_lit.starts_with("\"") {
                 sql_lit = sql_lit
                     .trim_start_matches("\"")
@@ -125,6 +128,7 @@ impl<'ast> Visit<'ast> for QueryVisitor {
                 // remove '""'
                 start.character += 1;
                 end.character -= 1;
+                quotation = "\"".to_string();
             }
 
             let sql_node = SqlNode {
@@ -139,6 +143,7 @@ impl<'ast> Visit<'ast> for QueryVisitor {
                     },
                 },
                 content: sql_lit.clone(),
+                quotation,
             };
 
             #[cfg(debug_assertions)]
@@ -211,6 +216,7 @@ async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
                 },
             },
             content: "INSERT INTO todos ( description ) VALUES ( $1 ) RETURNING id".to_string(),
+            quotation: "\"".to_string(),
         })
         .unwrap();
 
@@ -249,6 +255,7 @@ async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
                 },
             },
             content: "SELECT id \\\"id\\\", description, done FROM todos ORDER BY id".to_string(),
+            quotation: "\"".to_string(),
         })
         .unwrap();
 
@@ -264,6 +271,7 @@ async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
                 },
             },
             content: "INSERT INTO todos ( description ) VALUES ( $1 ) RETURNING id".to_string(),
+            quotation: "\"".to_string(),
         })
         .unwrap();
 
@@ -308,6 +316,7 @@ WHERE id = $1
                 },
             },
             content: "\nUPDATE todos\nSET done = TRUE\nWHERE id = $1\n        ".to_string(),
+            quotation: "r#\"".to_string(),
         })
         .unwrap();
         assert_eq!(result[0], expected,);
@@ -359,6 +368,7 @@ RETURNING id
             content:
                 "\nINSERT INTO \"todos\" ( description )\nVALUES ( $1 )\nRETURNING id\n        "
                     .to_string(),
+            quotation: "r#\"".to_string(),
         })
         .unwrap();
         assert_eq!(result[0], expected1);
@@ -372,6 +382,7 @@ RETURNING id
                 end: Position { line: 17, character: 12 },
             },
             content: "\n            UPDATE todos\n            SET done = TRUE\n            WHERE id = $1\n            ".to_string(),
+            quotation: "r#\"".to_string(),
         }).unwrap();
         assert_eq!(result[1], expected2);
     }
@@ -420,6 +431,7 @@ ORDER BY id
             content:
                 "\nSELECT id, description, done\nFROM todos\nWHERE id = ?\nORDER BY id\n        "
                     .to_string(),
+            quotation: "r#\"".to_string(),
         })
         .unwrap();
         assert_eq!(result[0], expected);

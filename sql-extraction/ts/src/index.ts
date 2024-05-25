@@ -38,6 +38,7 @@ export function extractSqlListTs(sourceTxt: string): SqlNode[] {
           },
         },
         content: node.template.rawText ?? "",
+        quotation: "`",
       });
     }
     ts.forEachChild<void>(node, visit);

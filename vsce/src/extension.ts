@@ -138,6 +138,7 @@ export async function activate(context: vscode.ExtensionContext) {
                 },
               },
               content: sqlNode.content,
+              quotation: sqlNode.quotation,
             };
           });
           break;
