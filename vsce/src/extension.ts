@@ -14,14 +14,15 @@ import {
   createIncrementalLanguageService,
   createIncrementalLanguageServiceHost,
 } from "./languageService";
-import { createOutputChannel, logger } from "./outputChannel";
+import { createOutputChannel } from "./outputChannel";
 import { client, startSqlsClient } from "./startSqlsClient";
 
 export async function activate(context: vscode.ExtensionContext) {
-  createOutputChannel();
+  const logger = createOutputChannel();
 
-  startSqlsClient().catch((err) => {
-    logger.error("[activate]", `Failed to start sqls client: ${err}`);
+  startSqlsClient(logger).catch((err) => {
+    logger.error(err, "[startSqlsClient] Failed to start sqls client.");
+    vscode.window.showErrorMessage("sqlsurge: Failed to start sqls client.");
   });
 
   const virtualContents = new Map<string, string[]>(); // TODO: #58 May not be needed
@@ -38,9 +39,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const completion = vscode.languages.registerCompletionItemProvider(
     ["typescript", "rust"],
-    await completionProvider(virtualDocuments, refresh),
+    await completionProvider(logger, virtualDocuments, refresh),
   );
-  const commandFormatSql = await commandFormatSqlProvider(refresh);
+  const commandFormatSql = await commandFormatSqlProvider(logger, refresh);
 
   context.subscriptions.push(
     logger,
@@ -123,7 +124,6 @@ export async function activate(context: vscode.ExtensionContext) {
           break;
         }
         case "rust": {
-          const sqlNodesRust = await extractSqlListRs(rawContent);
           sqlNodes = await extractSqlListRs(rawContent);
           break;
         }
