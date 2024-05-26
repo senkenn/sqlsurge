@@ -2,9 +2,9 @@ import type { SqlNode } from "@senken/config";
 
 import { format } from "sql-formatter";
 import * as vscode from "vscode";
-import { logger } from "../outputChannel";
 
 export async function commandFormatSqlProvider(
+  logger: vscode.LogOutputChannel,
   refresh: (
     document: vscode.TextDocument,
   ) => Promise<(SqlNode & { vFileName: string })[]>,
