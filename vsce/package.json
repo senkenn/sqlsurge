@@ -52,11 +52,6 @@
           "type": "boolean",
           "default": true,
           "description": "Format SQL on save."
-        },
-        "sqlsurge.formatSqlWithIndent": {
-          "type": "boolean",
-          "default": false,
-          "description": "Format SQL with indent."
         }
       }
     },
