@@ -1,8 +1,8 @@
 import { ORIGINAL_SCHEME, type SqlNode } from "@senken/config";
 import * as vscode from "vscode";
-import { logger } from "./outputChannel";
 
 export async function completionProvider(
+  logger: vscode.LogOutputChannel,
   virtualDocuments: Map<string, string>,
   refresh: (
     document: vscode.TextDocument,
