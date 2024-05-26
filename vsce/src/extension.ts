@@ -124,7 +124,6 @@ export async function activate(context: vscode.ExtensionContext) {
           break;
         }
         case "rust": {
-          const sqlNodesRust = await extractSqlListRs(rawContent);
           sqlNodes = await extractSqlListRs(rawContent);
           break;
         }
