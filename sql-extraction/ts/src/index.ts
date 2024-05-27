@@ -12,7 +12,7 @@ export function extractSqlListTs(sourceTxt: string): SqlNode[] {
   return sqlNodes;
 
   /**
-   * visit nodes
+   * Visit nodes recursively
    * If find a tagged template expression with name "$queryRaw", push it to blocksNode
    */
   function visit(node: ts.Node): void {
@@ -22,6 +22,9 @@ export function extractSqlListTs(sourceTxt: string): SqlNode[] {
       node.tag.name.text === "$queryRaw" &&
       ts.isNoSubstitutionTemplateLiteral(node.template)
     ) {
+      const method_line = sourceFile.getLineAndCharacterOfPosition(
+        node.tag.pos,
+      ).line;
       const { line: startLine, character: startCharacter } =
         sourceFile.getLineAndCharacterOfPosition(node.template.pos + 1); // +1 is to remove the first back quote
       const { line: endLine, character: endCharacter } =
@@ -38,6 +41,7 @@ export function extractSqlListTs(sourceTxt: string): SqlNode[] {
           },
         },
         content: node.template.rawText ?? "",
+        method_line,
       });
     }
     ts.forEachChild<void>(node, visit);

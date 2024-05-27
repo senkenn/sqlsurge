@@ -10,6 +10,7 @@ export type SqlNode = {
     };
   };
   content: string;
+  method_line: number; // 0-based
 };
 
 export const ORIGINAL_SCHEME = "sqlsurge";
