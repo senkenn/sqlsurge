@@ -58,7 +58,7 @@
           "default": false,
           "description": "Format SQL with indent."
         },
-        "sqlsurge.formatSql.indentSize": {
+        "sqlsurge.formatSql.tabSize": {
           "type": "number",
           "default": 4,
           "description": "Indent size for SQL formatting."
