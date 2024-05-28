@@ -3,7 +3,6 @@ import type { SqlNode } from "@senken/config";
 import { format } from "sql-formatter";
 import * as vscode from "vscode";
 
-// TODO: convert to class for logger
 export async function commandFormatSqlProvider(
   logger: vscode.LogOutputChannel,
   refresh: RefreshFunc,
@@ -58,8 +57,18 @@ async function formatSql(
           );
         }
 
+        const config = vscode.workspace
+          .getConfiguration("sqlsurge")
+          .get("formatSql") as {
+          indent: boolean;
+          tabSize: number;
+        };
+        // TODO: config validation
+
         // get formatted content
-        const formattedContentWithDummy = format(sqlNode.content);
+        const formattedContentWithDummy = format(sqlNode.content, {
+          tabWidth: config.tabSize,
+        });
 
         // reverse the place holders
         let formattedContent = formattedContentWithDummy;
@@ -73,17 +82,11 @@ async function formatSql(
         }
 
         // add indent if config is enabled
-        const formatSqlWithIndent = vscode.workspace
-          .getConfiguration("sqlsurge")
-          .get("formatSql") as {
-          indent: boolean;
-          indentSize: number;
-        };
-        if (formatSqlWithIndent.indent) {
+        if (config.indent) {
           formattedContent = indentedContent(
             formattedContent,
             sqlNode.method_line,
-            formatSqlWithIndent.indentSize,
+            config.tabSize,
           );
         }
 
@@ -114,7 +117,7 @@ async function formatSql(
 function indentedContent(
   content: string,
   methodLine: SqlNode["method_line"],
-  indentSize: number,
+  tabSize: number,
 ): string {
   const lineText =
     vscode.window.activeTextEditor?.document.lineAt(methodLine).text;
@@ -127,12 +130,12 @@ function indentedContent(
     return content;
   }
 
-  if (indents.length % indentSize !== 0) {
+  if (indents.length % tabSize !== 0) {
     // TODO: log
     throw new Error("indent size should be multiple of indents length");
   }
 
-  const oneLevelDown = indents.slice(0, indentSize);
+  const oneLevelDown = indents.slice(0, tabSize);
   return content
     .split("\n")
     .map((line) => indents + oneLevelDown + line)
