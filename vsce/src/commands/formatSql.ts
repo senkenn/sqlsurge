@@ -57,17 +57,19 @@ async function formatSql(
           );
         }
 
-        const config = vscode.workspace
+        const isEnabledIndent = vscode.workspace
           .getConfiguration("sqlsurge")
-          .get("formatSql") as {
-          indent: boolean;
-          tabSize: number;
-        };
-        // TODO: config validation
+          .get("formatSql.indent");
+        const defaultTabSize = 4;
+        const tabSize =
+          (vscode.workspace
+            .getConfiguration("sqlsurge")
+            .get("formatSql.tabSize") as number) ?? defaultTabSize;
+        // TODO: config validation, and get from package.json
 
         // get formatted content
         const formattedContentWithDummy = format(sqlNode.content, {
-          tabWidth: config.tabSize,
+          tabWidth: tabSize,
         });
 
         // reverse the place holders
@@ -82,11 +84,11 @@ async function formatSql(
         }
 
         // add indent if config is enabled
-        if (config.indent) {
+        if (isEnabledIndent) {
           formattedContent = indentedContent(
             formattedContent,
             sqlNode.method_line,
-            config.tabSize,
+            tabSize,
           );
         }
 
@@ -128,11 +130,6 @@ function indentedContent(
   const indents = lineText.match(/^(\s*)/)?.[0];
   if (!indents) {
     return content;
-  }
-
-  if (indents.length % tabSize !== 0) {
-    // TODO: log
-    throw new Error("indent size should be multiple of indents length");
   }
 
   const oneLevelDown = indents.slice(0, tabSize);
