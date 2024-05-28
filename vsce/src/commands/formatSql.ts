@@ -35,7 +35,7 @@ async function formatSql(
       sqlNodes.map((sqlNode) => {
         // get prefix and suffix of space or new line
         const prefixMatch = sqlNode.content.match(/^(\s*)/);
-        const prefix = prefixMatch ? prefixMatch[0] : "";
+        const prefix = prefixMatch ? prefixMatch[0].replace(/ +$/g, "") : "";
         const suffixMatch = sqlNode.content.match(/(\s*)$/);
         const suffix = suffixMatch ? suffixMatch[0] : "";
 
@@ -72,14 +72,13 @@ async function formatSql(
           });
         }
 
-        // get vscode settings for indent
+        // add indent if config is enabled
         const formatSqlWithIndent = vscode.workspace
           .getConfiguration("sqlsurge")
           .get("formatSql") as {
           indent: boolean;
           indentSize: number;
         };
-
         if (formatSqlWithIndent.indent) {
           formattedContent = indentedContent(
             formattedContent,
@@ -133,7 +132,6 @@ function indentedContent(
     throw new Error("indent size should be multiple of indents length");
   }
 
-  // FIXME: first line is always plus one indent
   const oneLevelDown = indents.slice(0, indentSize);
   return content
     .split("\n")
