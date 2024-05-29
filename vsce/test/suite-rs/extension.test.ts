@@ -129,6 +129,7 @@ describe("Formatting Test", () => {
     const editor = await vscode.window.showTextDocument(doc);
 
     await vscode.workspace.save(docUri);
+    await sleep(500);
 
     const newText = fs.readFileSync(filePath, "utf8");
     expect(newText).toMatchSnapshot();
