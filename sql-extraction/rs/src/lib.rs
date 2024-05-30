@@ -1,5 +1,6 @@
 use proc_macro2::TokenTree;
 use serde::Serialize;
+use syn::spanned::Spanned;
 use syn::visit::{self, Visit};
 use syn::File;
 use wasm_bindgen::prelude::wasm_bindgen;
@@ -38,6 +39,7 @@ struct Range {
 struct SqlNode {
     code_range: Range,
     content: String,
+    method_line: usize, // 0-indexed
 }
 
 type SerializedSqlNodeList = Vec<String>;
@@ -83,6 +85,11 @@ impl<'ast> Visit<'ast> for QueryVisitor {
                 _ => continue,
             };
             #[cfg(debug_assertions)]
+            println!(
+                "{} path_segment line: {:?}",
+                function!(),
+                path_segment.span().start().line
+            );
             println!("{} lit: {:?}", function!(), lit);
             println!("{} lit span start: {:?}", function!(), lit.span().start());
             println!("{} lit span end: {:?}", function!(), lit.span().end());
@@ -139,6 +146,7 @@ impl<'ast> Visit<'ast> for QueryVisitor {
                     },
                 },
                 content: sql_lit.clone(),
+                method_line: path_segment.span().start().line - 1, // -1 for 1-indexed to 0-indexed
             };
 
             #[cfg(debug_assertions)]
@@ -211,6 +219,7 @@ async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
                 },
             },
             content: "INSERT INTO todos ( description ) VALUES ( $1 ) RETURNING id".to_string(),
+            method_line: 2,
         })
         .unwrap();
 
@@ -249,6 +258,7 @@ async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
                 },
             },
             content: "SELECT id \\\"id\\\", description, done FROM todos ORDER BY id".to_string(),
+            method_line: 2,
         })
         .unwrap();
 
@@ -264,6 +274,7 @@ async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
                 },
             },
             content: "INSERT INTO todos ( description ) VALUES ( $1 ) RETURNING id".to_string(),
+            method_line: 7,
         })
         .unwrap();
 
@@ -308,6 +319,7 @@ WHERE id = $1
                 },
             },
             content: "\nUPDATE todos\nSET done = TRUE\nWHERE id = $1\n        ".to_string(),
+            method_line: 2,
         })
         .unwrap();
         assert_eq!(result[0], expected,);
@@ -359,6 +371,7 @@ RETURNING id
             content:
                 "\nINSERT INTO \"todos\" ( description )\nVALUES ( $1 )\nRETURNING id\n        "
                     .to_string(),
+            method_line: 2,
         })
         .unwrap();
         assert_eq!(result[0], expected1);
@@ -372,6 +385,7 @@ RETURNING id
                 end: Position { line: 17, character: 12 },
             },
             content: "\n            UPDATE todos\n            SET done = TRUE\n            WHERE id = $1\n            ".to_string(),
+            method_line: 13,
         }).unwrap();
         assert_eq!(result[1], expected2);
     }
@@ -420,6 +434,7 @@ ORDER BY id
             content:
                 "\nSELECT id, description, done\nFROM todos\nWHERE id = ?\nORDER BY id\n        "
                     .to_string(),
+            method_line: 2,
         })
         .unwrap();
         assert_eq!(result[0], expected);

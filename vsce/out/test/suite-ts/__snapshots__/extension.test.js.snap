@@ -37,6 +37,40 @@ main()
 "
 `;
 
+exports[`Formatting Test Should be formatted with 2 tab size indent 1`] = `
+"import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+async function main() {
+  const todo = await prisma.$queryRaw\`    SELECT
+      *
+    FROM
+      todos
+    WHERE
+      id = 1;\`;
+  await prisma.$queryRaw\`
+    INSERT INTO
+      todos (id, description, done)
+    VALUES
+      (1, "todo description", TRUE);
+    \`;
+  console.log(todo);
+}
+
+main()
+  .then(async () => {
+    await prisma.$disconnect();
+    console.log("Disconnected");
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });
+"
+`;
+
 exports[`Formatting Test Should be formatted with command 1`] = `
 "import { PrismaClient } from "@prisma/client";
 
@@ -44,16 +78,50 @@ const prisma = new PrismaClient();
 
 async function main() {
   const todo = await prisma.$queryRaw\`SELECT
-  *
+    *
 FROM
-  todos
+    todos
 WHERE
-  id = 1;\`;
+    id = 1;\`;
+  await prisma.$queryRaw\`
+INSERT INTO
+    todos (id, description, done)
+VALUES
+    (1, "todo description", TRUE);
+    \`;
+  console.log(todo);
+}
+
+main()
+  .then(async () => {
+    await prisma.$disconnect();
+    console.log("Disconnected");
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });
+"
+`;
+
+exports[`Formatting Test Should be formatted with indent if config is enabled(default: off) 1`] = `
+"import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+async function main() {
+  const todo = await prisma.$queryRaw\`    SELECT
+        *
+    FROM
+        todos
+    WHERE
+        id = 1;\`;
   await prisma.$queryRaw\`
     INSERT INTO
-  todos (id, description, done)
-VALUES
-  (1, "todo description", TRUE);
+        todos (id, description, done)
+    VALUES
+        (1, "todo description", TRUE);
     \`;
   console.log(todo);
 }
@@ -78,16 +146,16 @@ const prisma = new PrismaClient();
 
 async function main() {
   const todo = await prisma.$queryRaw\`SELECT
-  *
+    *
 FROM
-  todos
+    todos
 WHERE
-  id = 1;\`;
+    id = 1;\`;
   await prisma.$queryRaw\`
-    INSERT INTO
-  todos (id, description, done)
+INSERT INTO
+    todos (id, description, done)
 VALUES
-  (1, "todo description", TRUE);
+    (1, "todo description", TRUE);
     \`;
   console.log(todo);
 }

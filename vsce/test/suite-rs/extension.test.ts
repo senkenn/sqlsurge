@@ -129,6 +129,7 @@ describe("Formatting Test", () => {
     const editor = await vscode.window.showTextDocument(doc);
 
     await vscode.workspace.save(docUri);
+    await sleep(500);
 
     const newText = fs.readFileSync(filePath, "utf8");
     expect(newText).toMatchSnapshot();
@@ -144,11 +145,51 @@ describe("Formatting Test", () => {
     await vscode.workspace
       .getConfiguration("sqlsurge")
       .update("formatOnSave", false);
-    await sleep(500);
 
     await vscode.workspace.save(docUri);
 
     const newText = fs.readFileSync(filePath, "utf8");
     expect(newText).toMatchSnapshot();
+  });
+
+  it("Should be formatted with indent if config is enabled(default: off)", async () => {
+    const filePath = path.resolve(wsPath, "src", "main.rs");
+    const docUri = vscode.Uri.file(filePath);
+    const doc = await vscode.workspace.openTextDocument(docUri);
+    const editor = await vscode.window.showTextDocument(doc);
+
+    // change config
+    await vscode.workspace
+      .getConfiguration("sqlsurge")
+      .update("formatSql.indent", true);
+
+    // execute command
+    await vscode.commands.executeCommand("sqlsurge.formatSql");
+    await sleep(500);
+
+    const formattedText = doc.getText();
+    expect(formattedText).toMatchSnapshot();
+  });
+
+  it("Should be formatted with 2 tab size indent", async () => {
+    const filePath = path.resolve(wsPath, "src", "main.rs");
+    const docUri = vscode.Uri.file(filePath);
+    const doc = await vscode.workspace.openTextDocument(docUri);
+    const editor = await vscode.window.showTextDocument(doc);
+
+    // change config
+    await vscode.workspace
+      .getConfiguration("sqlsurge", vscode.workspace.workspaceFolders?.[0].uri)
+      .update("formatSql.indent", true);
+    await vscode.workspace
+      .getConfiguration("sqlsurge")
+      .update("formatSql.tabSize", 2);
+
+    // execute command
+    await vscode.commands.executeCommand("sqlsurge.formatSql");
+    await sleep(500);
+
+    const formattedText = doc.getText();
+    expect(formattedText).toMatchSnapshot();
   });
 });
