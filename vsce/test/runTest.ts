@@ -12,13 +12,13 @@ async function main() {
       __dirname,
       "..",
       "..",
-      "test-workspace-ts-prisma",
+      "test-workspace-ts",
     );
     const workspacePathRs = path.resolve(
       __dirname,
       "..",
       "..",
-      "test-workspace-rs-sqlx",
+      "test-workspace-rs",
     );
 
     // Download VS Code, unzip it and run the integration test
