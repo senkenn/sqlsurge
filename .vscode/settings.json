@@ -30,5 +30,9 @@
     ".github/workflows/rust-test.yaml"
   ],
   "github-actions.workflows.pinned.refresh.interval": 3,
-  "github-actions.workflows.pinned.refresh.enabled": true
+  "github-actions.workflows.pinned.refresh.enabled": true,
+  "markdown.copyFiles.destination": {
+    "*.md": "resources/screenshot.${fileName/^(.+)\\.([^.]+)/$2/}"
+  },
+  "markdown.editor.pasteUrlAsFormattedLink.enabled": "smart"
 }
