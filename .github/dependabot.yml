@@ -8,7 +8,7 @@ updates:
   - package-ecosystem: "npm" # See documentation for possible values
     directory: "/" # Location of package manifests
     schedule:
-      interval: "weekly"
+      interval: "monthly"
     groups:
       dependencies:
         patterns:
@@ -17,7 +17,16 @@ updates:
   - package-ecosystem: "cargo"
     directory: "/sql-extraction/rs"
     schedule:
-      interval: "weekly"
+      interval: "monthly"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "cargo"
+    directory: "/vsce/test-workspace-rs-sqlx"
+    schedule:
+      interval: "monthly"
     groups:
       dependencies:
         patterns:
