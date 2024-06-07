@@ -24,7 +24,7 @@ updates:
           - "*"
 
   - package-ecosystem: "cargo"
-    directory: "/vsce/test-workspace-rs-sqlx"
+    directory: "/vsce/test-workspace-rs"
     schedule:
       interval: "monthly"
     groups:
