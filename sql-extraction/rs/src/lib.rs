@@ -1,5 +1,5 @@
 use proc_macro2::TokenTree;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use syn::spanned::Spanned;
 use syn::visit::{self, Visit};
 use syn::File;
@@ -42,22 +42,29 @@ struct SqlNode {
     method_line: usize, // 0-indexed
 }
 
+#[derive(Serialize, Deserialize, Debug)]
+#[allow(non_snake_case)]
+struct Config {
+    functionName: String,
+    sqlArgNo: usize,
+    isMacro: bool,
+}
+
 type SerializedSqlNodeList = Vec<String>;
 
 struct QueryVisitor {
     sql_node_list: SerializedSqlNodeList,
-}
-
-impl<'ast> QueryVisitor {
-    fn into_sql_node_list(self) -> SerializedSqlNodeList {
-        self.sql_node_list
-    }
+    configs: Vec<Config>,
 }
 
 // NOTE: re-instructed to use the syn crate
 impl<'ast> Visit<'ast> for QueryVisitor {
     // visit sqlx macro
     fn visit_macro(&mut self, mac: &'ast syn::Macro) {
+        for config in &self.configs {
+            println!("{} config: {:?}", function!(), config);
+        }
+
         // print macro name
         for path_segment in &mac.path.segments {
             let mut sql_lit = String::new();
@@ -167,10 +174,32 @@ impl<'ast> Visit<'ast> for QueryVisitor {
         // println!("{}", i.value());
         visit::visit_lit(self, i);
     }
+
+    fn visit_expr_call(&mut self, expr_call: &'ast syn::ExprCall) {
+        println!("Found expr call {:?}", expr_call.func.span().start());
+        visit::visit_expr_call(self, expr_call);
+    }
 }
 
 #[wasm_bindgen]
-pub fn extract_sql_list(source_txt: &str) -> SerializedSqlNodeList {
+pub fn extract_sql_list(source_txt: &str, configs: Option<Vec<String>>) -> SerializedSqlNodeList {
+    let configs: Vec<Config> = match configs {
+        Some(c) => {
+            match c
+                .iter()
+                .map(|c| serde_json::from_str(c))
+                .collect::<Result<Vec<_>, _>>()
+            {
+                Ok(c) => c,
+                Err(err) => {
+                    eprintln!("Failed to parse config: {:?}", err);
+                    return Vec::<String>::new();
+                }
+            }
+        }
+        None => Vec::<Config>::new(),
+    };
+
     let ast: File = match syn::parse_file(source_txt) {
         Ok(ast) => ast,
         Err(err) => {
@@ -180,10 +209,11 @@ pub fn extract_sql_list(source_txt: &str) -> SerializedSqlNodeList {
     };
     let mut query_visitor = QueryVisitor {
         sql_node_list: Vec::<String>::new(),
+        configs,
     };
     query_visitor.visit_file(&ast);
 
-    query_visitor.into_sql_node_list()
+    query_visitor.sql_node_list
 }
 
 #[cfg(test)]
@@ -192,7 +222,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn found_sqlx_query_one_query_single_line() {
+    fn found_sqlx_query_one_query_single_line_default_config() {
         let result = extract_sql_list(
             r#"
 async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
@@ -205,6 +235,7 @@ async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
     Ok(rec.id)
 }
         "#,
+            None,
         );
         println!("{} result: {:?}", function!(), result);
         let expected = serde_json::to_string(&SqlNode {

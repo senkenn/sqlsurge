@@ -14,3 +14,9 @@ export type SqlNode = {
 };
 
 export const ORIGINAL_SCHEME = "sqlsurge";
+
+export type SqlExtractionConfigRs = {
+  functionName: string;
+  sqlArgNo: number;
+  isMacro: boolean;
+}[];

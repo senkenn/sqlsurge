@@ -62,6 +62,43 @@
           "type": "number",
           "default": 4,
           "description": "Indent size for SQL formatting."
+        },
+        "sqlsurge.customRawSqlQuery": {
+          "type": "object",
+          "title": "Custom Raw SQL Query",
+          "description": "Customize the raw SQL query to be extracted.",
+          "properties": {
+            "langurage": {
+              "type": "string",
+              "description": "Language of the writing custom query.",
+              "enum": ["typescript", "rust"]
+            },
+            "config": {
+              "type": "array",
+              "description": "Custom query configuration.",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "functionName": {
+                    "type": "string",
+                    "description": "Function name to be used for custom query."
+                  },
+                  "sqlArgNo": {
+                    "type": "number",
+                    "description": "Argument number of SQL query in the function."
+                  },
+                  "isMacro": {
+                    "type": "boolean",
+                    "description": "Whether the SQL query is in macro. Rust only."
+                  },
+                  "isTemplateLiteral": {
+                    "type": "boolean",
+                    "description": "Whether the SQL query is in template literal. TypeScript only."
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
