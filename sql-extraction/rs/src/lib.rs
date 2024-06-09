@@ -42,7 +42,7 @@ struct SqlNode {
     method_line: usize, // 0-indexed
 }
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, Clone)]
 #[allow(non_snake_case)]
 struct Config {
     functionName: String,
@@ -52,6 +52,7 @@ struct Config {
 
 type SerializedSqlNodeList = Vec<String>;
 
+#[derive(Clone)]
 struct QueryVisitor {
     sql_node_list: SerializedSqlNodeList,
     configs: Vec<Config>,
@@ -62,107 +63,110 @@ impl<'ast> Visit<'ast> for QueryVisitor {
     // visit sqlx macro
     fn visit_macro(&mut self, mac: &'ast syn::Macro) {
         for config in &self.configs {
-            println!("{} config: {:?}", function!(), config);
-        }
-
-        // print macro name
-        for path_segment in &mac.path.segments {
-            let mut sql_lit = String::new();
-            let mut sql_token: Option<TokenTree> = None;
-            if path_segment.ident == "query" {
-                for (i, token) in mac.tokens.clone().into_iter().enumerate() {
-                    if i != 0 {
-                        continue;
-                    }
-                    sql_token = Some(token);
-                }
-            } else if path_segment.ident == "query_as" {
-                for (i, token) in mac.tokens.clone().into_iter().enumerate() {
-                    println!("token: {}", token);
-                    if i != 2 {
-                        continue;
-                    }
-                    sql_token = Some(token);
-                }
+            if !config.isMacro {
+                let mut clone_self = self.clone();
+                return visit::visit_macro(&mut clone_self, mac);
             }
+            // path_segment ex) sqlx::query!
+            // path_segments[0]: sqlx
+            // path_segments[1]: query!
+            for path_segment in &mac.path.segments {
+                let mut sql_lit = String::new();
+                let mut sql_token: Option<TokenTree> = None;
+                if path_segment.ident == config.functionName {
+                    for (i, token) in mac.tokens.clone().into_iter().enumerate() {
+                        // if arguments: "INSERT INTO todos ( description ) VALUES ( $1 ) RETURNING id", description
+                        // tokens[0]: "INSERT INTO todos ( description ) VALUES ( $1 ) RETURNING id" (arg1 == i / 2 + 1)
+                        // tokens[1]: ,
+                        // tokens[2]: description (arg2 == i / 2 + 1)
+                        #[cfg(debug_assertions)]
+                        println!("{} config: {:?}, argNo: {}", function!(), config, i / 2 + 1);
+                        println!("{} token[{}]: {:?}", function!(), i, token.to_string());
+                        if i / 2 + 1 == config.sqlArgNo {
+                            sql_token = Some(token);
+                            break;
+                        }
+                    }
+                }
 
-            // get only Literal(Literal) from TokenTree
-            let lit = match sql_token {
-                Some(proc_macro2::TokenTree::Literal(lit)) => lit,
-                _ => continue,
-            };
-            #[cfg(debug_assertions)]
-            println!(
-                "{} path_segment line: {:?}",
-                function!(),
-                path_segment.span().start().line
-            );
-            println!("{} lit: {:?}", function!(), lit);
-            println!("{} lit span start: {:?}", function!(), lit.span().start());
-            println!("{} lit span end: {:?}", function!(), lit.span().end());
+                // get only Literal(Literal) from TokenTree
+                let lit = match sql_token {
+                    Some(proc_macro2::TokenTree::Literal(lit)) => lit,
+                    _ => continue,
+                };
+                #[cfg(debug_assertions)]
+                println!(
+                    "{} path_segment line: {:?}",
+                    function!(),
+                    path_segment.span().start().line
+                );
+                println!("{} lit: {:?}", function!(), lit);
+                println!("{} lit span start: {:?}", function!(), lit.span().start());
+                println!("{} lit span end: {:?}", function!(), lit.span().end());
 
-            let mut start = Position {
-                line: lit.span().start().line - 1, // -1 for 1-indexed to 0-indexed
-                character: lit.span().start().column, // column is 0-indexed
-            };
-            let mut end = Position {
-                line: lit.span().end().line - 1,    // -1 for 1-indexed to 0-indexed
-                character: lit.span().end().column, // column is 0-indexed
-            };
+                let mut start = Position {
+                    line: lit.span().start().line - 1, // -1 for 1-indexed to 0-indexed
+                    character: lit.span().start().column, // column is 0-indexed
+                };
+                let mut end = Position {
+                    line: lit.span().end().line - 1,    // -1 for 1-indexed to 0-indexed
+                    character: lit.span().end().column, // column is 0-indexed
+                };
 
-            // concat lit
-            sql_lit.push_str(&lit.to_string());
-            // If query is surrounded by "" or r#""# then remove it
-            if sql_lit.starts_with("r#\"") {
-                sql_lit = sql_lit
-                    .trim_start_matches("r#\"")
-                    .trim_end_matches("\"#")
-                    .to_string();
+                // concat lit
+                sql_lit.push_str(&lit.to_string());
+                // If query is surrounded by "" or r#""# then remove it
+                if sql_lit.starts_with("r#\"") {
+                    sql_lit = sql_lit
+                        .trim_start_matches("r#\"")
+                        .trim_end_matches("\"#")
+                        .to_string();
 
-                // remove 'r#""#'
-                // adjust position and if "\n" is included in the sql_lit, then add "\n" length to start line
-                let r_sharp_quote_len = "r#\"".len();
-                let sharp_quote_len = "\"#".len();
-                start.character += r_sharp_quote_len - 1 // -1 for 1-indexed to 0-indexed
+                    // remove 'r#""#'
+                    // adjust position and if "\n" is included in the sql_lit, then add "\n" length to start line
+                    let r_sharp_quote_len = "r#\"".len();
+                    let sharp_quote_len = "\"#".len();
+                    start.character += r_sharp_quote_len - 1 // -1 for 1-indexed to 0-indexed
                         + if let Some(_) = sql_lit.find("\n") {
                             "\n".len()
                         } else {
                             0
                         };
-                end.character -= sharp_quote_len;
-            } else if sql_lit.starts_with("\"") {
-                sql_lit = sql_lit
-                    .trim_start_matches("\"")
-                    .trim_end_matches("\"")
-                    .to_string();
+                    end.character -= sharp_quote_len;
+                } else if sql_lit.starts_with("\"") {
+                    sql_lit = sql_lit
+                        .trim_start_matches("\"")
+                        .trim_end_matches("\"")
+                        .to_string();
 
-                // remove '""'
-                start.character += 1;
-                end.character -= 1;
+                    // remove '""'
+                    start.character += 1;
+                    end.character -= 1;
+                }
+
+                let sql_node = SqlNode {
+                    code_range: Range {
+                        start: Position {
+                            line: start.line,
+                            character: start.character,
+                        },
+                        end: Position {
+                            line: end.line,
+                            character: end.character,
+                        },
+                    },
+                    content: sql_lit.clone(),
+                    method_line: path_segment.span().start().line - 1, // -1 for 1-indexed to 0-indexed
+                };
+
+                #[cfg(debug_assertions)]
+                println!("{} lit_str: {}", function!(), sql_lit);
+                println!("{} sql_node: {:?}", function!(), sql_node);
+
+                // serialize sql_node to json and push
+                let sql_node_str = serde_json::to_string(&sql_node).unwrap();
+                self.sql_node_list.push(sql_node_str);
             }
-
-            let sql_node = SqlNode {
-                code_range: Range {
-                    start: Position {
-                        line: start.line,
-                        character: start.character,
-                    },
-                    end: Position {
-                        line: end.line,
-                        character: end.character,
-                    },
-                },
-                content: sql_lit.clone(),
-                method_line: path_segment.span().start().line - 1, // -1 for 1-indexed to 0-indexed
-            };
-
-            #[cfg(debug_assertions)]
-            println!("{} lit_str: {}", function!(), sql_lit);
-            println!("{} sql_node: {:?}", function!(), sql_node);
-
-            // serialize sql_node to json and push
-            let sql_node_str = serde_json::to_string(&sql_node).unwrap();
-            self.sql_node_list.push(sql_node_str);
         }
 
         // Delegate to the default impl to visit any nested functions.
@@ -183,6 +187,20 @@ impl<'ast> Visit<'ast> for QueryVisitor {
 
 #[wasm_bindgen]
 pub fn extract_sql_list(source_txt: &str, configs: Option<Vec<String>>) -> SerializedSqlNodeList {
+    // default is sqlx
+    let default_configs: Vec<Config> = vec![
+        Config {
+            functionName: "query".to_string(),
+            sqlArgNo: 1,
+            isMacro: true,
+        },
+        Config {
+            functionName: "query_as".to_string(),
+            sqlArgNo: 2,
+            isMacro: true,
+        },
+    ];
+
     let configs: Vec<Config> = match configs {
         Some(c) => {
             match c
@@ -197,7 +215,7 @@ pub fn extract_sql_list(source_txt: &str, configs: Option<Vec<String>>) -> Seria
                 }
             }
         }
-        None => Vec::<Config>::new(),
+        None => default_configs,
     };
 
     let ast: File = match syn::parse_file(source_txt) {
@@ -255,6 +273,57 @@ async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
         .unwrap();
 
         assert_eq!(result.len(), 1);
+        assert_eq!(result[0], expected);
+    }
+
+    #[test]
+    fn found_sqlx_query_as_one_query_multi_line_default_config() {
+        let result = extract_sql_list(
+            r##"
+async fn list_todos(pool: &PgPool) -> anyhow::Result<()> {
+    let recs = sqlx::query_as!(
+        Todo,
+        r#"
+SELECT id, description, done
+FROM todos
+WHERE id = ?
+ORDER BY id
+        "#, 1
+    )
+    .fetch_all(pool)
+    .await?;
+
+    for rec in recs {
+        println!(
+            "- [{}] {}: {}",
+            if rec.done { "x" } else { " " },
+            rec.id,
+            &rec.description,
+        );
+    }
+}
+            "##,
+            None,
+        );
+        println!("{} result: {:?}", function!(), result);
+        assert_eq!(result.len(), 1);
+        let expected = serde_json::to_string(&SqlNode {
+            code_range: Range {
+                start: Position {
+                    line: 4,
+                    character: 11,
+                },
+                end: Position {
+                    line: 9,
+                    character: 8,
+                },
+            },
+            content:
+                "\nSELECT id, description, done\nFROM todos\nWHERE id = ?\nORDER BY id\n        "
+                    .to_string(),
+            method_line: 2,
+        })
+        .unwrap();
         assert_eq!(result[0], expected);
     }
 
