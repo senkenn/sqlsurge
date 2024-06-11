@@ -173,14 +173,112 @@ impl<'ast> Visit<'ast> for QueryVisitor {
         visit::visit_macro(self, mac);
     }
 
-    fn visit_lit(&mut self, i: &'ast syn::Lit) {
-        println!("Found lit str");
-        // println!("{}", i.value());
-        visit::visit_lit(self, i);
-    }
-
     fn visit_expr_call(&mut self, expr_call: &'ast syn::ExprCall) {
         println!("Found expr call {:?}", expr_call.func.span().start());
+        for config in &self.configs {
+            if config.isMacro {
+                continue;
+            }
+
+            let expr_path = &*expr_call.func;
+            let path = match expr_path {
+                syn::Expr::Path(syn::ExprPath { path, .. }) => path,
+                _ => return visit::visit_expr_call(self, expr_call),
+            };
+            for path_segment in &path.segments {
+                println!("path_segment: {:?}", path_segment.ident);
+                if path_segment.ident != config.functionName {
+                    continue;
+                }
+
+                let mut sql_lit = String::new();
+                let mut start: Position = Position {
+                    line: 0,
+                    character: 0,
+                };
+                let mut end: Position = Position {
+                    line: 0,
+                    character: 0,
+                };
+                println!("path_segment.indent: {}", path_segment.ident);
+                println!("path_segment.args: {}", path_segment.ident);
+                for (i, arg) in expr_call.args.clone().into_iter().enumerate() {
+                    let expr_lit = match &arg {
+                        syn::Expr::Lit(syn::ExprLit { lit, .. }) => lit,
+                        _ => return visit::visit_expr_call(self, expr_call),
+                    };
+                    let lit = match expr_lit {
+                        syn::Lit::Str(lit) => lit,
+                        _ => return visit::visit_expr_call(self, expr_call),
+                    };
+                    println!("expr_lit: {:#?}", lit.span().start());
+                    println!("expr_lit: {:#?}", lit.span().end());
+                    if i / 2 + 1 == config.sqlArgNo {
+                        sql_lit = lit.token().to_string();
+                        start = Position {
+                            line: lit.span().start().line - 1, // -1 for 1-indexed to 0-indexed
+                            character: lit.span().start().column, // column is 0-indexed
+                        };
+                        end = Position {
+                            line: lit.span().end().line - 1,    // -1 for 1-indexed to 0-indexed
+                            character: lit.span().end().column, // column is 0-indexed
+                        };
+                        break;
+                    }
+                }
+                println!("sql_lit: {}", sql_lit);
+
+                // If query is surrounded by "" or r#""# then remove it
+                if sql_lit.starts_with("r#\"") {
+                    sql_lit = sql_lit
+                        .trim_start_matches("r#\"")
+                        .trim_end_matches("\"#")
+                        .to_string();
+
+                    // remove 'r#""#'
+                    // adjust position and if "\n" is included in the sql_lit, then add "\n" length to start line
+                    let r_sharp_quote_len = "r#\"".len();
+                    let sharp_quote_len = "\"#".len();
+                    start.character += r_sharp_quote_len - 1 // -1 for 1-indexed to 0-indexed
+                        + if let Some(_) = sql_lit.find("\n") {
+                            "\n".len()
+                        } else {
+                            0
+                        };
+                    end.character -= sharp_quote_len;
+                } else if sql_lit.starts_with("\"") {
+                    sql_lit = sql_lit
+                        .trim_start_matches("\"")
+                        .trim_end_matches("\"")
+                        .to_string();
+
+                    // remove '""'
+                    start.character += 1;
+                    end.character -= 1;
+                }
+
+                let sql_node = SqlNode {
+                    code_range: Range {
+                        start: Position {
+                            line: start.line,
+                            character: start.character,
+                        },
+                        end: Position {
+                            line: end.line,
+                            character: end.character,
+                        },
+                    },
+                    content: sql_lit.clone(),
+                    method_line: path_segment.span().start().line - 1, // -1 for 1-indexed to 0-indexed
+                };
+
+                #[cfg(debug_assertions)]
+                println!("sql_node: {:#?}", sql_node);
+                self.sql_node_list
+                    .push(serde_json::to_string(&sql_node).unwrap());
+                break;
+            }
+        }
         visit::visit_expr_call(self, expr_call);
     }
 }
@@ -557,5 +655,56 @@ async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
         );
         println!("{} result: {:?}", function!(), result);
         assert_eq!(result.len(), 0);
+    }
+
+    #[test]
+    fn found_diesel_sql_query_one_query_multi_line() {
+        let result = extract_sql_list(
+            r##"
+fn main() {
+    let conn = getdbconn();
+
+    let results = diesel::sql_query(
+        r#"
+SELECT id, description, done
+FROM todos
+ORDER BY id
+        "#,
+    )
+    .load::<model::User>(&conn)
+    .unwrap();
+    println!("{:?}", results);
+}
+        "##,
+            Some(
+                [serde_json::to_string(&Config {
+                    functionName: "sql_query".to_string(),
+                    sqlArgNo: 1,
+                    isMacro: false,
+                })
+                .unwrap()]
+                .to_vec(),
+            ),
+        );
+        println!("{} result: {:?}", function!(), result);
+        let expected = serde_json::to_string(&SqlNode {
+            code_range: Range {
+                start: Position {
+                    line: 5,
+                    character: 11,
+                },
+                end: Position {
+                    line: 9,
+                    character: 8,
+                },
+            },
+            content: "\nSELECT id, description, done\nFROM todos\nORDER BY id\n        "
+                .to_string(),
+            method_line: 4,
+        })
+        .unwrap();
+
+        assert_eq!(result.len(), 1);
+        assert_eq!(result[0], expected);
     }
 }
