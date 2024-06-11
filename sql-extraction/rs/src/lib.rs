@@ -46,7 +46,7 @@ struct SqlNode {
 #[allow(non_snake_case)]
 struct Config {
     functionName: String,
-    sqlArgNo: usize,
+    sqlArgNo: usize, // 1-indexed, first argument is 1
     isMacro: bool,
 }
 
@@ -338,7 +338,7 @@ mod tests {
     use pretty_assertions::assert_eq;
 
     #[test]
-    fn found_sqlx_query_one_query_single_line_default_config() {
+    fn found_sqlx_query_one_query_single_line() {
         let result = extract_sql_list(
             r#"
 async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
@@ -375,7 +375,7 @@ async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
     }
 
     #[test]
-    fn found_sqlx_query_as_one_query_multi_line_default_config() {
+    fn found_sqlx_query_as_one_query_multi_line() {
         let result = extract_sql_list(
             r##"
 async fn list_todos(pool: &PgPool) -> anyhow::Result<()> {
@@ -426,6 +426,90 @@ ORDER BY id
     }
 
     #[test]
+    fn found_sqlx_query_and_query_as_with_custom_config() {
+        let result = extract_sql_list(
+            r##"
+async fn list_todos(pool: &PgPool) -> anyhow::Result<()> {
+    let rec = sqlx::query!("INSERT INTO todos ( description ) VALUES ( $1 ) RETURNING id",
+        description
+    )
+    .fetch_one(pool)
+    .await?;
+
+    let recs = sqlx::query_as!(
+        Todo,
+        r#"
+SELECT id, description, done
+FROM todos
+WHERE id = ?
+ORDER BY id
+        "#, 1
+    )
+    .fetch_all(pool)
+    .await?;
+
+    for rec in recs {
+        println!(
+            "- [{}] {}: {}",
+            if rec.done { "x" } else { " " },
+            rec.id,
+            &rec.description,
+        );
+    }
+}
+    "##,
+            Some(vec![
+                serde_json::to_string(&Config {
+                    functionName: "query".to_string(),
+                    sqlArgNo: 1,
+                    isMacro: true,
+                })
+                .unwrap(),
+                serde_json::to_string(&Config {
+                    functionName: "query_as".to_string(),
+                    sqlArgNo: 2,
+                    isMacro: true,
+                })
+                .unwrap(),
+            ]),
+        );
+        println!("{} result: {:?}", function!(), result);
+        assert_eq!(result.len(), 2);
+        let expected1 = serde_json::to_string(&SqlNode {
+            code_range: Range {
+                start: Position {
+                    line: 2,
+                    character: 28,
+                },
+                end: Position {
+                    line: 2,
+                    character: 88,
+                },
+            },
+            content: "INSERT INTO todos ( description ) VALUES ( $1 ) RETURNING id".to_string(),
+            method_line: 2,
+        });
+        let expected2 = serde_json::to_string(&SqlNode {
+            code_range: Range {
+                start: Position {
+                    line: 10,
+                    character: 11,
+                },
+                end: Position {
+                    line: 15,
+                    character: 8,
+                },
+            },
+            content:
+                "\nSELECT id, description, done\nFROM todos\nWHERE id = ?\nORDER BY id\n        "
+                    .to_string(),
+            method_line: 8,
+        });
+        assert_eq!(result[0], expected1.unwrap());
+        assert_eq!(result[1], expected2.unwrap());
+    }
+
+    #[test]
     fn found_sqlx_query_multi_queries_with_single_line() {
         let result = extract_sql_list(
             r#"
@@ -442,6 +526,7 @@ async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
     Ok(rec.id)
 }
             "#,
+            None,
         );
         println!("{} result: {:?}", function!(), result);
         let expected1 = serde_json::to_string(&SqlNode {
@@ -501,6 +586,7 @@ WHERE id = $1
     Ok(rows_affected > 0)
 }
             "##,
+            None,
         );
         println!("{} result: {:?}", function!(), result);
         assert_eq!(result.len(), 1);
@@ -552,6 +638,7 @@ RETURNING id
     Ok(rec.id)
 }
             "##,
+            None,
         );
         println!("{} result: {:?}", function!(), result);
         assert_eq!(result.len(), 2);
@@ -589,56 +676,6 @@ RETURNING id
     }
 
     #[test]
-    fn found_sqlx_query_as_one_query_multi_line() {
-        let result = extract_sql_list(
-            r##"
-async fn list_todos(pool: &PgPool) -> anyhow::Result<()> {
-    let recs = sqlx::query_as!(
-        Todo,
-        r#"
-SELECT id, description, done
-FROM todos
-WHERE id = ?
-ORDER BY id
-        "#, 1
-    )
-    .fetch_all(pool)
-    .await?;
-
-    for rec in recs {
-        println!(
-            "- [{}] {}: {}",
-            if rec.done { "x" } else { " " },
-            rec.id,
-            &rec.description,
-        );
-    }
-}
-            "##,
-        );
-        println!("{} result: {:?}", function!(), result);
-        assert_eq!(result.len(), 1);
-        let expected = serde_json::to_string(&SqlNode {
-            code_range: Range {
-                start: Position {
-                    line: 4,
-                    character: 11,
-                },
-                end: Position {
-                    line: 9,
-                    character: 8,
-                },
-            },
-            content:
-                "\nSELECT id, description, done\nFROM todos\nWHERE id = ?\nORDER BY id\n        "
-                    .to_string(),
-            method_line: 2,
-        })
-        .unwrap();
-        assert_eq!(result[0], expected);
-    }
-
-    #[test]
     fn not_found_sqlx_query_with_parsing_failure() {
         let result = extract_sql_list(
             // missing closing parenthesis
@@ -652,7 +689,9 @@ async fn add_todo(pool: &PgPool, description: String) -> anyhow::Result<i64> {
 
     Ok(rec.id)
         "##,
+            None,
         );
+
         println!("{} result: {:?}", function!(), result);
         assert_eq!(result.len(), 0);
     }
