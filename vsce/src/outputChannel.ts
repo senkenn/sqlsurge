@@ -1,7 +1,13 @@
 import * as vscode from "vscode";
 
-export function createOutputChannel(): vscode.LogOutputChannel {
-  const logger = vscode.window.createOutputChannel("sqlsurge", {
+let logger: vscode.LogOutputChannel | undefined = undefined;
+
+export function createLogger(): vscode.LogOutputChannel {
+  if (logger) {
+    return logger;
+  }
+
+  logger = vscode.window.createOutputChannel("sqlsurge", {
     log: true,
   });
   return logger;

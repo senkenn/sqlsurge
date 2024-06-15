@@ -14,13 +14,13 @@ import {
   createIncrementalLanguageService,
   createIncrementalLanguageServiceHost,
 } from "./languageService";
-import { createOutputChannel } from "./outputChannel";
+import { createLogger } from "./outputChannel";
 import { client, startSqlsClient } from "./startSqlsClient";
 
 export async function activate(context: vscode.ExtensionContext) {
-  const logger = createOutputChannel();
+  const logger = createLogger();
 
-  startSqlsClient(logger).catch((err) => {
+  startSqlsClient().catch((err) => {
     logger.error(err, "[startSqlsClient] Failed to start sqls client.");
     vscode.window.showErrorMessage("sqlsurge: Failed to start sqls client.");
   });
@@ -39,9 +39,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const completion = vscode.languages.registerCompletionItemProvider(
     ["typescript", "rust"],
-    await completionProvider(logger, virtualDocuments, refresh),
+    await completionProvider(virtualDocuments, refresh),
   );
-  const commandFormatSql = await commandFormatSqlProvider(logger, refresh);
+  const commandFormatSql = await commandFormatSqlProvider(refresh);
 
   context.subscriptions.push(
     logger,
