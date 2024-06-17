@@ -9,7 +9,8 @@
     "@biomejs/biome": "^1.7.3",
     "cspell": "^8.6.0",
     "lefthook": "^1.6.7",
-    "typescript": "^5.4.2"
+    "typescript": "^5.4.2",
+    "valibot": "^0.31.1"
   },
   "engines": {
     "pnpm": "^9.0.6"

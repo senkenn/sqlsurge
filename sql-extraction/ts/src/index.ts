@@ -1,7 +1,22 @@
 import type { SqlNode } from "@senken/config";
 import * as ts from "typescript";
+import * as v from "valibot";
 
-export function extractSqlListTs(sourceTxt: string): SqlNode[] {
+export const customRawSqlQueryTsSchema = v.array(
+  v.object({
+    functionName: v.string(),
+    sqlArgNo: v.pipe(v.number(), v.minValue(1)),
+    isTemplateLiteral: v.boolean(),
+  }),
+);
+export type CustomRawSqlQueryTs = v.InferOutput<
+  typeof customRawSqlQueryTsSchema
+>;
+
+export function extractSqlListTs(
+  sourceTxt: string,
+  configs?: CustomRawSqlQueryTs,
+): SqlNode[] {
   const sourceFile = ts.createSourceFile(
     "unusedFileName",
     sourceTxt,

@@ -34,5 +34,9 @@
   "markdown.copyFiles.destination": {
     "*.md": "resources/screenshot.${fileName/^(.+)\\.([^.]+)/$2/}"
   },
-  "markdown.editor.pasteUrlAsFormattedLink.enabled": "smart"
+  "markdown.editor.pasteUrlAsFormattedLink.enabled": "smart",
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "*": "${basename}.*.${extname}"
+  }
 }

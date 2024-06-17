@@ -8,7 +8,7 @@ import * as vscode from "vscode";
 import { commandFormatSqlProvider } from "./commands/formatSql";
 import { command as commandInstallSqls } from "./commands/installSqls";
 import { completionProvider } from "./completion";
-import { extConfig as extConfigStore, getWorkspaceConfig } from "./extConfig";
+import { getWorkspaceConfig } from "./extConfig";
 import {
   type IncrementalLanguageService,
   createIncrementalLanguageService,
@@ -56,7 +56,7 @@ export async function activate(context: vscode.ExtensionContext) {
     if (!event.document.languageId.match(/^(typescript|rust)$/g)) {
       return;
     }
-    if (!extConfigStore.formatOnSave) {
+    if (getWorkspaceConfig("formatOnSave") === false) {
       logger.info("[onWillSaveTextDocument]", "`formatOnSave` is false.");
       return;
     }
@@ -64,10 +64,9 @@ export async function activate(context: vscode.ExtensionContext) {
     logger.info("[onWillSaveTextDocument]", "formatted on save.");
   });
 
-  // update config store on change config
   vscode.workspace.onDidChangeConfiguration(() => {
-    const config = getWorkspaceConfig();
-    extConfigStore.formatOnSave = config.formatOnSave;
+    // validate customRawSqlQuery
+    getWorkspaceConfig("customRawSqlQuery");
   });
 
   function getOrCreateLanguageService(uri: vscode.Uri) {
@@ -118,13 +117,22 @@ export async function activate(context: vscode.ExtensionContext) {
       const fileName = document.fileName;
       const rawContent = document.getText();
       let sqlNodes: SqlNode[] = [];
+      let config = getWorkspaceConfig("customRawSqlQuery");
+      console.log(config);
       switch (document.languageId) {
         case "typescript": {
-          sqlNodes = extractSqlListTs(rawContent);
+          if (config?.language !== document.languageId) {
+            config = undefined;
+          }
+          sqlNodes = extractSqlListTs(rawContent, config?.configs);
           break;
         }
         case "rust": {
-          sqlNodes = await extractSqlListRs(rawContent);
+          if (config?.language !== document.languageId) {
+            config = undefined;
+          }
+          sqlNodes = await extractSqlListRs(rawContent, config?.configs);
+          console.log(sqlNodes);
           break;
         }
         default:
