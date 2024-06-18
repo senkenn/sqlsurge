@@ -21,6 +21,7 @@ import { getManager } from "typeorm";
         "todo description",
         TRUE
     );
-    `[1],
+    `,
+    [1],
   );
 })();
