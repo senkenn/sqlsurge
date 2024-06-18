@@ -38,5 +38,6 @@
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
     "*": "${basename}.*.${extname}"
-  }
+  },
+  "explorer.fileNesting.expand": false
 }
