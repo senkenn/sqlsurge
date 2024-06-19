@@ -21,7 +21,7 @@ jobs:
 
       - run: pnpm -r test
 
-  rusu-test:
+  rust-test:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
 
