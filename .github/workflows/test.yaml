@@ -1,0 +1,54 @@
+name: Tests
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+jobs:
+  unit-test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup
+
+      - name: Build
+        run: pnpm build:pkg
+
+      - run: pnpm -r test
+
+  rusu-test:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup
+
+      - name: Run tests
+        run: pnpm -F @senken/sql-extraction-rs exec cargo test
+
+  ee2-test:
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: ./.github/actions/setup
+
+      - name: Build
+        run: pnpm build:pkg
+
+      - run: xvfb-run -a pnpm -F sqlsurge test:e2e
+        if: runner.os == 'Linux'
+
+      - run: pnpm -F sqlsurge test:e2e
+        if: runner.os != 'Linux'

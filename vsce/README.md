@@ -26,6 +26,16 @@ These features are available on both Vanilla SQL files and raw SQL queries in ot
 - [Formatting](#formatting)
 - [Quick info symbol](#quick-info-symbol)
 
+And this table describe what language support these features.
+
+| Features                          | SQL | TypeScript | Rust |
+| --------------------------------- | --- | ---------- | ---- |
+| Auto-Completion                   | ✅  | ✅         | ✅   |
+| Formatting                        | ✅  | ✅         | ✅   |
+| Quick info symbol (on Completion) | ✅  | ✅         | ✅   |
+| Quick info symbol (on Hover)      | ✅  | ❌         | ❌   |
+| Any raw SQL queries support       | ー  | ✅         | ✅   |
+
 ### Auto-Completion
 
 These are the auto-completion items sqlsurge provides:
