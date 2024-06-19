@@ -2,6 +2,7 @@ import type { SqlNode } from "@senken/config";
 
 import { format } from "sql-formatter";
 import * as vscode from "vscode";
+import { getWorkspaceConfig } from "../extConfig";
 import { createLogger } from "../outputChannel";
 
 export async function commandFormatSqlProvider(refresh: RefreshFunc) {
@@ -54,15 +55,11 @@ async function formatSql(refresh: RefreshFunc): Promise<void> {
           );
         }
 
-        const isEnabledIndent = vscode.workspace
-          .getConfiguration("sqlsurge")
-          .get("formatSql.indent");
-        const defaultTabSize = 4;
-        const tabSize =
-          (vscode.workspace
-            .getConfiguration("sqlsurge")
-            .get("formatSql.tabSize") as number) ?? defaultTabSize;
-        // TODO: config validation, and get from package.json
+        const isEnabledIndent = getWorkspaceConfig("formatSql.indent");
+        const tabSize = getWorkspaceConfig("formatSql.tabSize");
+        if (tabSize === undefined) {
+          return;
+        }
 
         // get formatted content
         const formattedContentWithDummy = format(sqlNode.content, {
