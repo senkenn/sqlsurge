@@ -118,7 +118,6 @@ export async function activate(context: vscode.ExtensionContext) {
       const rawContent = document.getText();
       let sqlNodes: SqlNode[] = [];
       let config = getWorkspaceConfig("customRawSqlQuery");
-      console.log(config);
       switch (document.languageId) {
         case "typescript": {
           if (config?.language !== document.languageId) {
