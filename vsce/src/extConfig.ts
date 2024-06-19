@@ -55,7 +55,7 @@ export function getWorkspaceConfig<T extends ExtConfigKeys>(
     return undefined;
   }
 
-  return result.output as any; // TODO: Fix as assertion with using generics
+  return result.output as any; // TODO: #75 Fix as assertion with using generics
 }
 
 function getIssuesRecursively<T extends v.BaseIssue<any>[]>(issues: T): T {
