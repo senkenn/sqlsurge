@@ -33,7 +33,7 @@ jobs:
       - name: Run tests
         run: pnpm -F @senken/sql-extraction-rs exec cargo test
 
-  ee2-test:
+  e2e-test:
     strategy:
       matrix:
         os: [macos-latest, ubuntu-latest]
