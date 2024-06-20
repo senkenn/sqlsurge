@@ -146,7 +146,6 @@
     "@senken/config": "workspace:*",
     "@senken/sql-extraction-rs": "workspace:*",
     "@senken/sql-extraction-ts": "workspace:*",
-    "@types/jest": "^29.5.12",
     "@types/node": "^20.14.6",
     "@types/vscode": "^1.90.0",
     "@vscode/test-electron": "^2.4.0",

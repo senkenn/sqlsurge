@@ -64,9 +64,6 @@ importers:
       '@senken/sql-extraction-ts':
         specifier: workspace:*
         version: link:../sql-extraction/ts
-      '@types/jest':
-        specifier: ^29.5.12
-        version: 29.5.12
       '@types/node':
         specifier: ^20.14.6
         version: 20.14.6
