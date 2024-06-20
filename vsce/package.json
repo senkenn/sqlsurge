@@ -33,7 +33,7 @@
     "compile": "webpack",
     "watch": "webpack --watch",
     "test": "TEST_KIND=ut jest",
-    "test:e2e": "pnpm compile && tsc -p tsconfig.test.json && node ./out-test/runTest.js",
+    "test:e2e": "pnpm compile && tsc -p tsconfig.test.json && node ./out/test/runTest.js",
     "test:e2e:bg": "xvfb-run -a pnpm test:e2e",
     "watch-tests": "tsc -p . -w",
     "package": "vsce package --no-dependencies",
