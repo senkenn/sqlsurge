@@ -18,7 +18,7 @@
   "categories": ["Programming Languages"],
   "icon": "resources/sqlsurge-icon.png",
   "engines": {
-    "vscode": "^1.85.2"
+    "vscode": "^1.90.0"
   },
   "activationEvents": [
     "onLanguage:sql",
