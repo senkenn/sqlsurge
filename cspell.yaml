@@ -2,14 +2,15 @@ ignorePaths:
   - settings.json
   - extensions.json
   - "*.svg"
-  - package.json
 words:
   - esbuild
   - lefthook
+  - picklist
   - lockb
   - senken
   - sqls
   - sqlsurge
   - sqlx
   - todos
+  - valibot
   - vscodeignore

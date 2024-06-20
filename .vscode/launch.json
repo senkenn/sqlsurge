@@ -8,7 +8,7 @@
       "args": [
         "--profile-temp",
         "--extensionDevelopmentPath=${workspaceFolder}/vsce",
-        "${workspaceFolder}/vsce/test-workspace-ts-prisma"
+        "${workspaceFolder}/vsce-test/test-workspace-ts"
       ],
       "outFiles": ["${workspaceFolder}/vsce/out/**/*.js"],
       "skipFiles": [
@@ -32,7 +32,7 @@
       "args": [
         "--profile=debugging", // https://github.com/microsoft/vscode/issues/167140
         "--extensionDevelopmentPath=${workspaceFolder}/vsce",
-        "${workspaceFolder}/vsce/test-workspace-rs-sqlx"
+        "${workspaceFolder}/vsce-test/test-workspace-rs"
       ],
       "outFiles": ["${workspaceFolder}/vsce/out/**/*.js"],
       "skipFiles": [

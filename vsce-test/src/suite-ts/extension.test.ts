@@ -9,6 +9,19 @@ if (!wsPath) {
   throw new Error("wsPath is undefined");
 }
 
+beforeAll(async () => {
+  await resetTestWorkspace(wsPath, [
+    path.resolve(wsPath, "src", "index.ts"),
+    path.resolve(wsPath, "src", "userDefined.ts"),
+  ]);
+});
+afterEach(async () => {
+  await resetTestWorkspace(wsPath, [
+    path.resolve(wsPath, "src", "index.ts"),
+    path.resolve(wsPath, "src", "userDefined.ts"),
+  ]);
+});
+
 describe("Install sqls if not found in PATH", () => {
   test("Should find sqls in PATH", async () => {
     const sqlsVersion = execSync("sqls --version").toString();
@@ -17,7 +30,7 @@ describe("Install sqls if not found in PATH", () => {
   });
 });
 
-describe("Prisma Completion Test", () => {
+describe("Completion Test", () => {
   test('Should be completed "SELECT" with $queryRaw single line', async () => {
     const filePath = path.resolve(wsPath, "src", "index.ts");
     const docUri = vscode.Uri.file(filePath);
@@ -65,16 +78,48 @@ describe("Prisma Completion Test", () => {
     expect(label).toBe("VALUES");
     expect(kind).toBe(vscode.CompletionItemKind.Keyword);
   });
+
+  it('Should be completed "INSERT" with user-defined function', async () => {
+    const filePath = path.resolve(wsPath, "src", "userDefined.ts");
+    const docUri = vscode.Uri.file(filePath);
+    const doc = await vscode.workspace.openTextDocument(docUri);
+    const editor = await vscode.window.showTextDocument(doc);
+
+    await sleep(1000);
+
+    // change config
+    await vscode.workspace
+      .getConfiguration("sqlsurge", vscode.workspace.workspaceFolders?.[0].uri)
+      .update("customRawSqlQuery", {
+        language: "typescript",
+        configs: [
+          {
+            functionName: "query",
+            sqlArgNo: 2,
+            isTemplateLiteral: false,
+          },
+        ],
+      });
+    // Wait for server activation
+    await sleep(2000);
+
+    const pos = new vscode.Position(13, 9);
+    editor.selection = new vscode.Selection(pos, pos);
+    const actualCompletionList =
+      await vscode.commands.executeCommand<vscode.CompletionList>(
+        "vscode.executeCompletionItemProvider",
+        docUri,
+        pos,
+      );
+
+    expect(actualCompletionList.items.length).toBe(1);
+    const { label, kind } = actualCompletionList.items[0];
+    expect(label).toBe("INSERT");
+    expect(kind).toBe(vscode.CompletionItemKind.Keyword);
+  });
 });
 
 describe("Formatting Test", () => {
-  beforeAll(async () => {
-    await resetTestWorkspace(wsPath, path.resolve(wsPath, "src", "index.ts"));
-  });
-  afterEach(async () => {
-    await resetTestWorkspace(wsPath, path.resolve(wsPath, "src", "index.ts"));
-  });
-
   it("Should be formatted with command", async () => {
     const filePath = path.resolve(wsPath, "src", "index.ts");
     const docUri = vscode.Uri.file(filePath);

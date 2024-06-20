@@ -2,13 +2,12 @@ import type { SqlNode } from "@senken/config";
 
 import { format } from "sql-formatter";
 import * as vscode from "vscode";
+import { getWorkspaceConfig } from "../extConfig";
+import { createLogger } from "../outputChannel";
 
-export async function commandFormatSqlProvider(
-  logger: vscode.LogOutputChannel,
-  refresh: RefreshFunc,
-) {
+export async function commandFormatSqlProvider(refresh: RefreshFunc) {
   return vscode.commands.registerCommand("sqlsurge.formatSql", () =>
-    formatSql(logger, refresh),
+    formatSql(refresh),
   );
 }
 
@@ -16,10 +15,9 @@ type RefreshFunc = (
   document: vscode.TextDocument,
 ) => Promise<(SqlNode & { vFileName: string })[]>;
 
-async function formatSql(
-  logger: vscode.LogOutputChannel,
-  refresh: RefreshFunc,
-): Promise<void> {
+async function formatSql(refresh: RefreshFunc): Promise<void> {
+  const logger = createLogger();
+
   try {
     logger.info("[commandFormatSqlProvider]", "Formatting...");
     const editor = vscode.window.activeTextEditor;
@@ -57,15 +55,11 @@ async function formatSql(
           );
         }
 
-        const isEnabledIndent = vscode.workspace
-          .getConfiguration("sqlsurge")
-          .get("formatSql.indent");
-        const defaultTabSize = 4;
-        const tabSize =
-          (vscode.workspace
-            .getConfiguration("sqlsurge")
-            .get("formatSql.tabSize") as number) ?? defaultTabSize;
-        // TODO: config validation, and get from package.json
+        const isEnabledIndent = getWorkspaceConfig("formatSql.indent");
+        const tabSize = getWorkspaceConfig("formatSql.tabSize");
+        if (tabSize === undefined) {
+          return;
+        }
 
         // get formatted content
         const formattedContentWithDummy = format(sqlNode.content, {

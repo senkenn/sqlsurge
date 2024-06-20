@@ -15,14 +15,24 @@ const allTsConfigPaths = execSync(
 ).toString();
 const tsconfigPaths = allTsConfigPaths.split("\n").join(" ");
 
-beforeAll(() => {
+beforeAll(async () => {
   // delete all tsconfig.json
   execSync(`rm -rf ${tsconfigPaths}`);
+
+  await resetTestWorkspace(wsPath, [
+    path.resolve(wsPath, "src", "main.rs"),
+    path.resolve(wsPath, "src", "diesel.rs"),
+  ]);
 });
 
-afterAll(() => {
+afterEach(async () => {
   // restore tsconfig.json
   execSync(`git restore ${tsconfigPaths}`);
+
+  await resetTestWorkspace(wsPath, [
+    path.resolve(wsPath, "src", "main.rs"),
+    path.resolve(wsPath, "src", "diesel.rs"),
+  ]);
 });
 
 describe("SQLx Completion Test", () => {
@@ -97,16 +107,48 @@ describe("SQLx Completion Test", () => {
     expect(label).toBe("BY");
     expect(kind).toBe(vscode.CompletionItemKind.Keyword);
   });
+
+  it('Should be completed "INSERT" with diesel function', async () => {
+    const filePath = path.resolve(wsPath, "src", "diesel.rs");
+    const docUri = vscode.Uri.file(filePath);
+    const doc = await vscode.workspace.openTextDocument(docUri);
+    const editor = await vscode.window.showTextDocument(doc);
+
+    await sleep(1000);
+
+    // change config
+    await vscode.workspace
+      .getConfiguration("sqlsurge", vscode.workspace.workspaceFolders?.[0].uri)
+      .update("customRawSqlQuery", {
+        language: "rust",
+        configs: [
+          {
+            functionName: "sql_query",
+            sqlArgNo: 1,
+            isMacro: false,
+          },
+        ],
+      });
+    // Wait for server activation
+    await sleep(2000);
+
+    const pos = new vscode.Position(14, 4);
+    editor.selection = new vscode.Selection(pos, pos);
+    const actualCompletionList =
+      await vscode.commands.executeCommand<vscode.CompletionList>(
+        "vscode.executeCompletionItemProvider",
+        docUri,
+        pos,
+      );
+
+    expect(actualCompletionList.items.length).toBe(1);
+    const { label, kind } = actualCompletionList.items[0];
+    expect(label).toBe("SELECT");
+    expect(kind).toBe(vscode.CompletionItemKind.Keyword);
+  });
 });
 
 describe("Formatting Test", () => {
-  beforeAll(async () => {
-    await resetTestWorkspace(wsPath, path.resolve(wsPath, "src", "main.rs"));
-  });
-  afterEach(async () => {
-    await resetTestWorkspace(wsPath, path.resolve(wsPath, "src", "main.rs"));
-  });
-
   it("Should be formatted with command", async () => {
     const filePath = path.resolve(wsPath, "src", "main.rs");
     const docUri = vscode.Uri.file(filePath);

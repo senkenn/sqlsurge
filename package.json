@@ -3,13 +3,20 @@
   "workspaces": ["vsce", "sql-extraction/*"],
   "scripts": {
     "build:pkg": "pnpm -r build",
-    "vsce:watch": "pnpm build:pkg && pnpm -F sqlsurge run watch"
+    "vsce:watch": "pnpm build:pkg && pnpm -F sqlsurge run watch",
+    "test:e2e": "pnpm -F sqlsurge run compile && pnpm -F @senken/vsce-test test:e2e"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.8.1",
+    "@jest/types": "^29.6.3",
+    "@types/jest": "^29.5.12",
     "cspell": "^8.9.0",
+    "jest": "^29.7.0",
+    "jest-environment-node": "^29.7.0",
+    "jest-mock-vscode": "^3.0.5",
     "lefthook": "^1.6.16",
-    "typescript": "^5.4.2"
+    "typescript": "^5.4.5",
+    "valibot": "^0.31.1"
   },
   "packageManager": "pnpm@9.3.0",
   "engines": {

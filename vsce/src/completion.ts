@@ -1,8 +1,8 @@
 import { ORIGINAL_SCHEME, type SqlNode } from "@senken/config";
 import * as vscode from "vscode";
+import { createLogger } from "./outputChannel";
 
 export async function completionProvider(
-  logger: vscode.LogOutputChannel,
   virtualDocuments: Map<string, string>,
   refresh: (
     document: vscode.TextDocument,
@@ -15,6 +15,8 @@ export async function completionProvider(
       _token: vscode.CancellationToken,
       context: vscode.CompletionContext,
     ) {
+      const logger = createLogger();
+
       logger.info("[provideCompletionItems]", "Starting completion...");
       logger.debug("[provideCompletionItems]", "file: ", document.fileName);
       const sqlNodes = await refresh(document);

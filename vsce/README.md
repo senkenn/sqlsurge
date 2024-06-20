@@ -20,11 +20,22 @@ See: https://github.com/sqls-server/sqls?tab=readme-ov-file#support-rdbms
 
 ## Features <!-- omit in toc -->
 
-These features are available on both Vanilla SQL files and raw SQL queries in other languages(Now only supports [Prisma](https://www.prisma.io/docs/orm/prisma-client/queries/raw-database-access/raw-queries) in TypeScript and [SQLx](https://github.com/launchbadge/sqlx) in Rust).
+These features are available on both Vanilla SQL files and any raw SQL queries in other languages.
 
 - [Auto-Completion](#auto-completion)
 - [Formatting](#formatting)
 - [Quick info symbol](#quick-info-symbol)
+- [Any raw SQL queries support](#any-raw-sql-queries-support)
+
+And this table describe what language support these features.
+
+| Features                          | SQL | TypeScript | Rust |
+| --------------------------------- | --- | ---------- | ---- |
+| Auto-Completion                   | ✅  | ✅         | ✅   |
+| Formatting                        | ✅  | ✅         | ✅   |
+| Quick info symbol (on Completion) | ✅  | ✅         | ✅   |
+| Quick info symbol (on Hover)      | ✅  | ❌         | ❌   |
+| Any raw SQL queries support       | ー  | ✅         | ✅   |
 
 ### Auto-Completion
 
@@ -63,6 +74,33 @@ Quick info symbol for tables and columns can be shown by triggering completion w
 
 ![text](resources/screenshot-quick-info.png)
 
+### Any raw SQL queries support
+
+sqlsurge supports Prisma in TypeScript and SQLx in Rust by default. But you can use sqlsurge with any raw SQL queries, such as `TypeORM` or user-defined functions by setting.
+
+This is an example of settings for custom raw SQL queries.
+
+```ts
+// TypeORM in TypeScript
+const someQuery = await entityManager.query(
+  "SELECT * FROM todos WHERE id = $1;",
+  [1]
+);
+```
+
+```json
+"sqlsurge.customRawSqlQuery": {
+  "language": "typescript",
+  "configs": [
+    {
+      "functionName": "query",
+      "sqlArgNo": 1,
+      "isTemplateLiteral": false
+    }
+  ]
+}
+```
+
 ## TODOs <!-- omit in toc -->
 
 - [x] Support for Prisma in TypeScript
@@ -70,6 +108,6 @@ Quick info symbol for tables and columns can be shown by triggering completion w
 - [x] Install guide for sqls
 - [x] Format SQL (Vanilla SQL: sqls, Raw SQL: [SQL Formatter](https://github.com/sql-formatter-org/sql-formatter))
 - [x] Show quick info symbol
-- [ ] Support to custom raw SQL queries, not just Prisma and SQLx
+- [x] Support to custom raw SQL queries, not just Prisma and SQLx
 - [ ] Execute SQL query
 - [ ] Show sqls config with tree view

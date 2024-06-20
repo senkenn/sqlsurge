@@ -8,19 +8,19 @@ import * as vscode from "vscode";
 import { commandFormatSqlProvider } from "./commands/formatSql";
 import { command as commandInstallSqls } from "./commands/installSqls";
 import { completionProvider } from "./completion";
-import { extConfig as extConfigStore, getWorkspaceConfig } from "./extConfig";
+import { getWorkspaceConfig } from "./extConfig";
 import {
   type IncrementalLanguageService,
   createIncrementalLanguageService,
   createIncrementalLanguageServiceHost,
 } from "./languageService";
-import { createOutputChannel } from "./outputChannel";
+import { createLogger } from "./outputChannel";
 import { client, startSqlsClient } from "./startSqlsClient";
 
 export async function activate(context: vscode.ExtensionContext) {
-  const logger = createOutputChannel();
+  const logger = createLogger();
 
-  startSqlsClient(logger).catch((err) => {
+  startSqlsClient().catch((err) => {
     logger.error(err, "[startSqlsClient] Failed to start sqls client.");
     vscode.window.showErrorMessage("sqlsurge: Failed to start sqls client.");
   });
@@ -39,9 +39,9 @@ export async function activate(context: vscode.ExtensionContext) {
 
   const completion = vscode.languages.registerCompletionItemProvider(
     ["typescript", "rust"],
-    await completionProvider(logger, virtualDocuments, refresh),
+    await completionProvider(virtualDocuments, refresh),
   );
-  const commandFormatSql = await commandFormatSqlProvider(logger, refresh);
+  const commandFormatSql = await commandFormatSqlProvider(refresh);
 
   context.subscriptions.push(
     logger,
@@ -56,7 +56,7 @@ export async function activate(context: vscode.ExtensionContext) {
     if (!event.document.languageId.match(/^(typescript|rust)$/g)) {
       return;
     }
-    if (!extConfigStore.formatOnSave) {
+    if (getWorkspaceConfig("formatOnSave") === false) {
       logger.info("[onWillSaveTextDocument]", "`formatOnSave` is false.");
       return;
     }
@@ -64,10 +64,9 @@ export async function activate(context: vscode.ExtensionContext) {
     logger.info("[onWillSaveTextDocument]", "formatted on save.");
   });
 
-  // update config store on change config
   vscode.workspace.onDidChangeConfiguration(() => {
-    const config = getWorkspaceConfig();
-    extConfigStore.formatOnSave = config.formatOnSave;
+    // validate customRawSqlQuery
+    getWorkspaceConfig("customRawSqlQuery");
   });
 
   function getOrCreateLanguageService(uri: vscode.Uri) {
@@ -118,13 +117,21 @@ export async function activate(context: vscode.ExtensionContext) {
       const fileName = document.fileName;
       const rawContent = document.getText();
       let sqlNodes: SqlNode[] = [];
+      let config = getWorkspaceConfig("customRawSqlQuery");
       switch (document.languageId) {
         case "typescript": {
-          sqlNodes = extractSqlListTs(rawContent);
+          if (config?.language !== document.languageId) {
+            config = undefined;
+          }
+          sqlNodes = extractSqlListTs(rawContent, config?.configs);
           break;
         }
         case "rust": {
-          sqlNodes = await extractSqlListRs(rawContent);
+          if (config?.language !== document.languageId) {
+            config = undefined;
+          }
+          sqlNodes = await extractSqlListRs(rawContent, config?.configs);
+          console.log(sqlNodes);
           break;
         }
         default:

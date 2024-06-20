@@ -32,8 +32,7 @@
     "clean": "node -e 'fs.rmSync(`out`, {recursive:true, force:true})'",
     "compile": "webpack",
     "watch": "webpack --watch",
-    "test": "pnpm compile && tsc -p tsconfig.test.json && node ./out/test/runTest.js",
-    "test:bg": "xvfb-run -a pnpm test",
+    "test": "TEST_KIND=ut jest",
     "watch-tests": "tsc -p . -w",
     "package": "vsce package --no-dependencies",
     "publish": "vsce publish --no-dependencies"
@@ -62,6 +61,54 @@
           "type": "number",
           "default": 4,
           "description": "Indent size for SQL formatting."
+        },
+        "sqlsurge.customRawSqlQuery": {
+          "type": "object",
+          "title": "Custom Raw SQL Query",
+          "description": "Customize the raw SQL query to be extracted. This feature is experimental. Feedback is welcome.",
+          "default": {
+            "language": "typescript",
+            "configs": [
+              {
+                "functionName": "$queryRaw",
+                "sqlArgNo": 1,
+                "isTemplateLiteral": true
+              }
+            ]
+          },
+          "properties": {
+            "language": {
+              "type": "string",
+              "description": "Language of the writing custom query.",
+              "enum": ["typescript", "rust"]
+            },
+            "configs": {
+              "type": "array",
+              "description": "Custom query configuration.",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "functionName": {
+                    "type": "string",
+                    "description": "Function name to be used for custom query."
+                  },
+                  "sqlArgNo": {
+                    "type": "number",
+                    "description": "Argument number of SQL query in the function. 1-based index(1 == first argument).",
+                    "default": 1
+                  },
+                  "isMacro": {
+                    "type": "boolean",
+                    "description": "Whether the SQL query is in macro. Rust only."
+                  },
+                  "isTemplateLiteral": {
+                    "type": "boolean",
+                    "description": "Whether the SQL query is in template literal. TypeScript only."
+                  }
+                }
+              }
+            }
+          }
         }
       }
     },
@@ -94,18 +141,13 @@
     ]
   },
   "devDependencies": {
-    "@jest/types": "^29.6.3",
     "@senken/config": "workspace:*",
     "@senken/sql-extraction-rs": "workspace:*",
     "@senken/sql-extraction-ts": "workspace:*",
-    "@types/jest": "^29.5.12",
     "@types/node": "^20.14.6",
     "@types/vscode": "^1.90.0",
-    "@vscode/test-electron": "^2.4.0",
     "@vscode/vsce": "^2.28.0",
     "colorette": "^2.0.20",
-    "jest": "^29.7.0",
-    "jest-environment-node": "^29.7.0",
     "sql-formatter": "^15.3.1",
     "ts-jest": "^29.1.5",
     "ts-loader": "^9.5.1",

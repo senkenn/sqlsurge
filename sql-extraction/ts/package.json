@@ -3,6 +3,7 @@
   "main": "./out/index.js",
   "scripts": {
     "prepublishOnly": "pnpm build",
+    "test": "jest",
     "build": "tsc -p ."
   },
   "devDependencies": {

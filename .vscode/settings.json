@@ -23,7 +23,7 @@
   },
   "rust-analyzer.linkedProjects": [
     "./sql-extraction/rs/Cargo.toml",
-    "./vsce/test-workspace-rs-sqlx/Cargo.toml"
+    "./vsce/test-workspace-rs/Cargo.toml"
   ],
   "github-actions.workflows.pinned.workflows": [
     ".github/workflows/e2e-test.yaml",
@@ -34,5 +34,10 @@
   "markdown.copyFiles.destination": {
     "*.md": "resources/screenshot.${fileName/^(.+)\\.([^.]+)/$2/}"
   },
-  "markdown.editor.pasteUrlAsFormattedLink.enabled": "smart"
+  "markdown.editor.pasteUrlAsFormattedLink.enabled": "smart",
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "*": "${basename}.*.${extname}"
+  },
+  "explorer.fileNesting.expand": false
 }
