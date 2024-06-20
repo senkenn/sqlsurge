@@ -33,8 +33,6 @@
     "compile": "webpack",
     "watch": "webpack --watch",
     "test": "TEST_KIND=ut jest",
-    "test:e2e": "pnpm compile && tsc -p tsconfig.test.json && node ./out/test/runTest.js",
-    "test:e2e:bg": "xvfb-run -a pnpm test:e2e",
     "watch-tests": "tsc -p . -w",
     "package": "vsce package --no-dependencies",
     "publish": "vsce publish --no-dependencies"
@@ -148,7 +146,6 @@
     "@senken/sql-extraction-ts": "workspace:*",
     "@types/node": "^20.14.6",
     "@types/vscode": "^1.90.0",
-    "@vscode/test-electron": "^2.4.0",
     "@vscode/vsce": "^2.28.0",
     "colorette": "^2.0.20",
     "sql-formatter": "^15.3.1",

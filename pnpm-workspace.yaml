@@ -2,3 +2,4 @@ packages:
   - config
   - sql-extraction/*
   - vsce
+  - vsce-test

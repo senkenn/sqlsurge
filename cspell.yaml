@@ -6,6 +6,7 @@ words:
   - esbuild
   - lefthook
   - picklist
+  - lockb
   - senken
   - sqls
   - sqlsurge
