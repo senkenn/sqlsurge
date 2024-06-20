@@ -1,6 +1,6 @@
 {
   "compilerOptions": {
-    "outDir": "out/test",
+    "outDir": "out-test",
     "rootDir": "test",
     "esModuleInterop": false
   },

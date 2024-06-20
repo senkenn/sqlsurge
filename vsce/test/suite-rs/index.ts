@@ -6,12 +6,12 @@ export async function run(
   testsRoot: string,
   reportTestResults: (error?: Error, failures?: number) => void,
 ): Promise<void> {
-  const projectRootPath = path.resolve(__dirname, "../../..");
+  const projectRootPath = path.resolve(__dirname, "../..");
 
   console.info(`Running Jest tests from ${projectRootPath} ...`);
 
   const config = {
-    testMatch: ["<rootDir>/out/test/suite-rs/*.test.js"],
+    testMatch: ["<rootDir>/out-test/suite-rs/*.test.js"],
     testEnvironment: "./test/vscode-environment.ts",
   } as Config.Argv;
 

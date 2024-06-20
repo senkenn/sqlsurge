@@ -1,11 +1,12 @@
 /**/out/*
-!/vsce/out/test
+/vsce/out-test/*
+!/vsce/out-test
 
-/vsce/out/test/*
-!/vsce/out/test/*/
+/vsce/out-test/*
+!/vsce/out-test/*/
 
-/vsce/out/test/*/*
-!/vsce/out/test/*/__snapshots__
+/vsce/out-test/*/*
+!/vsce/out-test/*/__snapshots__
 
 node_modules
 client/server

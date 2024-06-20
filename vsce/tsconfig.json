@@ -2,8 +2,8 @@
   "compilerOptions": {
     "outDir": "out",
     "esModuleInterop": false,
-    "rootDir": "."
+    "rootDir": "src"
   },
-  "include": ["src", "test"],
+  "include": ["src"],
   "extends": "../tsconfig.json"
 }
