@@ -2,6 +2,11 @@ import * as vscode from "vscode";
 import { getWorkspaceConfig } from "../src/extConfig";
 import * as outputChannel from "../src/outputChannel";
 
+beforeEach(() => {
+  jest.clearAllMocks();
+  jest.resetAllMocks();
+});
+
 describe("extConfig", () => {
   describe("getWorkspaceConfig", () => {
     it.each`
@@ -35,6 +40,9 @@ describe("extConfig", () => {
         jest.spyOn(outputChannel, "createLogger").mockReturnValue({
           error: jest.fn(),
         } as unknown as vscode.LogOutputChannel);
+        jest
+          .spyOn(vscode.window, "showErrorMessage")
+          .mockResolvedValue(undefined);
 
         const config = getWorkspaceConfig(key);
         expect(config).toBeUndefined();
