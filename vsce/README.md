@@ -111,7 +111,3 @@ const someQuery = await entityManager.query(
 - [x] Support to custom raw SQL queries, not just Prisma and SQLx
 - [ ] Execute SQL query
 - [ ] Show sqls config with tree view
-
-```
-
-```
