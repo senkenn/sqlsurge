@@ -3,7 +3,8 @@
   "workspaces": ["vsce", "sql-extraction/*"],
   "scripts": {
     "build:pkg": "pnpm -r build",
-    "vsce:watch": "pnpm build:pkg && pnpm -F sqlsurge run watch"
+    "vsce:watch": "pnpm build:pkg && pnpm -F sqlsurge run watch",
+    "test:e2e": "pnpm -F sqlsurge run compile && pnpm -F @senken/vsce-test test:e2e"
   },
   "devDependencies": {
     "@biomejs/biome": "^1.8.1",
