@@ -11,7 +11,11 @@
     "lefthook": "^1.6.7",
     "typescript": "^5.4.2"
   },
+  "packageManager": "pnpm@9.3.0",
   "engines": {
-    "pnpm": "^9.0.6"
+    "pnpm": "^9.0.6",
+    "npm": "Do not use. Use pnpm instead.",
+    "yarn": "Do not use. Use pnmpm instead.",
+    "bun": "Do not use. Use pnmpm instead."
   }
 }
