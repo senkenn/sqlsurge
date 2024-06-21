@@ -221,4 +221,34 @@ describe("Formatting Test", () => {
     const formattedText = doc.getText();
     expect(formattedText).toMatchSnapshot();
   });
+
+  it("Should be formatted with user-defined function", async () => {
+    const filePath = path.resolve(wsPath, "src", "userDefined.ts");
+    const docUri = vscode.Uri.file(filePath);
+    const doc = await vscode.workspace.openTextDocument(docUri);
+    const editor = await vscode.window.showTextDocument(doc);
+
+    await sleep(1000);
+
+    // change config
+    await vscode.workspace
+      .getConfiguration("sqlsurge", vscode.workspace.workspaceFolders?.[0].uri)
+      .update("customRawSqlQuery", {
+        language: "typescript",
+        configs: [
+          {
+            functionName: "query",
+            sqlArgNo: 2,
+            isTemplateLiteral: false,
+          },
+        ],
+      });
+
+    // execute command
+    await vscode.commands.executeCommand("sqlsurge.formatSql");
+    await sleep(1000);
+
+    const formattedText = doc.getText();
+    expect(formattedText).toMatchSnapshot();
+  });
 });
