@@ -12,7 +12,7 @@ export async function run(
 
   const config = {
     testMatch: ["<rootDir>/out/suite-rs/*.test.js"],
-    testEnvironment: "./src/vscode-environment.ts",
+    testEnvironment: "./test/vscode-environment.ts",
   } as Config.Argv;
 
   const test = await runCLI(config, [projectRootPath]);
