@@ -35,7 +35,7 @@ afterEach(async () => {
   ]);
 });
 
-describe("SQLx Completion Test", () => {
+describe("Completion Test", () => {
   test('Should be completed "INSERT" with query! single line', async () => {
     const filePath = path.resolve(wsPath, "src", "main.rs");
     const docUri = vscode.Uri.file(filePath);
@@ -237,6 +237,36 @@ describe("Formatting Test", () => {
     await vscode.workspace
       .getConfiguration("sqlsurge")
       .update("formatSql.tabSize", 2);
+
+    // execute command
+    await vscode.commands.executeCommand("sqlsurge.formatSql");
+    await sleep(1000);
+
+    const formattedText = doc.getText();
+    expect(formattedText).toMatchSnapshot();
+  });
+
+  it("Should be formatted with diesel function", async () => {
+    const filePath = path.resolve(wsPath, "src", "diesel.rs");
+    const docUri = vscode.Uri.file(filePath);
+    const doc = await vscode.workspace.openTextDocument(docUri);
+    const editor = await vscode.window.showTextDocument(doc);
+
+    await sleep(1000);
+
+    // change config
+    await vscode.workspace
+      .getConfiguration("sqlsurge", vscode.workspace.workspaceFolders?.[0].uri)
+      .update("customRawSqlQuery", {
+        language: "rust",
+        configs: [
+          {
+            functionName: "sql_query",
+            sqlArgNo: 1,
+            isMacro: false,
+          },
+        ],
+      });
 
     // execute command
     await vscode.commands.executeCommand("sqlsurge.formatSql");
