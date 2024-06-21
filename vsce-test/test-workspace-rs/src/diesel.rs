@@ -14,9 +14,11 @@ fn main() {
         r#"
 SELECT id, description, done
 FROM todos
+WHERE id = ?
 ORDER BY id
         "#,
     )
+    .bind::<diesel::sql_types::Integer, _>(1)
     .load::<model::User>(&conn)
     .unwrap();
     println!("{:?}", results);
