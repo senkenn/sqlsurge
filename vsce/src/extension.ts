@@ -131,7 +131,6 @@ export async function activate(context: vscode.ExtensionContext) {
             config = undefined;
           }
           sqlNodes = await extractSqlListRs(rawContent, config?.configs);
-          console.log(sqlNodes);
           break;
         }
         default:
