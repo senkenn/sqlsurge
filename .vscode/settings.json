@@ -23,7 +23,7 @@
   },
   "rust-analyzer.linkedProjects": [
     "./sql-extraction/rs/Cargo.toml",
-    "./vsce/test-workspace-rs/Cargo.toml"
+    "./vsce-test/test-workspace-rs/Cargo.toml"
   ],
   "github-actions.workflows.pinned.workflows": [
     ".github/workflows/e2e-test.yaml",

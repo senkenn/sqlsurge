@@ -15,9 +15,9 @@ pre-commit:
     biome:
       glob: "*.{js,ts,jsx,tsx,json,css,scss}"
       run: |
-        bunx biome check --apply {staged_files} && git add {staged_files}
+        pnpm biome check --apply {staged_files} && git add {staged_files}
     cspell:
       glob: "*"
       run: |
         # check file name
-        git diff --name-only --cached | bunx cspell --no-progress --show-context stdin --cache
+        git diff --name-only --cached | pnpm cspell --no-progress --show-context stdin --cache

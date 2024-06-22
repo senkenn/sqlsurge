@@ -25,7 +25,6 @@ afterEach(async () => {
 describe("Install sqls if not found in PATH", () => {
   test("Should find sqls in PATH", async () => {
     const sqlsVersion = execSync("sqls --version").toString();
-    console.log(sqlsVersion);
     expect(sqlsVersion).not.toBe("");
   });
 });

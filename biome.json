@@ -17,17 +17,19 @@
     "rules": {
       "recommended": true,
       "suspicious": {
-        "noExplicitAny": "warn"
+        "noExplicitAny": "warn",
+        "noConsoleLog": "error"
       },
       "style": {
         "noParameterAssign": "warn",
         "noNonNullAssertion": "warn"
       }
-    }
+    },
+    "ignore": ["test-workspace*"]
   },
   "json": {
     "parser": {
-      "allowTrailingCommas": false,
+      "allowTrailingCommas": true,
       "allowComments": true
     }
   }
