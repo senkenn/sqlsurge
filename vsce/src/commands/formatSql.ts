@@ -31,7 +31,17 @@ async function formatSql(refresh: RefreshFunc): Promise<void> {
     const dummyPlaceHolder = '"SQLSURGE_DUMMY"';
 
     editor.edit((editBuilder) => {
-      sqlNodes.map((sqlNode) => {
+      for (const sqlNode of sqlNodes) {
+        logger.debug("[formatSql]", "Formatting", sqlNode);
+        if (sqlNode.content.match(/^\s*$/)) {
+          logger.debug(
+            "[formatSql]",
+            "Skip formatting for empty content",
+            sqlNode,
+          );
+          continue;
+        }
+
         // get prefix and suffix of space or new line
         const prefix =
           sqlNode.content
@@ -67,7 +77,7 @@ async function formatSql(refresh: RefreshFunc): Promise<void> {
             "Skip formatting for typescript string 1 line",
             sqlNode,
           );
-          return;
+          continue;
         }
 
         // convert place holder to dummy if there are any place holders
@@ -92,7 +102,7 @@ async function formatSql(refresh: RefreshFunc): Promise<void> {
         const isEnabledIndent = getWorkspaceConfig("formatSql.indent");
         const tabSize = getWorkspaceConfig("formatSql.tabSize");
         if (tabSize === undefined) {
-          return;
+          continue;
         }
 
         // get formatted content
@@ -134,7 +144,7 @@ async function formatSql(refresh: RefreshFunc): Promise<void> {
           ),
           prefix + formattedContent + suffix,
         );
-      });
+      }
     });
 
     logger.info("[commandFormatSqlProvider]", "Formatted");
