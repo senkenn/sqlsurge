@@ -1,11 +1,14 @@
 {
   "name": "@senken/vsce-test",
   "scripts": {
-    "test:e2e": "tsc -p . && node ./out/runTest.js",
+    "test:e2e": "tsc && node ./out/runTest.js",
     "test:e2e:bg": "xvfb-run -a pnpm test:e2e"
   },
   "devDependencies": {
     "@types/vscode": "^1.90.0",
     "@vscode/test-electron": "^2.4.0"
+  },
+  "jest": {
+    "snapshotResolver": "<rootDir>/test/snapshotResolver.js"
   }
 }

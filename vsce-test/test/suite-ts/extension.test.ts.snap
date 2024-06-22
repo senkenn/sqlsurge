@@ -1,5 +1,125 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`Formatting Test Should NOT be formatted with empty content: empty 1`] = `
+"import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+async function main() {
+  const todo = await prisma.$queryRaw\`\`;
+  await prisma.$queryRaw\`
+INSERT INTO
+    todos (id, description, done)
+VALUES
+    (1, "todo description", TRUE);
+    \`;
+  console.log(todo);
+}
+
+main()
+  .then(async () => {
+    await prisma.$disconnect();
+    console.log("Disconnected");
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });
+"
+`;
+
+exports[`Formatting Test Should NOT be formatted with empty content: one new line 1`] = `
+"import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+async function main() {
+  const todo = await prisma.$queryRaw\`
+\`;
+  await prisma.$queryRaw\`
+INSERT INTO
+    todos (id, description, done)
+VALUES
+    (1, "todo description", TRUE);
+    \`;
+  console.log(todo);
+}
+
+main()
+  .then(async () => {
+    await prisma.$disconnect();
+    console.log("Disconnected");
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });
+"
+`;
+
+exports[`Formatting Test Should NOT be formatted with empty content: one space 1`] = `
+"import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+async function main() {
+  const todo = await prisma.$queryRaw\` \`;
+  await prisma.$queryRaw\`
+INSERT INTO
+    todos (id, description, done)
+VALUES
+    (1, "todo description", TRUE);
+    \`;
+  console.log(todo);
+}
+
+main()
+  .then(async () => {
+    await prisma.$disconnect();
+    console.log("Disconnected");
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });
+"
+`;
+
+exports[`Formatting Test Should NOT be formatted with empty content: spaces and new lines 1`] = `
+"import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+async function main() {
+  const todo = await prisma.$queryRaw\`
+  
+  
+\`;
+  await prisma.$queryRaw\`
+INSERT INTO
+    todos (id, description, done)
+VALUES
+    (1, "todo description", TRUE);
+    \`;
+  console.log(todo);
+}
+
+main()
+  .then(async () => {
+    await prisma.$disconnect();
+    console.log("Disconnected");
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });
+"
+`;
+
 exports[`Formatting Test Should be NOT formatted with save if config is disabled 1`] = `
 "import { PrismaClient } from "@prisma/client";
 
