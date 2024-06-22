@@ -14,8 +14,9 @@ export async function resetTestWorkspace(
   const settingsJsonPath = path.resolve(wsPath, ".vscode", "settings.json");
   const testFilePathJoinedWithSpace = testFilePaths.join(" ");
 
+  // restore saved files
   execSync(`git restore ${testFilePathJoinedWithSpace} ${settingsJsonPath}`);
 
-  // close active editor
-  await vscode.commands.executeCommand("workbench.action.closeAllGroups");
+  // revert unsaved changes
+  await vscode.commands.executeCommand("workbench.action.files.revert");
 }
