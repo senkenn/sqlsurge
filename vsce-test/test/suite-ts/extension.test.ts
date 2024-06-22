@@ -250,4 +250,39 @@ describe("Formatting Test", () => {
     const formattedText = doc.getText();
     expect(formattedText).toMatchSnapshot();
   });
+
+  it.each`
+    desc                      | content
+    ${"empty"}                | ${""}
+    ${"one space"}            | ${" "}
+    ${"one new line"}         | ${"\n"}
+    ${"spaces and new lines"} | ${"\n  \n  \n"}
+  `(
+    "Should NOT be formatted with empty content: $desc",
+    async ({ content }) => {
+      const filePath = path.resolve(wsPath, "src", "index.ts");
+      const docUri = vscode.Uri.file(filePath);
+      const doc = await vscode.workspace.openTextDocument(docUri);
+      const editor = await vscode.window.showTextDocument(doc);
+
+      await sleep(1000);
+
+      // change config
+      const replaceRange = new vscode.Range(
+        new vscode.Position(5, 38),
+        new vscode.Position(5, 71),
+      );
+      await editor.edit((editBuilder) => {
+        editBuilder.replace(replaceRange, content);
+      });
+
+      // execute command
+      await vscode.commands.executeCommand("sqlsurge.formatSql");
+      await sleep(1000);
+
+      // execute command
+      const formattedText = doc.getText();
+      expect(formattedText).toMatchSnapshot();
+    },
+  );
 });
