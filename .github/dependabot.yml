@@ -15,7 +15,16 @@ updates:
           - "*"
 
   - package-ecosystem: "cargo"
-    directory: "/"
+    directory: "/sql-extraction/rs"
+    schedule:
+      interval: "monthly"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
+
+  - package-ecosystem: "cargo"
+    directory: "/vsce/test-workspace-rs"
     schedule:
       interval: "monthly"
     groups:
