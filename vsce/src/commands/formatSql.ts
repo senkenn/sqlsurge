@@ -1,7 +1,9 @@
 import type { SqlNode } from "@senken/config";
 
 import { format } from "sql-formatter";
+import * as ts from "typescript";
 import * as vscode from "vscode";
+
 import { getWorkspaceConfig } from "../extConfig";
 import { createLogger } from "../outputChannel";
 
@@ -31,15 +33,47 @@ async function formatSql(refresh: RefreshFunc): Promise<void> {
     editor.edit((editBuilder) => {
       sqlNodes.map((sqlNode) => {
         // get prefix and suffix of space or new line
-        const prefixMatch = sqlNode.content.match(/^(\s*)/);
-        const prefix = prefixMatch ? prefixMatch[0].replace(/ +$/g, "") : "";
-        const suffixMatch = sqlNode.content.match(/(\s*)$/);
-        const suffix = suffixMatch ? suffixMatch[0] : "";
+        const prefix =
+          sqlNode.content
+            .match(/^(\s*)/)?.[0]
+            .replace(/ +$/g, "") ?? // remove indent space
+          "";
+        const suffix = sqlNode.content.match(/(\s*)$/)?.[0] ?? "";
+
+        // skip typescript && "" or '' string(1 line)
+        const sourceText = document.getText();
+        const sourceFile = ts.createSourceFile(
+          "unusedFileName",
+          sourceText,
+          ts.ScriptTarget.Latest, // TODO: #74 re-consider this it should be the same as the vscode lsp or project tsconfig.json
+        );
+        const startPosition =
+          sourceFile.getPositionOfLineAndCharacter(
+            sqlNode.code_range.start.line,
+            sqlNode.code_range.start.character,
+          ) - prefix.length;
+        const endPosition =
+          sourceFile.getPositionOfLineAndCharacter(
+            sqlNode.code_range.end.line,
+            sqlNode.code_range.end.character,
+          ) + suffix.length;
+        if (
+          document.languageId === "typescript" &&
+          sourceText[startPosition - 1].match(/^["']$/) &&
+          sourceText[endPosition].match(/^["']$/)
+        ) {
+          logger.debug(
+            "[formatSql]",
+            "Skip formatting for typescript string 1 line",
+            sqlNode,
+          );
+          return;
+        }
 
         // convert place holder to dummy if there are any place holders
         const placeHolderRegExp =
           document.languageId === "typescript"
-            ? /\$\{.*\}/g
+            ? /\$(\{.*\}|\d+)/g // ${1} or $1
             : document.languageId === "rust"
               ? /(\$\d+|\?)/g
               : undefined;
