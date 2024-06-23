@@ -72,7 +72,10 @@ Quick info symbol for tables and columns can be shown by triggering completion w
 
 ![text](resources/screenshot-quick-info.png)
 
-### Any Raw SQL Queries Support
+### Any Raw SQL Queries Support (Experimental)
+
+> [!NOTE]
+> This feature is experimental. Feedback is welcome!
 
 sqlsurge supports Prisma in TypeScript and SQLx in Rust by default. But you can use sqlsurge with any raw SQL queries, such as `TypeORM` or user-defined functions by setting.
 
