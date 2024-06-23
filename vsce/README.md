@@ -23,7 +23,7 @@ See: https://github.com/sqls-server/sqls?tab=readme-ov-file#support-rdbms
 - [Completion](#completion)
 - [Formatting](#formatting)
 - [Quick Info Symbol](#quick-info-symbol)
-- [Any Raw SQL Queries Support](#any-raw-sql-queries-support)
+- [Any Raw SQL Queries Support (Experimental)](#any-raw-sql-queries-support-experimental)
 
 This table shows the features available for each file extension.
 
