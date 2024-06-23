@@ -20,26 +20,24 @@ See: https://github.com/sqls-server/sqls?tab=readme-ov-file#support-rdbms
 
 ## Features <!-- omit in toc -->
 
-These features are available on both Vanilla SQL files and any raw SQL queries in other languages.
-
-- [Auto-Completion](#auto-completion)
+- [Completion](#completion)
 - [Formatting](#formatting)
-- [Quick info symbol](#quick-info-symbol)
-- [Any raw SQL queries support](#any-raw-sql-queries-support)
+- [Quick Info Symbol](#quick-info-symbol)
+- [Any Raw SQL Queries Support](#any-raw-sql-queries-support)
 
-And this table describe what language support these features.
+This table shows the features available for each file extension.
 
-| Features                          | SQL | TypeScript | Rust |
-| --------------------------------- | --- | ---------- | ---- |
-| Auto-Completion                   | ✅  | ✅         | ✅   |
-| Formatting                        | ✅  | ✅         | ✅   |
-| Quick info symbol (on Completion) | ✅  | ✅         | ✅   |
-| Quick info symbol (on Hover)      | ✅  | ❌         | ❌   |
-| Any raw SQL queries support       | ー  | ✅         | ✅   |
+| Features                        | `.sql` | `.ts` | `.rs` |
+| ------------------------------- | ------ | ----- | ----- |
+| Completion                      | ✅     | ✅    | ✅    |
+| Formatting                      | ✅     | ✅    | ✅    |
+| Quick Info Symbol on Completion | ✅     | ✅    | ✅    |
+| Quick Info Symbol on Hover      | ✅     | ❌    | ❌    |
+| Any Raw SQL Queries Support     | ー     | ✅    | ✅    |
 
-### Auto-Completion
+### Completion
 
-These are the auto-completion items sqlsurge provides:
+These are the completion items sqlsurge provides:
 
 - SQL keywords
 - Tables and columns (Required to be configured by `sqls config`)
@@ -68,13 +66,13 @@ Configurations for raw SQL queries
 
 As a formatter, sqlsurge use `sqls` for Vanilla SQL files, use [SQL Formatter](https://github.com/sql-formatter-org/sql-formatter) for raw SQL.
 
-### Quick info symbol
+### Quick Info Symbol
 
 Quick info symbol for tables and columns can be shown by triggering completion with `Ctrl` + `Space` or `Cmd` + `Space`.
 
 ![text](resources/screenshot-quick-info.png)
 
-### Any raw SQL queries support
+### Any Raw SQL Queries Support
 
 sqlsurge supports Prisma in TypeScript and SQLx in Rust by default. But you can use sqlsurge with any raw SQL queries, such as `TypeORM` or user-defined functions by setting.
 
