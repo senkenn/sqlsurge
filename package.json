@@ -18,7 +18,6 @@
     "typescript": "^5.5.2",
     "valibot": "^0.33.3"
   },
-  "packageManager": "pnpm@9.3.0",
   "engines": {
     "pnpm": "^9.0.6",
     "npm": "Do not use. Use pnpm instead.",
