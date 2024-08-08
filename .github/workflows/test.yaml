@@ -21,7 +21,9 @@ jobs:
       - uses: ./.github/actions/setup
 
       - name: Build
-        run: BUILD=dev pnpm build:pkg
+        run: pnpm build:pkg
+        env:
+          BUILD: dev
 
       - run: pnpm -r test
 
@@ -49,7 +51,9 @@ jobs:
       - uses: ./.github/actions/setup
 
       - name: Build
-        run: BUILD=dev pnpm build:pkg
+        run: pnpm build:pkg
+        env:
+          BUILD: dev
 
       - run: xvfb-run -a pnpm test:e2e
         if: runner.os == 'Linux'
