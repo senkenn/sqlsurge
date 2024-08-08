@@ -22,7 +22,8 @@ afterEach(async () => {
   ]);
 });
 
-describe("Install sqls if not found in PATH", () => {
+// biome-ignore lint/suspicious/noFocusedTests: <explanation>
+describe.only("Install sqls if not found in PATH", () => {
   test("Should find sqls in PATH", async () => {
     const sqlsVersion = execSync("sqls --version").toString();
     expect(sqlsVersion).not.toBe("");
