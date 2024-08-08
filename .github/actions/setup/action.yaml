@@ -9,7 +9,7 @@ inputs:
   wasm-pack-version:
     description: "wasm-pack version"
     required: false
-    default: "0.12.1"
+    default: "0.13.0"
 
 runs:
   using: "composite"

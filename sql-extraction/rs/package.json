@@ -3,9 +3,10 @@
   "main": "./out/index.js",
   "scripts": {
     "prepublishOnly": "pnpm build",
-    "build:rs": "wasm-pack build --target bundler --release",
+    "build:dev": "wasm-pack build --target bundler --no-opt",
+    "build:release": "wasm-pack build --target bundler --release",
     "clean": "rm -rf ./pkg ./out",
-    "build": "pnpm build:rs && tsc -p ."
+    "build": "if [ \"$BUILD\" = \"dev\" ]; then pnpm build:dev; else pnpm build:release; fi && tsc -p ."
   },
   "devDependencies": {
     "@senken/config": "workspace:*"
