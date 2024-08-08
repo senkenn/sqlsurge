@@ -9,7 +9,7 @@ inputs:
   wasm-pack-version:
     description: "wasm-pack version"
     required: false
-    default: "0.12.1"
+    default: "0.13.0"
 
 runs:
   using: "composite"
@@ -45,8 +45,8 @@ runs:
     - name: Install wasm-pack if not installed
       shell: bash
       run: |
-        if [ ! -x "$(command -v wasm-pack)" ]; then
-          cargo install --version $WASM_PACK_VERSION wasm-pack
+        if [ ! -x "$(command -v wasm-pack)" ] || [ "$(wasm-pack -V | cut -d' ' -f2)" != "$WASM_PACK_VERSION" ]; then
+          cargo install --version $WASM_PACK_VERSION wasm-pack --force
         fi
 
       env:
@@ -67,30 +67,18 @@ runs:
       # - name: Start up DBs
       #   run: docker compose up -d
 
-    - name: Install Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: 20
-
     - name: Install pnpm
-      uses: pnpm/action-setup@v3
+      uses: pnpm/action-setup@v4
       with:
         version: 9
         run_install: false
 
-    - name: Get pnpm store directory
+    - name: Install Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+        cache: "pnpm"
+
+    - name: Install dependencies
       shell: bash
-      run: |
-        echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
-
-    # - uses: actions/cache@v4
-    #   name: Setup pnpm cache
-    #   with:
-    #     path: ${{ env.STORE_PATH }}
-    #     key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-    #     restore-keys: |
-    #       ${{ runner.os }}-pnpm-store-
-
-    - name: Install npm dependencies
       run: pnpm i
-      shell: bash
