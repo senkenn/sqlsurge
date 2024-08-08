@@ -46,7 +46,7 @@ runs:
       shell: bash
       run: |
         if [ ! -x "$(command -v wasm-pack)" ] || [ "$(wasm-pack -V | cut -d' ' -f2)" != "$WASM_PACK_VERSION" ]; then
-          cargo install --version $WASM_PACK_VERSION wasm-pack
+          cargo install --version $WASM_PACK_VERSION wasm-pack --force
         fi
 
       env:
