@@ -67,17 +67,17 @@ runs:
       # - name: Start up DBs
       #   run: docker compose up -d
 
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 9
+        run_install: false
+
     - name: Install Node.js
       uses: actions/setup-node@v4
       with:
         node-version: 20
         cache: "pnpm"
-
-    - name: Install pnpm
-      uses: pnpm/action-setup@v3
-      with:
-        version: 9
-        run_install: false
 
     - name: Install dependencies
       shell: bash
