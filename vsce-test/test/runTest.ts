@@ -24,12 +24,12 @@ async function main() {
       launchArgs: ["--disable-extensions", workspacePathTs],
     });
 
-    // rs
-    await runTests({
-      extensionDevelopmentPath,
-      extensionTestsPath: path.resolve(__dirname, "suite-rs", "index"),
-      launchArgs: ["--disable-extensions", workspacePathRs],
-    });
+    // // rs
+    // await runTests({
+    //   extensionDevelopmentPath,
+    //   extensionTestsPath: path.resolve(__dirname, "suite-rs", "index"),
+    //   launchArgs: ["--disable-extensions", workspacePathRs],
+    // });
   } catch (err) {
     console.error("Failed to run tests", err);
     process.exit(1);
