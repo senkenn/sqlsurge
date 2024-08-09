@@ -31,8 +31,7 @@ describe.only("Install sqls if not found in PATH", () => {
 });
 
 describe("Completion Test", () => {
-  // biome-ignore lint/suspicious/noFocusedTests: <explanation>
-  test.only('Should be completed "SELECT" with $queryRaw single line', async () => {
+  test('Should be completed "SELECT" with $queryRaw single line', async () => {
     const filePath = path.resolve(wsPath, "src", "index.ts");
     const docUri = vscode.Uri.file(filePath);
     const doc = await vscode.workspace.openTextDocument(docUri);
