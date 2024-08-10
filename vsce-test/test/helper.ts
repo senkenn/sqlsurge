@@ -21,5 +21,5 @@ export async function resetTestWorkspace(
   await vscode.commands.executeCommand("workbench.action.files.revert");
 }
 
-export const waitingTimeCompletion = 2500;
-export const waitingTimeFormatting = 2000;
+export const waitingTimeCompletion = process.platform === "win32" ? 4000 : 1000;
+export const waitingTimeFormatting = process.platform === "win32" ? 1500 : 500;
