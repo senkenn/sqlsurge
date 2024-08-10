@@ -44,7 +44,7 @@ export async function completionProvider(
       virtualDocuments.set(sqlNode.vFileName, vContent);
 
       // trigger completion on virtual file
-      const vDocUriString = `${ORIGINAL_SCHEME}://${sqlNode.vFileName}`;
+      const vDocUriString = `${ORIGINAL_SCHEME}:${sqlNode.vFileName}`;
       const vDocUri = vscode.Uri.parse(vDocUriString);
 
       logger.info("[provideCompletionItems] Finished completion.");

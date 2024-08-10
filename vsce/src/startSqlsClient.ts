@@ -76,13 +76,13 @@ export async function startSqlsClient() {
 
 export async function findSqlsInPath(): Promise<vscode.Uri | undefined> {
   const path = process.env.PATH;
-
   if (!path) {
     throw new Error("PATH environment variable is not set");
   }
 
+  const sqlsFileName = process.platform === "win32" ? "sqls.exe" : "sqls";
   for (const dir of path.split(delimiter)) {
-    const sqls = vscode.Uri.joinPath(vscode.Uri.file(dir), "sqls");
+    const sqls = vscode.Uri.joinPath(vscode.Uri.file(dir), sqlsFileName);
     if (await fileExists(sqls)) {
       return sqls;
     }
