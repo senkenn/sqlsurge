@@ -6,7 +6,7 @@
     "build:dev": "wasm-pack build --target bundler --no-opt",
     "build:release": "wasm-pack build --target bundler --release",
     "clean": "rm -rf ./pkg ./out",
-    "build": "if [ \"$BUILD\" = \"dev\" ]; then pnpm build:dev; else pnpm build:release; fi && tsc -p ."
+    "build": "node ./scripts/build.js"
   },
   "devDependencies": {
     "@senken/config": "workspace:*"

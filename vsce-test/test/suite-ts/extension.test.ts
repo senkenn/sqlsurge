@@ -2,7 +2,12 @@ import { execSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as path from "node:path";
 import * as vscode from "vscode";
-import { resetTestWorkspace, sleep } from "../helper";
+import {
+  resetTestWorkspace,
+  sleep,
+  waitingTimeCompletion,
+  waitingTimeFormatting,
+} from "../helper";
 
 const wsPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
 if (!wsPath) {
@@ -37,7 +42,7 @@ describe("Completion Test", () => {
     const editor = await vscode.window.showTextDocument(doc);
 
     // Wait for server activation
-    await sleep(2000);
+    await sleep(waitingTimeCompletion);
 
     const pos = new vscode.Position(5, 44);
     editor.selection = new vscode.Selection(pos, pos);
@@ -61,7 +66,7 @@ describe("Completion Test", () => {
     const editor = await vscode.window.showTextDocument(doc);
 
     // Wait for server activation
-    await sleep(2000);
+    await sleep(waitingTimeCompletion);
 
     const pos = new vscode.Position(13, 10);
     editor.selection = new vscode.Selection(pos, pos);
@@ -84,7 +89,7 @@ describe("Completion Test", () => {
     const doc = await vscode.workspace.openTextDocument(docUri);
     const editor = await vscode.window.showTextDocument(doc);
 
-    await sleep(1000);
+    await sleep(waitingTimeFormatting);
 
     // change config
     await vscode.workspace
@@ -100,7 +105,7 @@ describe("Completion Test", () => {
         ],
       });
     // Wait for server activation
-    await sleep(2000);
+    await sleep(waitingTimeCompletion);
 
     const pos = new vscode.Position(13, 9);
     editor.selection = new vscode.Selection(pos, pos);
@@ -126,12 +131,12 @@ describe("Formatting Test", () => {
     const editor = await vscode.window.showTextDocument(doc);
 
     // Wait for server activation
-    await sleep(1000);
+    await sleep(waitingTimeFormatting);
 
     // execute command
     await vscode.commands.executeCommand("sqlsurge.formatSql");
 
-    await sleep(1000);
+    await sleep(waitingTimeFormatting);
 
     const formattedText = doc.getText();
     expect(formattedText).toMatchSnapshot();
@@ -144,10 +149,10 @@ describe("Formatting Test", () => {
     const editor = await vscode.window.showTextDocument(doc);
 
     // Wait for server activation
-    await sleep(1000);
+    await sleep(waitingTimeFormatting);
 
     await vscode.workspace.save(docUri);
-    await sleep(1000);
+    await sleep(waitingTimeFormatting);
 
     const newText = fs.readFileSync(filePath, "utf8");
     expect(newText).toMatchSnapshot();
@@ -160,13 +165,13 @@ describe("Formatting Test", () => {
     const editor = await vscode.window.showTextDocument(doc);
 
     // Wait for server activation
-    await sleep(1000);
+    await sleep(waitingTimeFormatting);
 
     // change config
     await vscode.workspace
       .getConfiguration("sqlsurge")
       .update("formatOnSave", false);
-    await sleep(1000);
+    await sleep(waitingTimeFormatting);
 
     await vscode.workspace.save(docUri);
 
@@ -181,7 +186,7 @@ describe("Formatting Test", () => {
     const editor = await vscode.window.showTextDocument(doc);
 
     // Wait for server activation
-    await sleep(1000);
+    await sleep(waitingTimeFormatting);
 
     // change config
     await vscode.workspace
@@ -190,7 +195,7 @@ describe("Formatting Test", () => {
 
     // execute command
     await vscode.commands.executeCommand("sqlsurge.formatSql");
-    await sleep(1000);
+    await sleep(waitingTimeFormatting);
 
     const formattedText = doc.getText();
     expect(formattedText).toMatchSnapshot();
@@ -203,7 +208,7 @@ describe("Formatting Test", () => {
     const editor = await vscode.window.showTextDocument(doc);
 
     // Wait for server activation
-    await sleep(1000);
+    await sleep(waitingTimeFormatting);
 
     // change config
     await vscode.workspace
@@ -215,7 +220,7 @@ describe("Formatting Test", () => {
 
     // execute command
     await vscode.commands.executeCommand("sqlsurge.formatSql");
-    await sleep(1000);
+    await sleep(waitingTimeFormatting);
 
     const formattedText = doc.getText();
     expect(formattedText).toMatchSnapshot();
@@ -227,7 +232,7 @@ describe("Formatting Test", () => {
     const doc = await vscode.workspace.openTextDocument(docUri);
     const editor = await vscode.window.showTextDocument(doc);
 
-    await sleep(1000);
+    await sleep(waitingTimeFormatting);
 
     // change config
     await vscode.workspace
@@ -245,7 +250,7 @@ describe("Formatting Test", () => {
 
     // execute command
     await vscode.commands.executeCommand("sqlsurge.formatSql");
-    await sleep(1000);
+    await sleep(waitingTimeFormatting);
 
     const formattedText = doc.getText();
     expect(formattedText).toMatchSnapshot();
@@ -265,7 +270,7 @@ describe("Formatting Test", () => {
       const doc = await vscode.workspace.openTextDocument(docUri);
       const editor = await vscode.window.showTextDocument(doc);
 
-      await sleep(1000);
+      await sleep(waitingTimeFormatting);
 
       // change config
       const replaceRange = new vscode.Range(
@@ -278,7 +283,7 @@ describe("Formatting Test", () => {
 
       // execute command
       await vscode.commands.executeCommand("sqlsurge.formatSql");
-      await sleep(1000);
+      await sleep(waitingTimeFormatting);
 
       // execute command
       const formattedText = doc.getText();

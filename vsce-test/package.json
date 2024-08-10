@@ -6,9 +6,7 @@
   },
   "devDependencies": {
     "@types/vscode": "^1.90.0",
-    "@vscode/test-electron": "^2.4.0"
-  },
-  "jest": {
-    "snapshotResolver": "<rootDir>/test/snapshotResolver.js"
+    "@vscode/test-electron": "^2.4.0",
+    "glob": "^11.0.0"
   }
 }
