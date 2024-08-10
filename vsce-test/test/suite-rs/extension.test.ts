@@ -1,6 +1,7 @@
 import { execSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as path from "node:path";
+import { glob } from "glob";
 import * as vscode from "vscode";
 import {
   resetTestWorkspace,
@@ -15,10 +16,12 @@ if (!wsPath) {
 }
 
 const rootDir = path.resolve(wsPath, "..", "..");
-const allTsConfigPaths = execSync(
-  `find ${rootDir} -name tsconfig.json | grep -v node_modules`,
-).toString();
-const tsconfigPaths = allTsConfigPaths.split("\n").join(" ");
+const allTsConfigPaths = glob.sync("**/tsconfig.json", {
+  cwd: rootDir,
+  ignore: ["**/node_modules/**"],
+  absolute: true,
+});
+const tsconfigPaths = allTsConfigPaths.join(" ");
 
 beforeAll(async () => {
   // delete all tsconfig.json

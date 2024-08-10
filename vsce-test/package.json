@@ -6,6 +6,7 @@
   },
   "devDependencies": {
     "@types/vscode": "^1.90.0",
-    "@vscode/test-electron": "^2.4.0"
+    "@vscode/test-electron": "^2.4.0",
+    "glob": "^11.0.0"
   }
 }
