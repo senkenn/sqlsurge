@@ -9,6 +9,11 @@
       "group": {
         "kind": "build",
         "isDefault": true
+      },
+      "options": {
+        "env": {
+          "BUILD": "dev"
+        }
       }
     }
   ]
