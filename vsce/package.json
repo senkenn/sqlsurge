@@ -2,7 +2,7 @@
   "name": "sqlsurge",
   "description": "SQL Language Server Extension for Visual Studio Code",
   "license": "MIT",
-  "version": "0.5.6",
+  "version": "0.5.7",
   "displayName": "sqlsurge",
   "private": true,
   "preview": true,
