@@ -1,4 +1,4 @@
-import { execSync } from "node:child_process";
+import { execFileSync, execSync } from "node:child_process";
 import * as path from "node:path";
 import * as vscode from "vscode";
 
@@ -15,7 +15,7 @@ export async function resetTestWorkspace(
   const testFilePathJoinedWithSpace = testFilePaths.join(" ");
 
   // restore saved files
-  execSync(`git restore ${testFilePathJoinedWithSpace} ${settingsJsonPath}`);
+  execFileSync("git", ["restore", ...testFilePaths, settingsJsonPath]);
 
   // revert unsaved changes
   await vscode.commands.executeCommand("workbench.action.files.revert");
