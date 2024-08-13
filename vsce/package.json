@@ -118,6 +118,10 @@
         "title": "sqlsurge: Install sqls"
       },
       {
+        "command": "sqlsurge.restartSqlLanguageServer",
+        "title": "sqlsurge: Restart SQL Language Server"
+      },
+      {
         "command": "sqlsurge.formatSql",
         "title": "sqlsurge: Format SQL"
       }

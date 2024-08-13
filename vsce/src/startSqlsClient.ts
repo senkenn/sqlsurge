@@ -13,10 +13,10 @@ interface LanguageServerConfig {
 
 export let client: LanguageClient;
 
-export async function startSqlsClient() {
-  const logger = createLogger();
+const logger = createLogger();
 
-  logger.info("[startSqlsClient]", "Starting sqls client...");
+export async function startSqlsClient() {
+  logger.debug("[startSqlsClient]", "Starting sqls client...");
   const sqlsConfig = vscode.workspace.getConfiguration("sqlsurge");
   const config: LanguageServerConfig = {
     flags: sqlsConfig.languageServerFlags || [],
@@ -41,14 +41,10 @@ export async function startSqlsClient() {
             "https://github.com/sqls-server/sqls?tab=readme-ov-file#installation",
           ),
         );
-        vscode.window
-          .createOutputChannel("sqlsurge")
-          .appendLine("sqls is not installed.");
+        logger.info("[startSqlsClient]", "sqls is not installed.");
         return;
       default:
-        vscode.window
-          .createOutputChannel("sqlsurge")
-          .appendLine("sqls is not installed.");
+        logger.info("[startSqlsClient]", "sqls is not installed.");
         return;
     }
 
@@ -74,6 +70,17 @@ export async function startSqlsClient() {
   logger.info("[startSqlsClient]", "Started sqls client.");
 }
 
+export async function restartLanguageServer() {
+  if (client) {
+    client.stop();
+    await startSqlsClient();
+  }
+
+  vscode.window.showInformationMessage(
+    "Successfully restarted SQL language server.",
+  );
+}
+
 export async function findSqlsInPath(): Promise<vscode.Uri | undefined> {
   const path = process.env.PATH;
   if (!path) {
@@ -83,7 +90,7 @@ export async function findSqlsInPath(): Promise<vscode.Uri | undefined> {
   const sqlsFileName = process.platform === "win32" ? "sqls.exe" : "sqls";
   for (const dir of path.split(delimiter)) {
     const sqls = vscode.Uri.joinPath(vscode.Uri.file(dir), sqlsFileName);
-    if (await fileExists(sqls)) {
+    if (await existsFile(sqls)) {
       return sqls;
     }
   }
@@ -91,14 +98,14 @@ export async function findSqlsInPath(): Promise<vscode.Uri | undefined> {
   return;
 }
 
-async function fileExists(path: vscode.Uri) {
-  try {
-    await vscode.workspace.fs.stat(path);
-    return true;
-  } catch (err: any) {
-    if (err.code === "ENOENT" || err.code === "FileNotFound") {
-      return false;
-    }
-    throw err;
-  }
+async function existsFile(path: vscode.Uri) {
+  return vscode.workspace.fs.stat(path).then(
+    () => true,
+    (err) => {
+      if (err.code === "ENOENT" || err.code === "FileNotFound") {
+        return false;
+      }
+      throw err;
+    },
+  );
 }

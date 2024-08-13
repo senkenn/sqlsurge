@@ -34,6 +34,33 @@ describe("Install sqls if not found in PATH", () => {
   });
 });
 
+describe("Restart Language Server Test", () => {
+  test("Should restart SQL language server", async () => {
+    await vscode.commands.executeCommand("sqlsurge.restartSqlLanguageServer");
+
+    // confirm completion
+    const filePath = path.resolve(wsPath, "src", "index.ts");
+    const docUri = vscode.Uri.file(filePath);
+    const doc = await vscode.workspace.openTextDocument(docUri);
+
+    // Wait for server activation
+    await sleep(waitingTimeCompletion);
+
+    const pos = new vscode.Position(5, 44);
+    const actualCompletionList =
+      await vscode.commands.executeCommand<vscode.CompletionList>(
+        "vscode.executeCompletionItemProvider",
+        docUri,
+        pos,
+      );
+
+    expect(actualCompletionList.items.length).toBe(1);
+    const { label, kind } = actualCompletionList.items[0];
+    expect(label).toBe("SELECT");
+    expect(kind).toBe(vscode.CompletionItemKind.Keyword);
+  });
+});
+
 describe("Completion Test", () => {
   test('Should be completed "SELECT" with $queryRaw single line', async () => {
     const filePath = path.resolve(wsPath, "src", "index.ts");

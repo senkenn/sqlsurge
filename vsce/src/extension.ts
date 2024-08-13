@@ -7,6 +7,7 @@ import * as vscode from "vscode";
 
 import { commandFormatSqlProvider } from "./commands/formatSql";
 import { command as commandInstallSqls } from "./commands/installSqls";
+import { command as commandRestartLS } from "./commands/restartLS";
 import { completionProvider } from "./completion";
 import { getWorkspaceConfig } from "./extConfig";
 import {
@@ -48,6 +49,7 @@ export async function activate(context: vscode.ExtensionContext) {
     completion,
     commandInstallSqls,
     commandFormatSql,
+    commandRestartLS,
   );
 
   // on save event
