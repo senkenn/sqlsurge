@@ -72,7 +72,9 @@ export async function startSqlsClient() {
 
 export async function restartLanguageServer() {
   if (client) {
-    client.stop();
+    await client.stop();
+    await startSqlsClient();
+  } else {
     await startSqlsClient();
   }
 
@@ -102,6 +104,7 @@ async function existsFile(path: vscode.Uri) {
   return vscode.workspace.fs.stat(path).then(
     () => true,
     (err) => {
+      logger.debug("[existsFile]", err);
       if (err.code === "ENOENT" || err.code === "FileNotFound") {
         return false;
       }
