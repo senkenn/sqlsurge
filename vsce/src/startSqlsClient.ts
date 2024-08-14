@@ -4,6 +4,7 @@ import {
   LanguageClient,
   type LanguageClientOptions,
   type ServerOptions,
+  State,
 } from "vscode-languageclient/node";
 import { createLogger } from "./outputChannel";
 
@@ -11,7 +12,7 @@ interface LanguageServerConfig {
   flags: string[];
 }
 
-export let client: LanguageClient;
+export let client: LanguageClient | undefined = undefined;
 
 const logger = createLogger();
 
@@ -22,37 +23,10 @@ export async function startSqlsClient() {
     flags: sqlsConfig.languageServerFlags || [],
   };
 
-  let sqlsInPATH = await findSqlsInPath();
+  const sqlsInPATH = await findSqlsInPath();
   if (!sqlsInPATH) {
-    // not found sqls, install sqls automatically
-    const action = await vscode.window.showInformationMessage(
-      "sqls is not installed yet. You need to install sqls to enable SQL language features.",
-      "Install with command",
-      "Install manually (Jump to the installation guide)",
-    );
-    switch (action) {
-      case "Install with command":
-        await vscode.commands.executeCommand("sqlsurge.installSqls");
-        break;
-      case "Install manually (Jump to the installation guide)":
-        await vscode.commands.executeCommand(
-          "vscode.open",
-          vscode.Uri.parse(
-            "https://github.com/sqls-server/sqls?tab=readme-ov-file#installation",
-          ),
-        );
-        logger.info("[startSqlsClient]", "sqls is not installed.");
-        return;
-      default:
-        logger.info("[startSqlsClient]", "sqls is not installed.");
-        return;
-    }
-
-    // check again
-    sqlsInPATH = await findSqlsInPath();
-    if (!sqlsInPATH) {
-      throw new Error("sqls should be installed but not found in PATH");
-    }
+    showSqlsNotFoundMessage();
+    return;
   }
 
   const serverOptions: ServerOptions = {
@@ -71,14 +45,32 @@ export async function startSqlsClient() {
 }
 
 export async function restartLanguageServer() {
-  if (client) {
-    await client.stop();
+  logger.debug("[restartLanguageServer]", "Restarting SQL language server...");
+  if (!client) {
     await startSqlsClient();
-  } else {
-    await startSqlsClient();
+    return;
+  }
+
+  const sqlsInPATH = await findSqlsInPath();
+  if (!sqlsInPATH) {
+    showSqlsNotFoundMessage();
+    return;
+  }
+
+  if (client.state === State.Stopped) {
+    await client.start();
+    logger.debug("[restartLanguageServer]", "Started SQL language server.");
+  }
+  if (client.state === State.Running) {
+    await client.restart();
+    logger.debug("[restartLanguageServer]", "Restarted SQL language server.");
   }
 
   vscode.window.showInformationMessage(
+    "Successfully restarted SQL language server.",
+  );
+  logger.info(
+    "[restartLanguageServer]",
     "Successfully restarted SQL language server.",
   );
 }
@@ -111,4 +103,30 @@ async function existsFile(path: vscode.Uri) {
       throw err;
     },
   );
+}
+
+async function showSqlsNotFoundMessage() {
+  // not found sqls, install sqls automatically
+  const action = await vscode.window.showInformationMessage(
+    "sqls is not installed yet or not found in PATH. Install sqls to enable SQL language features.",
+    "Install with command",
+    "Install manually (Jump to the installation guide)",
+  );
+  switch (action) {
+    case "Install with command":
+      await vscode.commands.executeCommand("sqlsurge.installSqls");
+      break;
+    case "Install manually (Jump to the installation guide)":
+      await vscode.commands.executeCommand(
+        "vscode.open",
+        vscode.Uri.parse(
+          "https://github.com/sqls-server/sqls?tab=readme-ov-file#installation",
+        ),
+      );
+      logger.info("[startSqlsClient]", "sqls is not installed.");
+      return;
+    default:
+      logger.info("[startSqlsClient]", "sqls is not installed.");
+      return;
+  }
 }

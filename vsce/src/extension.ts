@@ -21,7 +21,7 @@ import { client, startSqlsClient } from "./startSqlsClient";
 export async function activate(context: vscode.ExtensionContext) {
   const logger = createLogger();
 
-  startSqlsClient().catch((err) => {
+  await startSqlsClient().catch((err) => {
     logger.error(err, "[startSqlsClient] Failed to start sqls client.");
     vscode.window.showErrorMessage("sqlsurge: Failed to start sqls client.");
   });
