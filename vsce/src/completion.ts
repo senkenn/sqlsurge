@@ -17,7 +17,7 @@ export async function completionProvider(
     ) {
       const logger = createLogger();
 
-      logger.info("[provideCompletionItems]", "Starting completion...");
+      logger.debug("[provideCompletionItems]", "Starting completion...");
       logger.debug("[provideCompletionItems]", "file: ", document.fileName);
       const sqlNodes = await refresh(document);
       const sqlNode = sqlNodes.find(({ code_range: { start, end } }) => {
@@ -47,7 +47,7 @@ export async function completionProvider(
       const vDocUriString = `${ORIGINAL_SCHEME}:${sqlNode.vFileName}`;
       const vDocUri = vscode.Uri.parse(vDocUriString);
 
-      logger.info("[provideCompletionItems] Finished completion.");
+      logger.debug("[provideCompletionItems] Finished completion.");
       return vscode.commands.executeCommand<vscode.CompletionList>(
         "vscode.executeCompletionItemProvider",
         vDocUri,

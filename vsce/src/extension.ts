@@ -113,7 +113,7 @@ export async function activate(context: vscode.ExtensionContext) {
   async function refresh(
     document: vscode.TextDocument,
   ): Promise<(SqlNode & { vFileName: string })[]> {
-    logger.info("[refresh]", "Refreshing...");
+    logger.debug("[refresh]", "Refreshing...");
     try {
       const service = getOrCreateLanguageService(document.uri)!;
       const fileName = document.fileName;
@@ -171,7 +171,7 @@ export async function activate(context: vscode.ExtensionContext) {
           index: idx,
         };
       });
-      logger.info("[refresh]", "Refreshed.");
+      logger.debug("[refresh]", "Refreshed.");
       return sqlNodesWithVirtualDoc;
     } catch (e) {
       logger.error("[refresh]", `${e}`);

@@ -25,10 +25,7 @@
     "./sql-extraction/rs/Cargo.toml",
     "./vsce-test/test-workspace-rs/Cargo.toml"
   ],
-  "github-actions.workflows.pinned.workflows": [
-    ".github/workflows/e2e-test.yaml",
-    ".github/workflows/rust-test.yaml"
-  ],
+  "github-actions.workflows.pinned.workflows": [".github/workflows/test.yaml"],
   "github-actions.workflows.pinned.refresh.interval": 3,
   "github-actions.workflows.pinned.refresh.enabled": true,
   "markdown.copyFiles.destination": {
