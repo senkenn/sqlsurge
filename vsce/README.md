@@ -102,6 +102,14 @@ const someQuery = await entityManager.query(
 }
 ```
 
+## VS Code Commands <!-- omit in toc -->
+
+- `sqlsurge: Install sqls`: Install sqls.
+- `sqlsurge: Restart SQL Language Server`: Restart SQL Language Server.
+  - This command is useful when you update sqls or change the configuration.
+- `sqlsurge: Format SQL`: Format Raw SQL query.
+- `Format Document`: Format SQL file with sqls.
+
 ## TODOs <!-- omit in toc -->
 
 - [x] Support for Prisma in TypeScript

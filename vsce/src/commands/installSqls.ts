@@ -47,11 +47,11 @@ export const command = vscode.commands.registerCommand(
       .createOutputChannel("sqlsurge")
       .appendLine("sqls is installed.");
     const actions = await vscode.window.showInformationMessage(
-      "sqls was successfully installed! Reload window to enable SQL language features.",
-      "Reload Window",
+      "sqls was successfully installed! Restart language server to enable SQL language features.",
+      "Restart Language Server",
     );
-    if (actions === "Reload Window") {
-      vscode.commands.executeCommand("workbench.action.reloadWindow");
+    if (actions === "Restart Language Server") {
+      vscode.commands.executeCommand("sqlsurge.restartSqlLanguageServer");
     }
   },
 );

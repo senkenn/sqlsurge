@@ -7,6 +7,7 @@ import * as vscode from "vscode";
 
 import { commandFormatSqlProvider } from "./commands/formatSql";
 import { command as commandInstallSqls } from "./commands/installSqls";
+import { command as commandRestartLS } from "./commands/restartLS";
 import { completionProvider } from "./completion";
 import { getWorkspaceConfig } from "./extConfig";
 import {
@@ -20,7 +21,7 @@ import { client, startSqlsClient } from "./startSqlsClient";
 export async function activate(context: vscode.ExtensionContext) {
   const logger = createLogger();
 
-  startSqlsClient().catch((err) => {
+  await startSqlsClient().catch((err) => {
     logger.error(err, "[startSqlsClient] Failed to start sqls client.");
     vscode.window.showErrorMessage("sqlsurge: Failed to start sqls client.");
   });
@@ -48,6 +49,7 @@ export async function activate(context: vscode.ExtensionContext) {
     completion,
     commandInstallSqls,
     commandFormatSql,
+    commandRestartLS,
   );
 
   // on save event
@@ -111,7 +113,7 @@ export async function activate(context: vscode.ExtensionContext) {
   async function refresh(
     document: vscode.TextDocument,
   ): Promise<(SqlNode & { vFileName: string })[]> {
-    logger.info("[refresh]", "Refreshing...");
+    logger.debug("[refresh]", "Refreshing...");
     try {
       const service = getOrCreateLanguageService(document.uri)!;
       const fileName = document.fileName;
@@ -169,7 +171,7 @@ export async function activate(context: vscode.ExtensionContext) {
           index: idx,
         };
       });
-      logger.info("[refresh]", "Refreshed.");
+      logger.debug("[refresh]", "Refreshed.");
       return sqlNodesWithVirtualDoc;
     } catch (e) {
       logger.error("[refresh]", `${e}`);
