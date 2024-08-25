@@ -9,6 +9,9 @@
   "typescript.tsc.autoDetect": "off",
   "editor.tabSize": 2,
   "editor.formatOnSave": true,
+  "editor.codeActionsOnSave": {
+    "quickfix.biome": "explicit"
+  },
   "[typescript]": {
     "editor.defaultFormatter": "biomejs.biome"
   },
