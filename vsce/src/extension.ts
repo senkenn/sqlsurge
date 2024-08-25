@@ -1,5 +1,5 @@
-import { extractSqlListRs } from "@senken/sql-extraction-rs";
-import { extractSqlListTs } from "@senken/sql-extraction-ts";
+import { extractSqlListRs } from "@senken/sql-extraction-rs/src";
+import { extractSqlListTs } from "@senken/sql-extraction-ts/src";
 import { ORIGINAL_SCHEME, type SqlNode } from "./interface";
 
 import * as ts from "typescript";

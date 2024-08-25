@@ -1,6 +1,5 @@
 {
   "name": "@senken/sql-extraction-ts",
-  "main": "./out/index.js",
   "scripts": {
     "prepublishOnly": "pnpm build",
     "test": "jest",
