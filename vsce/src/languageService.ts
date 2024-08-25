@@ -447,6 +447,7 @@ function createLogger(
         debug = debugOrFunc();
         if (!debug) return;
       }
+      // biome-ignore lint/suspicious/noConsoleLog: <explanation>
       console.log(
         header,
         ...mapped.flatMap((item) => {

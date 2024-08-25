@@ -145,7 +145,6 @@
     ]
   },
   "devDependencies": {
-    "@senken/config": "workspace:*",
     "@senken/sql-extraction-rs": "workspace:*",
     "@senken/sql-extraction-ts": "workspace:*",
     "@types/node": "^20.14.6",

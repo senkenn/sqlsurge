@@ -1,6 +1,5 @@
 {
   "name": "@senken/sql-extraction-rs",
-  "main": "./out/index.js",
   "scripts": {
     "prepublishOnly": "pnpm build",
     "build:dev": "wasm-pack build --target bundler --no-opt",
@@ -8,7 +7,5 @@
     "clean": "rm -rf ./pkg ./out",
     "build": "node ./scripts/build.js"
   },
-  "devDependencies": {
-    "@senken/config": "workspace:*"
-  }
+  "devDependencies": {}
 }

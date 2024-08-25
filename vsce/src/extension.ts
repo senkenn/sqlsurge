@@ -1,6 +1,6 @@
-import { ORIGINAL_SCHEME, type SqlNode } from "@senken/config";
-import { extractSqlListRs } from "@senken/sql-extraction-rs";
-import { extractSqlListTs } from "@senken/sql-extraction-ts";
+import { extractSqlListRs } from "@senken/sql-extraction-rs/src";
+import { extractSqlListTs } from "@senken/sql-extraction-ts/src";
+import { ORIGINAL_SCHEME, type SqlNode } from "./interface";
 
 import * as ts from "typescript";
 import * as vscode from "vscode";
@@ -165,6 +165,9 @@ export async function activate(context: vscode.ExtensionContext) {
         });
       virtualContents.set(fileName, vFileNames);
       const sqlNodesWithVirtualDoc = sqlNodes.map((block, idx) => {
+        if (vFileNames[idx] === undefined) {
+          throw new Error(`vFileName[${idx}] is undefined.`);
+        }
         return {
           ...block,
           vFileName: vFileNames[idx],

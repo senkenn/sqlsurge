@@ -1,5 +1,5 @@
-import type { SqlNode } from "@senken/config"; // TODO: #72 reference to src not out
 import * as v from "valibot";
+import type { SqlNode } from "../../../vsce/src/interface";
 
 export const customRawSqlQueryRsSchema = v.array(
   v.object({

@@ -1,5 +1,5 @@
-import { customRawSqlQueryRsSchema } from "@senken/sql-extraction-rs";
-import { customRawSqlQueryTsSchema } from "@senken/sql-extraction-ts";
+import { customRawSqlQueryRsSchema } from "@senken/sql-extraction-rs/src";
+import { customRawSqlQueryTsSchema } from "@senken/sql-extraction-ts/src";
 import * as v from "valibot";
 import * as vscode from "vscode";
 import { createLogger } from "./outputChannel";

@@ -1,4 +1,4 @@
-import type { SqlNode } from "@senken/config";
+import type { SqlNode } from "../interface";
 
 import { format } from "sql-formatter";
 import * as ts from "typescript";
@@ -69,8 +69,8 @@ async function formatSql(refresh: RefreshFunc): Promise<void> {
           ) + suffix.length;
         if (
           document.languageId === "typescript" &&
-          sourceText[startPosition - 1].match(/^["']$/) &&
-          sourceText[endPosition].match(/^["']$/)
+          sourceText[startPosition - 1]?.match(/^["']$/) &&
+          sourceText[endPosition]?.match(/^["']$/)
         ) {
           logger.debug(
             "[formatSql]",

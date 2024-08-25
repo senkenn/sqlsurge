@@ -25,6 +25,7 @@
     /* Advanced Options */
     "forceConsistentCasingInFileNames": true,
     "skipLibCheck": true,
+    "noUncheckedIndexedAccess": true,
 
     "rootDir": "."
   }
