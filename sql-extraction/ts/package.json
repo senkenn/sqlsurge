@@ -6,7 +6,5 @@
     "test": "jest",
     "build": "tsc -p ."
   },
-  "devDependencies": {
-    "@senken/config": "workspace:*"
-  }
+  "devDependencies": {}
 }

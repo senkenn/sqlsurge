@@ -39,25 +39,12 @@ importers:
         specifier: ^0.33.3
         version: 0.33.3
 
-  config: {}
+  sql-extraction/rs: {}
 
-  sql-extraction/rs:
-    devDependencies:
-      '@senken/config':
-        specifier: workspace:*
-        version: link:../../config
-
-  sql-extraction/ts:
-    devDependencies:
-      '@senken/config':
-        specifier: workspace:*
-        version: link:../../config
+  sql-extraction/ts: {}
 
   vsce:
     devDependencies:
-      '@senken/config':
-        specifier: workspace:*
-        version: link:../config
       '@senken/sql-extraction-rs':
         specifier: workspace:*
         version: link:../sql-extraction/rs
