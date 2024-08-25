@@ -1,4 +1,4 @@
-import type { SqlNode } from "@senken/config";
+import type { SqlNode } from "../interface";
 
 import { format } from "sql-formatter";
 import * as ts from "typescript";

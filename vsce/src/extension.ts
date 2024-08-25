@@ -1,6 +1,6 @@
-import { ORIGINAL_SCHEME, type SqlNode } from "@senken/config";
 import { extractSqlListRs } from "@senken/sql-extraction-rs";
 import { extractSqlListTs } from "@senken/sql-extraction-ts";
+import { ORIGINAL_SCHEME, type SqlNode } from "./interface";
 
 import * as ts from "typescript";
 import * as vscode from "vscode";

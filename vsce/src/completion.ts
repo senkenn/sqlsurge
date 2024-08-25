@@ -1,5 +1,5 @@
-import { ORIGINAL_SCHEME, type SqlNode } from "@senken/config";
 import * as vscode from "vscode";
+import { ORIGINAL_SCHEME, type SqlNode } from "./interface";
 import { createLogger } from "./outputChannel";
 
 export async function completionProvider(
