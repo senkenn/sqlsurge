@@ -165,6 +165,9 @@ export async function activate(context: vscode.ExtensionContext) {
         });
       virtualContents.set(fileName, vFileNames);
       const sqlNodesWithVirtualDoc = sqlNodes.map((block, idx) => {
+        if (vFileNames[idx] === undefined) {
+          throw new Error(`vFileName[${idx}] is undefined.`);
+        }
         return {
           ...block,
           vFileName: vFileNames[idx],

@@ -10,7 +10,7 @@ import {
   waitingTimeFormatting,
 } from "../helper";
 
-const wsPath = vscode.workspace.workspaceFolders?.[0].uri.fsPath;
+const wsPath = vscode.workspace.workspaceFolders?.[0]?.uri.fsPath;
 if (!wsPath) {
   throw new Error("wsPath is undefined");
 }
@@ -63,7 +63,8 @@ describe("Completion Test", () => {
       );
 
     expect(actualCompletionList.items.length).toBe(1);
-    const { label, kind } = actualCompletionList.items[0];
+    const { label, kind } = actualCompletionList
+      .items[0] as vscode.CompletionItem;
     expect(label).toBe("INSERT");
     expect(kind).toBe(vscode.CompletionItemKind.Keyword);
   }, 10000);
@@ -87,7 +88,8 @@ describe("Completion Test", () => {
       );
 
     expect(actualCompletionList.items.length).toBe(1);
-    const { label, kind } = actualCompletionList.items[0];
+    const { label, kind } = actualCompletionList
+      .items[0] as vscode.CompletionItem;
     expect(label).toBe("SET");
     expect(kind).toBe(vscode.CompletionItemKind.Keyword);
   });
@@ -111,7 +113,8 @@ describe("Completion Test", () => {
       );
 
     expect(actualCompletionList.items.length).toBe(1);
-    const { label, kind } = actualCompletionList.items[0];
+    const { label, kind } = actualCompletionList
+      .items[0] as vscode.CompletionItem;
     expect(label).toBe("BY");
     expect(kind).toBe(vscode.CompletionItemKind.Keyword);
   });
@@ -126,7 +129,7 @@ describe("Completion Test", () => {
 
     // change config
     await vscode.workspace
-      .getConfiguration("sqlsurge", vscode.workspace.workspaceFolders?.[0].uri)
+      .getConfiguration("sqlsurge", vscode.workspace.workspaceFolders?.[0]?.uri)
       .update("customRawSqlQuery", {
         language: "rust",
         configs: [
@@ -150,7 +153,8 @@ describe("Completion Test", () => {
       );
 
     expect(actualCompletionList.items.length).toBe(1);
-    const { label, kind } = actualCompletionList.items[0];
+    const { label, kind } = actualCompletionList
+      .items[0] as vscode.CompletionItem;
     expect(label).toBe("SELECT");
     expect(kind).toBe(vscode.CompletionItemKind.Keyword);
   });
@@ -240,7 +244,7 @@ describe("Formatting Test", () => {
 
     // change config
     await vscode.workspace
-      .getConfiguration("sqlsurge", vscode.workspace.workspaceFolders?.[0].uri)
+      .getConfiguration("sqlsurge", vscode.workspace.workspaceFolders?.[0]?.uri)
       .update("formatSql.indent", true);
     await vscode.workspace
       .getConfiguration("sqlsurge")
@@ -264,7 +268,7 @@ describe("Formatting Test", () => {
 
     // change config
     await vscode.workspace
-      .getConfiguration("sqlsurge", vscode.workspace.workspaceFolders?.[0].uri)
+      .getConfiguration("sqlsurge", vscode.workspace.workspaceFolders?.[0]?.uri)
       .update("customRawSqlQuery", {
         language: "rust",
         configs: [
