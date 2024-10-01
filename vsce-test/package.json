@@ -5,8 +5,8 @@
     "test:e2e:bg": "xvfb-run -a pnpm test:e2e"
   },
   "devDependencies": {
-    "@types/vscode": "^1.90.0",
-    "@vscode/test-electron": "^2.4.0",
+    "@types/vscode": "^1.93.0",
+    "@vscode/test-electron": "^2.4.1",
     "glob": "^11.0.0"
   }
 }

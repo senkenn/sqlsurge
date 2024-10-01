@@ -6,16 +6,16 @@
     "test:e2e": "pnpm -F sqlsurge run compile && pnpm -F @senken/vsce-test test:e2e"
   },
   "devDependencies": {
-    "@biomejs/biome": "^1.8.2",
+    "@biomejs/biome": "^1.9.3",
     "@jest/types": "^29.6.3",
-    "@types/jest": "^29.5.12",
-    "cspell": "^8.9.1",
+    "@types/jest": "^29.5.13",
+    "cspell": "^8.14.4",
     "jest": "^29.7.0",
     "jest-environment-node": "^29.7.0",
-    "jest-mock-vscode": "^3.0.5",
-    "lefthook": "^1.6.17",
-    "typescript": "^5.5.2",
-    "valibot": "^0.33.3"
+    "jest-mock-vscode": "^4.0.2",
+    "lefthook": "^1.7.18",
+    "typescript": "^5.6.2",
+    "valibot": "^0.42.1"
   },
   "engines": {
     "pnpm": "^9.0.6",
