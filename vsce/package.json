@@ -147,15 +147,15 @@
   "devDependencies": {
     "@senken/sql-extraction-rs": "workspace:*",
     "@senken/sql-extraction-ts": "workspace:*",
-    "@types/node": "^20.14.6",
-    "@types/vscode": "^1.90.0",
-    "@vscode/vsce": "^2.29.0",
+    "@types/node": "^22.7.4",
+    "@types/vscode": "^1.93.0",
+    "@vscode/vsce": "^3.1.1",
     "colorette": "^2.0.20",
-    "sql-formatter": "^15.3.2",
-    "ts-jest": "^29.1.5",
+    "sql-formatter": "^15.4.2",
+    "ts-jest": "^29.2.5",
     "ts-loader": "^9.5.1",
     "vscode-languageclient": "^9.0.1",
-    "webpack": "^5.92.1",
+    "webpack": "^5.95.0",
     "webpack-cli": "^5.1.4"
   }
 }
