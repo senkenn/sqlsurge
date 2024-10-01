@@ -51,9 +51,6 @@ importers:
       '@senken/sql-extraction-ts':
         specifier: workspace:*
         version: link:../sql-extraction/ts
-      '@types/node':
-        specifier: ^20.14.6
-        version: 20.14.6
       '@types/vscode':
         specifier: ^1.90.0
         version: 1.90.0
