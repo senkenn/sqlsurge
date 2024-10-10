@@ -2,6 +2,7 @@
   "name": "test-workspace-ts",
   "devDependencies": {
     "prisma": "5.11.0",
+    "sql-formatter": "^15.4.2",
     "ts-node": "^10.9.2"
   },
   "dependencies": {
