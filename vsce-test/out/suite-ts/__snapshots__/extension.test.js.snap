@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Formatting Test Should NOT be formatted with empty content: empty 1`] = `
+exports[`Formatting Test Should NOT be formatted first SQL node with "Empty" content 1`] = `
 "import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -9,9 +9,9 @@ async function main() {
   const todo = await prisma.$queryRaw\`\`;
   await prisma.$queryRaw\`
 INSERT INTO
-    todos (id, description, done)
+  todos (id, description, done)
 VALUES
-    (1, "todo description", TRUE);
+  (1, "todo description", TRUE);
     \`;
   console.log(todo);
 }
@@ -29,7 +29,7 @@ main()
 "
 `;
 
-exports[`Formatting Test Should NOT be formatted with empty content: one new line 1`] = `
+exports[`Formatting Test Should NOT be formatted first SQL node with "One new line" content 1`] = `
 "import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -39,9 +39,9 @@ async function main() {
 \`;
   await prisma.$queryRaw\`
 INSERT INTO
-    todos (id, description, done)
+  todos (id, description, done)
 VALUES
-    (1, "todo description", TRUE);
+  (1, "todo description", TRUE);
     \`;
   console.log(todo);
 }
@@ -59,7 +59,7 @@ main()
 "
 `;
 
-exports[`Formatting Test Should NOT be formatted with empty content: one space 1`] = `
+exports[`Formatting Test Should NOT be formatted first SQL node with "One space" content 1`] = `
 "import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -68,9 +68,9 @@ async function main() {
   const todo = await prisma.$queryRaw\` \`;
   await prisma.$queryRaw\`
 INSERT INTO
-    todos (id, description, done)
+  todos (id, description, done)
 VALUES
-    (1, "todo description", TRUE);
+  (1, "todo description", TRUE);
     \`;
   console.log(todo);
 }
@@ -88,7 +88,7 @@ main()
 "
 `;
 
-exports[`Formatting Test Should NOT be formatted with empty content: spaces and new lines 1`] = `
+exports[`Formatting Test Should NOT be formatted first SQL node with "Spaces and new lines" content 1`] = `
 "import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -100,9 +100,9 @@ async function main() {
 \`;
   await prisma.$queryRaw\`
 INSERT INTO
-    todos (id, description, done)
+  todos (id, description, done)
 VALUES
-    (1, "todo description", TRUE);
+  (1, "todo description", TRUE);
     \`;
   console.log(todo);
 }
@@ -157,75 +157,7 @@ main()
 "
 `;
 
-exports[`Formatting Test Should be formatted with 2 tab size indent 1`] = `
-"import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
-
-async function main() {
-  const todo = await prisma.$queryRaw\`    SELECT
-      *
-    FROM
-      todos
-    WHERE
-      id = 1;\`;
-  await prisma.$queryRaw\`
-    INSERT INTO
-      todos (id, description, done)
-    VALUES
-      (1, "todo description", TRUE);
-    \`;
-  console.log(todo);
-}
-
-main()
-  .then(async () => {
-    await prisma.$disconnect();
-    console.log("Disconnected");
-  })
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
-"
-`;
-
-exports[`Formatting Test Should be formatted with command 1`] = `
-"import { PrismaClient } from "@prisma/client";
-
-const prisma = new PrismaClient();
-
-async function main() {
-  const todo = await prisma.$queryRaw\`SELECT
-    *
-FROM
-    todos
-WHERE
-    id = 1;\`;
-  await prisma.$queryRaw\`
-INSERT INTO
-    todos (id, description, done)
-VALUES
-    (1, "todo description", TRUE);
-    \`;
-  console.log(todo);
-}
-
-main()
-  .then(async () => {
-    await prisma.$disconnect();
-    console.log("Disconnected");
-  })
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    process.exit(1);
-  });
-"
-`;
-
-exports[`Formatting Test Should be formatted with indent if config is enabled(default: off) 1`] = `
+exports[`Formatting Test Should be formatted with 4 tab size indent 1`] = `
 "import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
@@ -259,6 +191,74 @@ main()
 "
 `;
 
+exports[`Formatting Test Should be formatted with command 1`] = `
+"import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+async function main() {
+  const todo = await prisma.$queryRaw\`SELECT
+  *
+FROM
+  todos
+WHERE
+  id = 1;\`;
+  await prisma.$queryRaw\`
+INSERT INTO
+  todos (id, description, done)
+VALUES
+  (1, "todo description", TRUE);
+    \`;
+  console.log(todo);
+}
+
+main()
+  .then(async () => {
+    await prisma.$disconnect();
+    console.log("Disconnected");
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });
+"
+`;
+
+exports[`Formatting Test Should be formatted with indent if config is enabled(default: off) 1`] = `
+"import { PrismaClient } from "@prisma/client";
+
+const prisma = new PrismaClient();
+
+async function main() {
+  const todo = await prisma.$queryRaw\`    SELECT
+      *
+    FROM
+      todos
+    WHERE
+      id = 1;\`;
+  await prisma.$queryRaw\`
+    INSERT INTO
+      todos (id, description, done)
+    VALUES
+      (1, "todo description", TRUE);
+    \`;
+  console.log(todo);
+}
+
+main()
+  .then(async () => {
+    await prisma.$disconnect();
+    console.log("Disconnected");
+  })
+  .catch(async (e) => {
+    console.error(e);
+    await prisma.$disconnect();
+    process.exit(1);
+  });
+"
+`;
+
 exports[`Formatting Test Should be formatted with save if config is default(enabled) 1`] = `
 "import { PrismaClient } from "@prisma/client";
 
@@ -266,16 +266,16 @@ const prisma = new PrismaClient();
 
 async function main() {
   const todo = await prisma.$queryRaw\`SELECT
-    *
+  *
 FROM
-    todos
+  todos
 WHERE
-    id = 1;\`;
+  id = 1;\`;
   await prisma.$queryRaw\`
 INSERT INTO
-    todos (id, description, done)
+  todos (id, description, done)
 VALUES
-    (1, "todo description", TRUE);
+  (1, "todo description", TRUE);
     \`;
   console.log(todo);
 }
@@ -308,9 +308,9 @@ exports[`Formatting Test Should be formatted with user-defined function 1`] = `
     connection,
     \`
 INSERT INTO
-    todos (id, description, done)
+  todos (id, description, done)
 VALUES
-    ($1, "todo description", TRUE);
+  ($1, "todo description", TRUE);
     \`,
     [1],
   );

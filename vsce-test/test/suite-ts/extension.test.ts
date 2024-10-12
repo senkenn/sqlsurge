@@ -232,7 +232,7 @@ describe("Formatting Test", () => {
     expect(formattedText).toMatchSnapshot();
   });
 
-  it("Should be formatted with 2 tab size indent", async () => {
+  it("Should be formatted with 4 tab size indent", async () => {
     const filePath = path.resolve(wsPath, "src", "index.ts");
     const docUri = vscode.Uri.file(filePath);
     const doc = await vscode.workspace.openTextDocument(docUri);
@@ -245,9 +245,11 @@ describe("Formatting Test", () => {
     await vscode.workspace
       .getConfiguration("sqlsurge", vscode.workspace.workspaceFolders?.[0]?.uri)
       .update("formatSql.indent", true);
-    await vscode.workspace
-      .getConfiguration("sqlsurge")
-      .update("formatSql.tabSize", 2);
+    const sqlFormatterConfigPath = path.resolve(wsPath, ".sql-formatter.json");
+    const sqlFormatterOptionsStr = JSON.stringify({
+      tabWidth: 4,
+    });
+    fs.writeFileSync(sqlFormatterConfigPath, sqlFormatterOptionsStr);
 
     // execute command
     await vscode.commands.executeCommand("sqlsurge.formatSql");
@@ -289,12 +291,12 @@ describe("Formatting Test", () => {
 
   it.each`
     desc                      | content
-    ${"empty"}                | ${""}
-    ${"one space"}            | ${" "}
-    ${"one new line"}         | ${"\n"}
-    ${"spaces and new lines"} | ${"\n  \n  \n"}
+    ${"Empty"}                | ${""}
+    ${"One space"}            | ${" "}
+    ${"One new line"}         | ${"\n"}
+    ${"Spaces and new lines"} | ${"\n  \n  \n"}
   `(
-    "Should NOT be formatted with empty content: $desc",
+    'Should NOT be formatted first SQL node with "$desc" content',
     async ({ content }) => {
       const filePath = path.resolve(wsPath, "src", "index.ts");
       const docUri = vscode.Uri.file(filePath);

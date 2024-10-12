@@ -13,7 +13,6 @@ describe("extConfig", () => {
       key                    | expected
       ${"formatOnSave"}      | ${true}
       ${"formatSql.indent"}  | ${false}
-      ${"formatSql.tabSize"} | ${4}
       ${"customRawSqlQuery"} | ${{ language: "typescript", configs: [{ functionName: "functionName", sqlArgNo: 1, isTemplateLiteral: true }] }}
       ${"customRawSqlQuery"} | ${{ language: "rust", configs: [{ functionName: "functionName", sqlArgNo: 1, isMacro: true }] }}
     `("Should return workspace config: sqlsurge.$key", ({ key, expected }) => {
@@ -29,7 +28,6 @@ describe("extConfig", () => {
       key                    | expected
       ${"formatOnSave"}      | ${"true"}
       ${"formatSql.indent"}  | ${"false"}
-      ${"formatSql.tabSize"} | ${"4"}
       ${"customRawSqlQuery"} | ${{ language: "rust", configs: [{ functionName: "functionName", sqlArgNo: 0, isTemplateLiteral: true }] }}
     `(
       "Should return undefined with invalid config: sqlsurge.$key",

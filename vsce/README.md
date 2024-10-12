@@ -62,7 +62,6 @@ Configurations for raw SQL queries
 
 - `sqlsurge.formatOnSave`: Format SQL on save. Default is `true`.
 - `sqlsurge.formatSql.indent`: Format SQL with indent. Default is `false`.
-- `sqlsurge.formatSql.tabSize`: Tab size for SQL formatting. Default is `4`.
 
 As a formatter, sqlsurge use `sqls` for Vanilla SQL files, use [SQL Formatter](https://github.com/sql-formatter-org/sql-formatter) for raw SQL.
 

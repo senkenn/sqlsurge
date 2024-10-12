@@ -7,7 +7,6 @@ import { createLogger } from "./outputChannel";
 const extConfigSchemas = v.object({
   formatOnSave: v.boolean(),
   "formatSql.indent": v.boolean(),
-  "formatSql.tabSize": v.number(),
   customRawSqlQuery: v.union([
     v.object({
       language: v.literal("typescript"),
