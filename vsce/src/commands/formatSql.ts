@@ -8,7 +8,6 @@ import { getWorkspaceConfig } from "../extConfig";
 import { createLogger } from "../outputChannel";
 
 const sqlFormatterConfigFileName = ".sql-formatter.json";
-const sqlFormatterTabWidthDefault = 2;
 
 export async function commandFormatSqlProvider(refresh: RefreshFunc) {
   return vscode.commands.registerCommand("sqlsurge.formatSql", () =>
