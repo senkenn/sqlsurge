@@ -10,12 +10,18 @@ export async function resetTestWorkspace(
   wsPath: string,
   testFilePaths: string[],
 ) {
-  // restore file
+  // Files to be restored
   const settingsJsonPath = path.resolve(wsPath, ".vscode", "settings.json");
   const testFilePathJoinedWithSpace = testFilePaths.join(" ");
+  const sqlFormatterConfigPath = path.resolve(wsPath, ".sql-formatter.json");
 
   // restore saved files
-  execFileSync("git", ["restore", ...testFilePaths, settingsJsonPath]);
+  execFileSync("git", [
+    "restore",
+    ...testFilePaths,
+    settingsJsonPath,
+    sqlFormatterConfigPath,
+  ]);
 
   // revert unsaved changes
   await vscode.commands.executeCommand("workbench.action.files.revert");

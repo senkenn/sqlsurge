@@ -1,11 +1,13 @@
 import type { SqlNode } from "../interface";
 
-import { format } from "sql-formatter";
+import { type FormatOptionsWithLanguage, format } from "sql-formatter";
 import * as ts from "typescript";
 import * as vscode from "vscode";
 
 import { getWorkspaceConfig } from "../extConfig";
 import { createLogger } from "../outputChannel";
+
+const sqlFormatterConfigFileName = ".sql-formatter.json";
 
 export async function commandFormatSqlProvider(refresh: RefreshFunc) {
   return vscode.commands.registerCommand("sqlsurge.formatSql", () =>
@@ -30,9 +32,48 @@ async function formatSql(refresh: RefreshFunc): Promise<void> {
     const sqlNodes = await refresh(document);
     const dummyPlaceHolder = '"SQLSURGE_DUMMY"';
 
+    // get sql-formatter config
+    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+    if (!workspaceFolder) {
+      logger.error("[commandFormatSqlProvider]", "Not open workspace");
+      return;
+    }
+    const sqlFormatterConfigUri = vscode.Uri.joinPath(
+      workspaceFolder.uri,
+      sqlFormatterConfigFileName,
+    );
+    let sqlFormatterOptionsBinary: Uint8Array | undefined = undefined;
+    try {
+      logger.info(
+        "[commandFormatSqlProvider]",
+        "Find & Reading sql-formatter config file.",
+      );
+      sqlFormatterOptionsBinary = await vscode.workspace.fs.readFile(
+        sqlFormatterConfigUri,
+      );
+    } catch (error) {
+      logger.warn(
+        "[commandFormatSqlProvider]",
+        "Failed to read sql-formatter config file.",
+        error,
+      );
+      logger.info(
+        "[commandFormatSqlProvider]",
+        "Use default sql-formatter config.",
+      );
+    }
+    const sqlFormatterOptions =
+      sqlFormatterOptionsBinary &&
+      (JSON.parse(
+        sqlFormatterOptionsBinary.toString(),
+      ) as FormatOptionsWithLanguage);
+
+    // edit document with formatted content
     editor.edit((editBuilder) => {
       for (const sqlNode of sqlNodes) {
         logger.debug("[formatSql]", "Formatting", sqlNode);
+
+        // skip empty content
         if (sqlNode.content.match(/^\s*$/)) {
           logger.debug(
             "[formatSql]",
@@ -100,15 +141,12 @@ async function formatSql(refresh: RefreshFunc): Promise<void> {
         }
 
         const isEnabledIndent = getWorkspaceConfig("formatSql.indent");
-        const tabSize = getWorkspaceConfig("formatSql.tabSize");
-        if (tabSize === undefined) {
-          continue;
-        }
 
         // get formatted content
-        const formattedContentWithDummy = format(sqlNode.content, {
-          tabWidth: tabSize,
-        });
+        const formattedContentWithDummy = format(
+          sqlNode.content,
+          sqlFormatterOptions,
+        );
 
         // reverse the place holders
         let formattedContent = formattedContentWithDummy;
@@ -126,7 +164,6 @@ async function formatSql(refresh: RefreshFunc): Promise<void> {
           formattedContent = indentedContent(
             formattedContent,
             sqlNode.method_line,
-            tabSize,
           );
         }
 
@@ -157,8 +194,20 @@ async function formatSql(refresh: RefreshFunc): Promise<void> {
 function indentedContent(
   content: string,
   methodLine: SqlNode["method_line"],
-  tabSize: number,
 ): string {
+  const logger = createLogger();
+
+  const defaultTabSize = 2;
+  let tabSize =
+    vscode.window.activeTextEditor?.options.tabSize ?? defaultTabSize;
+  if (typeof tabSize === "string") {
+    logger.warn(
+      "[indentedContent]",
+      `tabSize is ${tabSize}. Use default tabSize: ${defaultTabSize}`,
+    );
+    tabSize = defaultTabSize;
+  }
+
   const lineText =
     vscode.window.activeTextEditor?.document.lineAt(methodLine).text;
   if (!lineText) {
