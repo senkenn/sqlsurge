@@ -53,17 +53,22 @@ It can be enabled by adding the following setting to settings.json.
 
 ### Formatting
 
-VSCode Commands
+#### SQL File
 
-- SQL File: `Format Document`
-- Raw SQL query: `sqlsurge: Format SQL`
+- VSCode Command: `Format Document`
+- Formatter: sqls
 
-Configurations for raw SQL queries
+#### Embedded Files (TypeScript, Rust, etc.)
+
+- VSCode Command: `sqlsurge: Format SQL`
+- Formatter: [SQL Formatter](https://github.com/sql-formatter-org/sql-formatter)
+
+For embedded SQL queries, there are several VS Code configurations available.
 
 - `sqlsurge.formatOnSave`: Format SQL on save. Default is `true`.
 - `sqlsurge.formatSql.indent`: Format SQL with indent. Default is `false`.
 
-As a formatter, sqlsurge use `sqls` for Vanilla SQL files, use [SQL Formatter](https://github.com/sql-formatter-org/sql-formatter) for raw SQL.
+Also, `sqlsurge` reads the `.sql-formatter.json` file if it exists in the workspace root. If not, it uses the default `SQL Formatter` configuration.
 
 ### Quick Info Symbol
 

@@ -40,5 +40,6 @@
   "explorer.fileNesting.patterns": {
     "*": "${basename}.*.${extname}"
   },
-  "explorer.fileNesting.expand": false
+  "explorer.fileNesting.expand": false,
+  "markdown.extension.toc.levels": "3..3"
 }
