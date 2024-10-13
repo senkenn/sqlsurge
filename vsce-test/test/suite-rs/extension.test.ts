@@ -247,13 +247,17 @@ describe("Formatting Test", () => {
       .getConfiguration("sqlsurge", vscode.workspace.workspaceFolders?.[0]?.uri)
       .update("formatSql.indent", true);
     const sqlFormatterConfigPath = path.resolve(wsPath, ".sql-formatter.json");
-    const sqlFormatterOptionsStr = JSON.stringify({
+    const sqlFormatterOptions = JSON.parse(
+      fs.readFileSync(sqlFormatterConfigPath, "utf8"),
+    );
+    const newSqlFormatterOptions = {
+      ...sqlFormatterOptions,
       tabWidth: 4,
-      paramTypes: {
-        numbered: ["$"],
-      },
-    });
-    fs.writeFileSync(sqlFormatterConfigPath, sqlFormatterOptionsStr);
+    };
+    fs.writeFileSync(
+      sqlFormatterConfigPath,
+      JSON.stringify(newSqlFormatterOptions),
+    );
 
     // execute command
     await vscode.commands.executeCommand("sqlsurge.formatSql");
