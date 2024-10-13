@@ -249,6 +249,9 @@ describe("Formatting Test", () => {
     const sqlFormatterConfigPath = path.resolve(wsPath, ".sql-formatter.json");
     const sqlFormatterOptionsStr = JSON.stringify({
       tabWidth: 4,
+      paramTypes: {
+        numbered: ["$"],
+      },
     });
     fs.writeFileSync(sqlFormatterConfigPath, sqlFormatterOptionsStr);
 

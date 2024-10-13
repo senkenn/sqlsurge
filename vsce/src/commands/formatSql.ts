@@ -30,7 +30,6 @@ async function formatSql(refresh: RefreshFunc): Promise<void> {
     }
     const document = editor.document;
     const sqlNodes = await refresh(document);
-    const dummyPlaceHolder = '"SQLSURGE_DUMMY"';
 
     // get sql-formatter config
     const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
@@ -121,43 +120,13 @@ async function formatSql(refresh: RefreshFunc): Promise<void> {
           continue;
         }
 
-        // convert place holder to dummy if there are any place holders
-        const placeHolderRegExp =
-          document.languageId === "typescript"
-            ? /\$(\{.*\}|\d+)/g // ${1} or $1
-            : document.languageId === "rust"
-              ? /(\$\d+|\?)/g
-              : undefined;
-        if (placeHolderRegExp === undefined) {
-          throw new Error("placeHolderRegExp is undefined");
-        }
-
-        const placeHolders = sqlNode.content.match(placeHolderRegExp);
-        if (placeHolders) {
-          sqlNode.content = sqlNode.content.replaceAll(
-            placeHolderRegExp,
-            dummyPlaceHolder,
-          );
-        }
-
         const isEnabledIndent = getWorkspaceConfig("formatSql.indent");
 
         // get formatted content
-        const formattedContentWithDummy = format(
+        let formattedContent = format(
           sqlNode.content,
-          sqlFormatterOptions,
+          sqlFormatterOptions as FormatOptionsWithLanguage,
         );
-
-        // reverse the place holders
-        let formattedContent = formattedContentWithDummy;
-        if (placeHolders) {
-          placeHolders.forEach((placeHolder, index) => {
-            formattedContent = formattedContent.replace(
-              dummyPlaceHolder,
-              placeHolder,
-            );
-          });
-        }
 
         // add indent if config is enabled
         if (isEnabledIndent) {
