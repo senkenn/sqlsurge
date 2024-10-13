@@ -1,10 +1,8 @@
-import type { SqlNode } from "../interface";
-
 import { type FormatOptionsWithLanguage, format } from "sql-formatter";
 import * as ts from "typescript";
 import * as vscode from "vscode";
-
 import { getWorkspaceConfig } from "../extConfig";
+import type { SqlNode } from "../interface";
 import { createLogger } from "../outputChannel";
 
 const sqlFormatterConfigFileName = ".sql-formatter.json";
@@ -30,157 +28,18 @@ async function formatSql(refresh: RefreshFunc): Promise<void> {
     }
     const document = editor.document;
     const sqlNodes = await refresh(document);
-    const dummyPlaceHolder = '"SQLSURGE_DUMMY"';
 
-    // get sql-formatter config
-    const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
-    if (!workspaceFolder) {
-      logger.error("[commandFormatSqlProvider]", "Not open workspace");
-      return;
-    }
-    const sqlFormatterConfigUri = vscode.Uri.joinPath(
-      workspaceFolder.uri,
-      sqlFormatterConfigFileName,
-    );
-    let sqlFormatterOptionsBinary: Uint8Array | undefined = undefined;
-    try {
+    const sqlFormatterOptions = await getSqlFormatterOptions();
+    if (!sqlFormatterOptions) {
       logger.info(
         "[commandFormatSqlProvider]",
-        "Find & Reading sql-formatter config file.",
-      );
-      sqlFormatterOptionsBinary = await vscode.workspace.fs.readFile(
-        sqlFormatterConfigUri,
-      );
-    } catch (error) {
-      logger.warn(
-        "[commandFormatSqlProvider]",
-        "Failed to read sql-formatter config file.",
-        error,
-      );
-      logger.info(
-        "[commandFormatSqlProvider]",
-        "Use default sql-formatter config.",
+        "Using default sql-formatter config.",
       );
     }
-    const sqlFormatterOptions =
-      sqlFormatterOptionsBinary &&
-      (JSON.parse(
-        sqlFormatterOptionsBinary.toString(),
-      ) as FormatOptionsWithLanguage);
 
-    // edit document with formatted content
     editor.edit((editBuilder) => {
       for (const sqlNode of sqlNodes) {
-        logger.debug("[formatSql]", "Formatting", sqlNode);
-
-        // skip empty content
-        if (sqlNode.content.match(/^\s*$/)) {
-          logger.debug(
-            "[formatSql]",
-            "Skip formatting for empty content",
-            sqlNode,
-          );
-          continue;
-        }
-
-        // get prefix and suffix of space or new line
-        const prefix =
-          sqlNode.content
-            .match(/^(\s*)/)?.[0]
-            .replace(/ +$/g, "") ?? // remove indent space
-          "";
-        const suffix = sqlNode.content.match(/(\s*)$/)?.[0] ?? "";
-
-        // skip typescript && "" or '' string(1 line)
-        const sourceText = document.getText();
-        const sourceFile = ts.createSourceFile(
-          "unusedFileName",
-          sourceText,
-          ts.ScriptTarget.Latest, // TODO: #74 re-consider this it should be the same as the vscode lsp or project tsconfig.json
-        );
-        const startPosition =
-          sourceFile.getPositionOfLineAndCharacter(
-            sqlNode.code_range.start.line,
-            sqlNode.code_range.start.character,
-          ) - prefix.length;
-        const endPosition =
-          sourceFile.getPositionOfLineAndCharacter(
-            sqlNode.code_range.end.line,
-            sqlNode.code_range.end.character,
-          ) + suffix.length;
-        if (
-          document.languageId === "typescript" &&
-          sourceText[startPosition - 1]?.match(/^["']$/) &&
-          sourceText[endPosition]?.match(/^["']$/)
-        ) {
-          logger.debug(
-            "[formatSql]",
-            "Skip formatting for typescript string 1 line",
-            sqlNode,
-          );
-          continue;
-        }
-
-        // convert place holder to dummy if there are any place holders
-        const placeHolderRegExp =
-          document.languageId === "typescript"
-            ? /\$(\{.*\}|\d+)/g // ${1} or $1
-            : document.languageId === "rust"
-              ? /(\$\d+|\?)/g
-              : undefined;
-        if (placeHolderRegExp === undefined) {
-          throw new Error("placeHolderRegExp is undefined");
-        }
-
-        const placeHolders = sqlNode.content.match(placeHolderRegExp);
-        if (placeHolders) {
-          sqlNode.content = sqlNode.content.replaceAll(
-            placeHolderRegExp,
-            dummyPlaceHolder,
-          );
-        }
-
-        const isEnabledIndent = getWorkspaceConfig("formatSql.indent");
-
-        // get formatted content
-        const formattedContentWithDummy = format(
-          sqlNode.content,
-          sqlFormatterOptions,
-        );
-
-        // reverse the place holders
-        let formattedContent = formattedContentWithDummy;
-        if (placeHolders) {
-          placeHolders.forEach((placeHolder, index) => {
-            formattedContent = formattedContent.replace(
-              dummyPlaceHolder,
-              placeHolder,
-            );
-          });
-        }
-
-        // add indent if config is enabled
-        if (isEnabledIndent) {
-          formattedContent = indentedContent(
-            formattedContent,
-            sqlNode.method_line,
-          );
-        }
-
-        // replace with formatted content
-        editBuilder.replace(
-          new vscode.Range(
-            new vscode.Position(
-              sqlNode.code_range.start.line,
-              sqlNode.code_range.start.character,
-            ),
-            new vscode.Position(
-              sqlNode.code_range.end.line,
-              sqlNode.code_range.end.character,
-            ),
-          ),
-          prefix + formattedContent + suffix,
-        );
+        formatSqlNode(sqlNode, document, editBuilder, sqlFormatterOptions);
       }
     });
 
@@ -189,6 +48,146 @@ async function formatSql(refresh: RefreshFunc): Promise<void> {
     logger.error(`[commandFormatSqlProvider] ${error}`);
     vscode.window.showErrorMessage(`[commandFormatSqlProvider] ${error}`);
   }
+}
+
+async function getSqlFormatterOptions(): Promise<
+  FormatOptionsWithLanguage | undefined
+> {
+  const logger = createLogger();
+
+  const workspaceFolder = vscode.workspace.workspaceFolders?.[0];
+  if (!workspaceFolder) {
+    logger.error("[commandFormatSqlProvider]", "No open workspace");
+    return undefined;
+  }
+
+  const sqlFormatterConfigUri = vscode.Uri.joinPath(
+    workspaceFolder.uri,
+    sqlFormatterConfigFileName,
+  );
+  try {
+    logger.info(
+      "[commandFormatSqlProvider]",
+      "Reading sql-formatter config file.",
+    );
+    const sqlFormatterOptionsBinary = await vscode.workspace.fs.readFile(
+      sqlFormatterConfigUri,
+    );
+    return JSON.parse(
+      sqlFormatterOptionsBinary.toString(),
+    ) as FormatOptionsWithLanguage;
+  } catch (error) {
+    logger.warn(
+      "[commandFormatSqlProvider]",
+      "Failed to read sql-formatter config file.",
+      error,
+    );
+    return undefined;
+  }
+}
+
+function formatSqlNode(
+  sqlNode: SqlNode & { vFileName: string },
+  document: vscode.TextDocument,
+  editBuilder: vscode.TextEditorEdit,
+  sqlFormatterOptions: FormatOptionsWithLanguage | undefined,
+): void {
+  const logger = createLogger();
+  logger.debug("[formatSql]", "Formatting", sqlNode);
+
+  if (sqlNode.content.match(/^\s*$/)) {
+    logger.debug("[formatSql]", "Skip formatting for empty content", sqlNode);
+    return;
+  }
+
+  const { prefix, suffix } = getPrefixAndSuffix(sqlNode.content);
+  const { startPosition, endPosition } = getPositions(
+    sqlNode,
+    document,
+    prefix,
+    suffix,
+  );
+
+  if (shouldSkipFormatting(document, startPosition, endPosition)) {
+    logger.debug(
+      "[formatSql]",
+      "Skip formatting for typescript string 1 line",
+      sqlNode,
+    );
+    return;
+  }
+
+  const isEnabledIndent = getWorkspaceConfig("formatSql.indent");
+  let formattedContent = format(sqlNode.content, sqlFormatterOptions);
+
+  if (isEnabledIndent) {
+    formattedContent = indentedContent(formattedContent, sqlNode.method_line);
+  }
+
+  editBuilder.replace(
+    new vscode.Range(
+      new vscode.Position(
+        sqlNode.code_range.start.line,
+        sqlNode.code_range.start.character,
+      ),
+      new vscode.Position(
+        sqlNode.code_range.end.line,
+        sqlNode.code_range.end.character,
+      ),
+    ),
+    prefix + formattedContent + suffix,
+  );
+}
+
+function getPrefixAndSuffix(content: string): {
+  prefix: string;
+  suffix: string;
+} {
+  const prefix = content.match(/^(\s*)/)?.[0].replace(/ +$/g, "") ?? "";
+  const suffix = content.match(/(\s*)$/)?.[0] ?? "";
+  return { prefix, suffix };
+}
+
+function getPositions(
+  sqlNode: SqlNode,
+  document: vscode.TextDocument,
+  prefix: string,
+  suffix: string,
+): { startPosition: number; endPosition: number } {
+  const sourceText = document.getText();
+  const sourceFile = ts.createSourceFile(
+    "unusedFileName",
+    sourceText,
+    ts.ScriptTarget.Latest, // TODO: #74 re-consider this it should be the same as the vscode lsp or project tsconfig.json
+  );
+  const startPosition =
+    sourceFile.getPositionOfLineAndCharacter(
+      sqlNode.code_range.start.line,
+      sqlNode.code_range.start.character,
+    ) - prefix.length;
+  const endPosition =
+    sourceFile.getPositionOfLineAndCharacter(
+      sqlNode.code_range.end.line,
+      sqlNode.code_range.end.character,
+    ) + suffix.length;
+  return { startPosition, endPosition };
+}
+
+function shouldSkipFormatting(
+  document: vscode.TextDocument,
+  startPosition: number,
+  endPosition: number,
+): boolean {
+  const sourceText = document.getText();
+  const startMatch = sourceText[startPosition - 1]?.match(/^["']$/);
+  const endMatch = sourceText[endPosition]?.match(/^["']$/);
+  return (
+    document.languageId === "typescript" &&
+    startMatch !== undefined &&
+    startMatch !== null &&
+    endMatch !== undefined &&
+    endMatch !== null
+  );
 }
 
 function indentedContent(
@@ -203,7 +202,7 @@ function indentedContent(
   if (typeof tabSize === "string") {
     logger.warn(
       "[indentedContent]",
-      `tabSize is ${tabSize}. Use default tabSize: ${defaultTabSize}`,
+      `tabSize is ${tabSize}. Using default tabSize: ${defaultTabSize}`,
     );
     tabSize = defaultTabSize;
   }
