@@ -25,7 +25,7 @@
         "noNonNullAssertion": "warn"
       }
     },
-    "ignore": ["test-workspace*"]
+    "ignore": ["example-workspaces*"]
   },
   "json": {
     "parser": {
