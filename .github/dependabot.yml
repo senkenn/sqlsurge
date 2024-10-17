@@ -23,8 +23,17 @@ updates:
         patterns:
           - "*"
 
+  - package-ecosystem: "npm"
+    directory: "/example-workspace/ts"
+    schedule:
+      interval: "monthly"
+    groups:
+      dependencies:
+        patterns:
+          - "*"
+
   - package-ecosystem: "cargo"
-    directory: "/vsce-test/test-workspace-rs"
+    directory: "/example-workspaces/rs"
     schedule:
       interval: "monthly"
     groups:

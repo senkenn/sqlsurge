@@ -27,7 +27,7 @@
   },
   "rust-analyzer.linkedProjects": [
     "./sql-extraction/rs/Cargo.toml",
-    "./vsce-test/test-workspace-rs/Cargo.toml"
+    "./example-workspaces/rs/Cargo.toml"
   ],
   "github-actions.workflows.pinned.workflows": [".github/workflows/test.yaml"],
   "github-actions.workflows.pinned.refresh.interval": 3,

@@ -13,8 +13,20 @@ async function main() {
       "vsce",
     );
 
-    const workspacePathTs = path.resolve(__dirname, "..", "test-workspace-ts");
-    const workspacePathRs = path.resolve(__dirname, "..", "test-workspace-rs");
+    const workspacePathTs = path.resolve(
+      __dirname,
+      "..",
+      "..",
+      "example-workspaces",
+      "ts",
+    );
+    const workspacePathRs = path.resolve(
+      __dirname,
+      "..",
+      "..",
+      "example-workspaces",
+      "rs",
+    );
 
     // Download VS Code, unzip it and run the integration test
     // ts
