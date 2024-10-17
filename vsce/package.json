@@ -142,10 +142,10 @@
   "devDependencies": {
     "@senken/sql-extraction-rs": "workspace:*",
     "@senken/sql-extraction-ts": "workspace:*",
-    "@types/vscode": "^1.93.0",
+    "@types/vscode": "^1.94.0",
     "@vscode/vsce": "^3.1.1",
     "colorette": "^2.0.20",
-    "sql-formatter": "^15.4.2",
+    "sql-formatter": "^15.4.3",
     "ts-jest": "^29.2.5",
     "ts-loader": "^9.5.1",
     "vscode-languageclient": "^9.0.1",
