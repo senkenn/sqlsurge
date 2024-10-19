@@ -58,12 +58,12 @@ It can be enabled by adding the following setting to settings.json.
 - VSCode Command: `Format Document`
 - Formatter: sqls
 
-#### Embedded Files (TypeScript, Rust, etc.)
+#### Embedded SQL in Other Files (TypeScript, Rust, etc.)
 
 - VSCode Command: `sqlsurge: Format SQL`
 - Formatter: [SQL Formatter](https://github.com/sql-formatter-org/sql-formatter)
 
-For embedded SQL queries, there are several VS Code configurations available.
+For embedded SQL code in other files, there are several VS Code configurations available:
 
 - `sqlsurge.formatOnSave`: Format SQL on save. Default is `true`.
 - `sqlsurge.formatSql.indent`: Format SQL with indent. Default is `false`.
