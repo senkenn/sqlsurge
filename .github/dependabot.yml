@@ -24,7 +24,7 @@ updates:
           - "*"
 
   - package-ecosystem: "npm"
-    directory: "/example-workspace/ts"
+    directory: "/example-workspaces/ts"
     schedule:
       interval: "monthly"
     groups:
