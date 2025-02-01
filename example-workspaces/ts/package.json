@@ -1,11 +1,11 @@
 {
   "name": "test-workspace-ts",
   "devDependencies": {
-    "prisma": "6.1.0",
+    "prisma": "6.3.0",
     "sql-formatter": "^15.4.2",
     "ts-node": "^10.9.2"
   },
   "dependencies": {
-    "@prisma/client": "6.1.0"
+    "@prisma/client": "6.3.0"
   }
 }
