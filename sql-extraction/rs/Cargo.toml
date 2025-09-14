@@ -11,9 +11,9 @@ crate-type = ["cdylib"]
 [dependencies]
 expect-test = "1.5.1"
 pretty_assertions = "1.4.1"
-proc-macro2 = { version = "1.0.93", features = ["span-locations"] }
-quote = "1.0.38"
-serde = { version = "1.0.217", features = ["derive"] }
-serde_json = "1.0.138"
-syn = { version = "2.0.96", features = ["full", "visit", "extra-traits"] }
-wasm-bindgen = { version = "0.2.100", features = ["serde-serialize"] }
+proc-macro2 = { version = "1.0.101", features = ["span-locations"] }
+quote = "1.0.40"
+serde = { version = "1.0.221", features = ["derive"] }
+serde_json = "1.0.144"
+syn = { version = "2.0.106", features = ["full", "visit", "extra-traits"] }
+wasm-bindgen = { version = "0.2.101", features = ["serde-serialize"] }
