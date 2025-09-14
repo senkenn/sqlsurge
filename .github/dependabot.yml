@@ -13,7 +13,6 @@ updates:
       dependencies:
         patterns:
           - "*"
-    open-pull-requests-limit: 0
 
   - package-ecosystem: "cargo"
     directory: "/sql-extraction/rs"
@@ -23,8 +22,7 @@ updates:
       dependencies:
         patterns:
           - "*"
-    open-pull-requests-limit: 0
-  
+
   - package-ecosystem: "npm"
     directory: "/example-workspaces/ts"
     schedule:
@@ -33,7 +31,6 @@ updates:
       dependencies:
         patterns:
           - "*"
-    open-pull-requests-limit: 0
 
   - package-ecosystem: "cargo"
     directory: "/example-workspaces/rs"
@@ -43,4 +40,3 @@ updates:
       dependencies:
         patterns:
           - "*"
-    open-pull-requests-limit: 0
