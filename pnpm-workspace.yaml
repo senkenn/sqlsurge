@@ -2,3 +2,8 @@ packages:
   - sql-extraction/*
   - vsce
   - vsce-test
+
+onlyBuiltDependencies:
+  - '@vscode/vsce-sign'
+  - lefthook
+  - unrs-resolver
