@@ -3,8 +3,8 @@ import type { Config } from "@jest/types";
 import { runCLI } from "jest";
 
 export async function run(
-  testsRoot: string,
-  reportTestResults: (error?: Error, failures?: number) => void,
+  _testsRoot: string,
+  _reportTestResults: (error?: Error, failures?: number) => void,
 ): Promise<void> {
   const projectRootPath = path.resolve(__dirname, "../..");
 

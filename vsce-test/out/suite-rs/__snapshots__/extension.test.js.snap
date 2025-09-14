@@ -1,4 +1,4 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
 
 exports[`Formatting Test Should NOT be formatted first SQL node with "Empty" content 1`] = `
 "use sqlx::postgres::PgPool;

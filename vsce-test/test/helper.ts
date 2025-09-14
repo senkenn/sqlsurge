@@ -1,4 +1,4 @@
-import { execFileSync, execSync } from "node:child_process";
+import { execFileSync } from "node:child_process";
 import * as path from "node:path";
 import * as vscode from "vscode";
 
@@ -12,7 +12,6 @@ export async function resetTestWorkspace(
 ) {
   // Files to be restored
   const settingsJsonPath = path.resolve(wsPath, ".vscode", "settings.json");
-  const testFilePathJoinedWithSpace = testFilePaths.join(" ");
   const sqlFormatterConfigPath = path.resolve(wsPath, ".sql-formatter.json");
 
   // restore saved files

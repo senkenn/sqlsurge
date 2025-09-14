@@ -1,6 +1,6 @@
 import * as vscode from "vscode";
 
-let logger: vscode.LogOutputChannel | undefined = undefined;
+let logger: vscode.LogOutputChannel | undefined;
 
 export function createLogger(): vscode.LogOutputChannel {
   if (logger) {
