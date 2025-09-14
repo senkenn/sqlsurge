@@ -18,10 +18,9 @@
     "valibot": "^0.42.1"
   },
   "engines": {
-    "pnpm": "^9.0.6",
+    "pnpm": "^10.0.0",
     "npm": "Do not use. Use pnpm instead.",
     "yarn": "Do not use. Use pnmpm instead.",
     "bun": "Do not use. Use pnmpm instead."
-  },
-  "packageManager": "pnpm@9.8.0+sha512.8e4c3550fb500e808dbc30bb0ce4dd1eb614e30b1c55245f211591ec2cdf9c611cabd34e1364b42f564bd54b3945ed0f49d61d1bbf2ec9bd74b866fcdc723276"
+  }
 }

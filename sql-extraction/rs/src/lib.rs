@@ -46,7 +46,7 @@ struct SqlNode {
 #[allow(non_snake_case)]
 struct Config {
     functionName: String,
-    sqlArgNo: usize, // 1-indexed, first argument is 1
+    sqlArgNo: usize, // 0-indexed, first argument is 0
     isMacro: bool,
 }
 
@@ -82,10 +82,10 @@ impl<'ast> Visit<'ast> for QueryVisitor {
                         #[cfg(debug_assertions)]
                         println!("{} config: {:?}, argNo: {}", function!(), config, i / 2 + 1);
                         println!("{} token[{}]: {:?}", function!(), i, token.to_string());
-                        if i / 2 + 1 == config.sqlArgNo {
-                            sql_token = Some(token);
-                            break;
-                        }
+                    if i / 2 == config.sqlArgNo {
+                        sql_token = Some(token);
+                        break;
+                    }
                     }
                 }
 
@@ -213,7 +213,7 @@ impl<'ast> Visit<'ast> for QueryVisitor {
                     };
                     println!("expr_lit: {:#?}", lit.span().start());
                     println!("expr_lit: {:#?}", lit.span().end());
-                    if i / 2 + 1 == config.sqlArgNo {
+                    if i == config.sqlArgNo {
                         sql_lit = lit.token().to_string();
                         start = Position {
                             line: lit.span().start().line - 1, // -1 for 1-indexed to 0-indexed
@@ -289,12 +289,12 @@ pub fn extract_sql_list(source_txt: &str, configs: Option<Vec<String>>) -> Seria
     let default_configs: Vec<Config> = vec![
         Config {
             functionName: "query".to_string(),
-            sqlArgNo: 1,
+            sqlArgNo: 0,
             isMacro: true,
         },
         Config {
             functionName: "query_as".to_string(),
-            sqlArgNo: 2,
+            sqlArgNo: 1,
             isMacro: true,
         },
     ];
@@ -461,13 +461,13 @@ ORDER BY id
             Some(vec![
                 serde_json::to_string(&Config {
                     functionName: "query".to_string(),
-                    sqlArgNo: 1,
+                    sqlArgNo: 0,
                     isMacro: true,
                 })
                 .unwrap(),
                 serde_json::to_string(&Config {
                     functionName: "query_as".to_string(),
-                    sqlArgNo: 2,
+                    sqlArgNo: 1,
                     isMacro: true,
                 })
                 .unwrap(),
@@ -718,7 +718,7 @@ ORDER BY id
             Some(
                 [serde_json::to_string(&Config {
                     functionName: "sql_query".to_string(),
-                    sqlArgNo: 1,
+                    sqlArgNo: 0,
                     isMacro: false,
                 })
                 .unwrap()]

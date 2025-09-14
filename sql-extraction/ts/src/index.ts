@@ -5,7 +5,7 @@ import type { SqlNode } from "../../../vsce/src/interface";
 export const customRawSqlQueryTsSchema = v.array(
   v.object({
     functionName: v.string(),
-    sqlArgNo: v.pipe(v.number(), v.minValue(1)),
+    sqlArgNo: v.pipe(v.number(), v.minValue(0)),
     isTemplateLiteral: v.boolean(),
   }),
 );
@@ -16,7 +16,7 @@ export type CustomRawSqlQueryTs = v.InferOutput<
 const defaultCustomRawSqlQueryTs: CustomRawSqlQueryTs = [
   {
     functionName: "$queryRaw",
-    sqlArgNo: 1,
+    sqlArgNo: 0,
     isTemplateLiteral: true,
   },
 ];
@@ -25,6 +25,14 @@ export function extractSqlListTs(
   sourceTxt: string,
   configs = defaultCustomRawSqlQueryTs,
 ): SqlNode[] {
+  const result = v.safeParse(customRawSqlQueryTsSchema, configs);
+  if (!result.success) {
+    throw new Error(
+      `Invalid config: ${JSON.stringify(result.issues, null, 2)}`,
+    );
+  }
+  const parsedConfig = result.output;
+
   const sourceFile = ts.createSourceFile(
     "unusedFileName",
     sourceTxt,
@@ -39,7 +47,7 @@ export function extractSqlListTs(
    * If find a tagged template expression with name "$queryRaw", push it to blocksNode
    */
   function visit(node: ts.Node): void {
-    for (const c of configs) {
+    for (const c of parsedConfig) {
       // CallExpression
       if (
         !c.isTemplateLiteral &&
@@ -50,7 +58,7 @@ export function extractSqlListTs(
         const method_line = sourceFile.getLineAndCharacterOfPosition(
           node.expression.pos,
         ).line;
-        const sqlNode = node.arguments[c.sqlArgNo - 1] as
+        const sqlNode = node.arguments[c.sqlArgNo] as
           | ts.StringLiteral
           | ts.NoSubstitutionTemplateLiteral;
         const { line: startLine, character: startCharacter } =
@@ -86,7 +94,7 @@ export function extractSqlListTs(
         const method_line = sourceFile.getLineAndCharacterOfPosition(
           node.expression.pos,
         ).line;
-        const sqlNode = node.arguments[c.sqlArgNo - 1] as
+        const sqlNode = node.arguments[c.sqlArgNo] as
           | ts.StringLiteral
           | ts.NoSubstitutionTemplateLiteral;
         const { line: startLine, character: startCharacter } =

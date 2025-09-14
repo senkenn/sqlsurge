@@ -4,7 +4,7 @@ import type { SqlNode } from "../../../vsce/src/interface";
 export const customRawSqlQueryRsSchema = v.array(
   v.object({
     functionName: v.string(),
-    sqlArgNo: v.pipe(v.number(), v.minValue(1)),
+    sqlArgNo: v.pipe(v.number(), v.minValue(0)),
     isMacro: v.boolean(),
   }),
 );

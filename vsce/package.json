@@ -66,7 +66,7 @@
             "configs": [
               {
                 "functionName": "$queryRaw",
-                "sqlArgNo": 1,
+                "sqlArgNo": 0,
                 "isTemplateLiteral": true
               }
             ]
@@ -89,8 +89,8 @@
                   },
                   "sqlArgNo": {
                     "type": "number",
-                    "description": "Argument number of SQL query in the function. 1-based index(1 == first argument).",
-                    "default": 1
+                    "description": "Argument number of SQL query in the function. 0-based index(0 == first argument).",
+                    "default": 0
                   },
                   "isMacro": {
                     "type": "boolean",

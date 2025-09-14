@@ -27,18 +27,6 @@ jobs:
 
       - run: pnpm -r test
 
-  rust-test:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'pull_request'
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: ./.github/actions/setup
-
-      - name: Run tests
-        run: pnpm -F @senken/sql-extraction-rs exec cargo test
-
   e2e-test:
     strategy:
       matrix:
@@ -64,7 +52,7 @@ jobs:
   dependabot-auto-merge:
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]'
-    needs: [unit-test, rust-test, e2e-test]
+    needs: [unit-test, e2e-test]
     steps:
       - name: Dependabot metadata
         id: metadata

@@ -247,7 +247,7 @@ import { getManager } from "typeorm";
         [
           {
             functionName: "query",
-            sqlArgNo: 1,
+            sqlArgNo: 0,
             isTemplateLiteral: false,
           },
         ],
@@ -322,7 +322,7 @@ import { query, getConnection } from "./lib/db";
         [
           {
             functionName: "query",
-            sqlArgNo: 2,
+            sqlArgNo: 1,
             isTemplateLiteral: false,
           },
         ],

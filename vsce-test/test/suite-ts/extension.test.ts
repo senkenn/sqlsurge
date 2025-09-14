@@ -129,7 +129,7 @@ describe("Completion Test", () => {
         configs: [
           {
             functionName: "query",
-            sqlArgNo: 2,
+            sqlArgNo: 1,
             isTemplateLiteral: false,
           },
         ],
@@ -275,7 +275,7 @@ describe("Formatting Test", () => {
         configs: [
           {
             functionName: "query",
-            sqlArgNo: 2,
+            sqlArgNo: 1,
             isTemplateLiteral: false,
           },
         ],
