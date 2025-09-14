@@ -14,8 +14,12 @@
     "url": "https://github.com/senkenn/sqlsurge"
   },
   "publisher": "senken",
-  "keywords": ["multi-root ready"],
-  "categories": ["Programming Languages"],
+  "keywords": [
+    "multi-root ready"
+  ],
+  "categories": [
+    "Programming Languages"
+  ],
   "icon": "resources/sqlsurge-icon.png",
   "engines": {
     "vscode": "^1.93.0"
@@ -75,7 +79,10 @@
             "language": {
               "type": "string",
               "description": "Language of the writing custom query.",
-              "enum": ["typescript", "rust"]
+              "enum": [
+                "typescript",
+                "rust"
+              ]
             },
             "configs": {
               "type": "array",

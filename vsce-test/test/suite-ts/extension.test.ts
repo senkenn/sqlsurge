@@ -41,7 +41,7 @@ describe("Restart Language Server Test", () => {
     // confirm completion
     const filePath = path.resolve(wsPath, "src", "index.ts");
     const docUri = vscode.Uri.file(filePath);
-    const doc = await vscode.workspace.openTextDocument(docUri);
+    const _doc = await vscode.workspace.openTextDocument(docUri);
 
     // Wait for server activation
     await sleep(waitingTimeCompletion);
@@ -159,7 +159,7 @@ describe("Formatting Test", () => {
     const filePath = path.resolve(wsPath, "src", "index.ts");
     const docUri = vscode.Uri.file(filePath);
     const doc = await vscode.workspace.openTextDocument(docUri);
-    const editor = await vscode.window.showTextDocument(doc);
+    const _editor = await vscode.window.showTextDocument(doc);
 
     // Wait for server activation
     await sleep(waitingTimeFormatting);
@@ -177,7 +177,7 @@ describe("Formatting Test", () => {
     const filePath = path.resolve(wsPath, "src", "index.ts");
     const docUri = vscode.Uri.file(filePath);
     const doc = await vscode.workspace.openTextDocument(docUri);
-    const editor = await vscode.window.showTextDocument(doc);
+    const _editor = await vscode.window.showTextDocument(doc);
 
     // Wait for server activation
     await sleep(waitingTimeFormatting);
@@ -193,7 +193,7 @@ describe("Formatting Test", () => {
     const filePath = path.resolve(wsPath, "src", "index.ts");
     const docUri = vscode.Uri.file(filePath);
     const doc = await vscode.workspace.openTextDocument(docUri);
-    const editor = await vscode.window.showTextDocument(doc);
+    const _editor = await vscode.window.showTextDocument(doc);
 
     // Wait for server activation
     await sleep(waitingTimeFormatting);
@@ -214,7 +214,7 @@ describe("Formatting Test", () => {
     const filePath = path.resolve(wsPath, "src", "index.ts");
     const docUri = vscode.Uri.file(filePath);
     const doc = await vscode.workspace.openTextDocument(docUri);
-    const editor = await vscode.window.showTextDocument(doc);
+    const _editor = await vscode.window.showTextDocument(doc);
 
     // Wait for server activation
     await sleep(waitingTimeFormatting);
@@ -236,7 +236,7 @@ describe("Formatting Test", () => {
     const filePath = path.resolve(wsPath, "src", "index.ts");
     const docUri = vscode.Uri.file(filePath);
     const doc = await vscode.workspace.openTextDocument(docUri);
-    const editor = await vscode.window.showTextDocument(doc);
+    const _editor = await vscode.window.showTextDocument(doc);
 
     // Wait for server activation
     await sleep(waitingTimeFormatting);
@@ -263,7 +263,7 @@ describe("Formatting Test", () => {
     const filePath = path.resolve(wsPath, "src", "userDefined.ts");
     const docUri = vscode.Uri.file(filePath);
     const doc = await vscode.workspace.openTextDocument(docUri);
-    const editor = await vscode.window.showTextDocument(doc);
+    const _editor = await vscode.window.showTextDocument(doc);
 
     await sleep(waitingTimeFormatting);
 

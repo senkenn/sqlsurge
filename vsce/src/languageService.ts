@@ -398,8 +398,8 @@ export function createIncrementalLanguageServiceHost(
 
 export function createIncrementalSnapshot(
   content: string,
-  [start, end]: [number, number] = [0, content.length],
-  prevSnapshot?: IncrementalSnapshot,
+  [_start, _end]: [number, number] = [0, content.length],
+  _prevSnapshot?: IncrementalSnapshot,
 ): IncrementalSnapshot {
   const snapshot = ts.ScriptSnapshot.fromString(content) as IncrementalSnapshot;
   return snapshot;
@@ -447,7 +447,6 @@ function createLogger(
         debug = debugOrFunc();
         if (!debug) return;
       }
-      // biome-ignore lint/suspicious/noConsoleLog: <explanation>
       console.log(
         header,
         ...mapped.flatMap((item) => {

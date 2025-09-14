@@ -1,19 +1,18 @@
+import * as path from "node:path";
 import { extractSqlListRs } from "@senken/sql-extraction-rs/src";
 import { extractSqlListTs } from "@senken/sql-extraction-ts/src";
-import { ORIGINAL_SCHEME, type SqlNode } from "./interface";
-
 import * as ts from "typescript";
 import * as vscode from "vscode";
-
 import { commandFormatSqlProvider } from "./commands/formatSql";
 import { command as commandInstallSqls } from "./commands/installSqls";
 import { command as commandRestartLS } from "./commands/restartLS";
 import { completionProvider } from "./completion";
 import { getWorkspaceConfig } from "./extConfig";
+import { ORIGINAL_SCHEME, type SqlNode } from "./interface";
 import {
-  type IncrementalLanguageService,
   createIncrementalLanguageService,
   createIncrementalLanguageServiceHost,
+  type IncrementalLanguageService,
 } from "./languageService";
 import { createLogger } from "./outputChannel";
 import { client, startSqlsClient } from "./startSqlsClient";
@@ -71,14 +70,17 @@ export async function activate(context: vscode.ExtensionContext) {
     getWorkspaceConfig("customRawSqlQuery");
   });
 
-  function getOrCreateLanguageService(uri: vscode.Uri) {
-    const workspace = vscode.workspace.getWorkspaceFolder(uri);
-    const roodDir = workspace?.uri.fsPath!;
-    if (services.has(roodDir)) {
-      return services.get(roodDir);
-    }
-    const service = createLanguageService(roodDir);
-    services.set(roodDir, service);
+  function getOrCreateLanguageService(
+    uri: vscode.Uri,
+  ): IncrementalLanguageService {
+    const workspaceFolder = vscode.workspace.getWorkspaceFolder(uri);
+    const rootDir = workspaceFolder
+      ? workspaceFolder.uri.fsPath
+      : path.dirname(uri.fsPath);
+    const cached = services.get(rootDir);
+    if (cached) return cached;
+    const service = createLanguageService(rootDir);
+    services.set(rootDir, service);
     return service;
   }
 
@@ -115,7 +117,7 @@ export async function activate(context: vscode.ExtensionContext) {
   ): Promise<(SqlNode & { vFileName: string })[]> {
     logger.debug("[refresh]", "Refreshing...");
     try {
-      const service = getOrCreateLanguageService(document.uri)!;
+      const service = getOrCreateLanguageService(document.uri);
       const fileName = document.fileName;
       const rawContent = document.getText();
       let sqlNodes: SqlNode[] = [];
@@ -160,7 +162,7 @@ export async function activate(context: vscode.ExtensionContext) {
       // remove unused virtual files
       lastVirtualFileNames
         .filter((vFileName) => !vFileNames.includes(vFileName))
-        .map((vFileName) => {
+        .forEach((vFileName) => {
           service.deleteSnapshot(vFileName);
         });
       virtualContents.set(fileName, vFileNames);

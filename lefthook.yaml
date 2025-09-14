@@ -15,7 +15,7 @@ pre-commit:
     biome:
       glob: "*.{js,ts,jsx,tsx,json,css,scss}"
       run: |
-        pnpm biome check --apply {staged_files} && git add {staged_files}
+        pnpm biome check --write {staged_files} && git add {staged_files}
     cspell:
       glob: "*"
       run: |

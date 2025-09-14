@@ -1,8 +1,6 @@
 {
   "$schema": "./node_modules/@biomejs/biome/configuration_schema.json",
-  "organizeImports": {
-    "enabled": true
-  },
+  "assist": { "actions": { "source": { "organizeImports": "on" } } },
   "vcs": {
     "enabled": true,
     "clientKind": "git",
@@ -18,15 +16,35 @@
       "recommended": true,
       "suspicious": {
         "noExplicitAny": "warn",
-        "noConsoleLog": "error"
+        "noConsole": { "level": "error", "options": { "allow": ["log"] } }
       },
       "style": {
         "noParameterAssign": "warn",
         "noNonNullAssertion": "warn"
       }
     },
-    "ignore": ["example-workspaces*"]
+    "includes": ["**", "!**/example-workspaces/**"]
   },
+  "overrides": [
+    {
+      "includes": [
+        "**/*.test.ts",
+        "**/*.test.tsx",
+        "**/*.spec.ts",
+        "**/*.spec.tsx",
+        "**/__tests__/**",
+        "**/test/**",
+        "vsce-test/**"
+      ],
+      "linter": {
+        "rules": {
+          "suspicious": {
+            "noConsole": "off"
+          }
+        }
+      }
+    }
+  ],
   "json": {
     "parser": {
       "allowTrailingCommas": true,
