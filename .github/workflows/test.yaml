@@ -11,9 +11,19 @@ permissions:
   pull-requests: write
 
 jobs:
+  lint:
+    name: Lint & Format (Biome)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ./.github/actions/setup
+      - name: Biome check (lint + format)
+        run: pnpm biome check
+
   unit-test:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
+    needs: [lint]
 
     steps:
       - uses: actions/checkout@v4
@@ -32,6 +42,7 @@ jobs:
       matrix:
         os: [macos-latest, ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
+    needs: [lint]
 
     steps:
       - uses: actions/checkout@v4
@@ -52,7 +63,7 @@ jobs:
   dependabot-auto-merge:
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]'
-    needs: [unit-test, e2e-test]
+    needs: [lint, unit-test, e2e-test]
     steps:
       - name: Dependabot metadata
         id: metadata
