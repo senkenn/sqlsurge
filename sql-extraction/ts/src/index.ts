@@ -116,8 +116,9 @@ export function extractSqlListTs(
       if (
         c.isTemplateLiteral &&
         ts.isTaggedTemplateExpression(node) &&
-        ts.isPropertyAccessExpression(node.tag) &&
-        node.tag.name.text === c.functionName &&
+        ((ts.isPropertyAccessExpression(node.tag) &&
+          node.tag.name.text === c.functionName) ||
+          (ts.isIdentifier(node.tag) && node.tag.text === c.functionName)) &&
         ts.isNoSubstitutionTemplateLiteral(node.template)
       ) {
         const method_line = sourceFile.getLineAndCharacterOfPosition(
