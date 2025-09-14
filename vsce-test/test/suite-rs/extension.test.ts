@@ -135,7 +135,7 @@ describe("Completion Test", () => {
         configs: [
           {
             functionName: "sql_query",
-            sqlArgNo: 1,
+            sqlArgNo: 0,
             isMacro: false,
           },
         ],
@@ -283,7 +283,7 @@ describe("Formatting Test", () => {
         configs: [
           {
             functionName: "sql_query",
-            sqlArgNo: 1,
+            sqlArgNo: 0,
             isMacro: false,
           },
         ],

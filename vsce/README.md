@@ -16,7 +16,7 @@ SQLx Example in Rust:
 
 ## Supported RDBMS <!-- omit in toc -->
 
-See: https://github.com/sqls-server/sqls?tab=readme-ov-file#support-rdbms
+See: <https://github.com/sqls-server/sqls?tab=readme-ov-file#support-rdbms>
 
 ## Features <!-- omit in toc -->
 
@@ -93,13 +93,15 @@ const someQuery = await entityManager.query(
 );
 ```
 
+Add the following configuration to your settings.json:
+
 ```json
 "sqlsurge.customRawSqlQuery": {
   "language": "typescript",
   "configs": [
     {
       "functionName": "query",
-      "sqlArgNo": 1,
+      "sqlArgNo": 0,
       "isTemplateLiteral": false
     }
   ]

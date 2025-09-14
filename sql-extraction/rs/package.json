@@ -5,7 +5,8 @@
     "build:dev": "wasm-pack build --target bundler --no-opt",
     "build:release": "wasm-pack build --target bundler --release",
     "clean": "rm -rf ./pkg ./out",
-    "build": "node ./scripts/build.js"
+    "build": "node ./scripts/build.js",
+    "test": "cargo test"
   },
   "devDependencies": {}
 }
