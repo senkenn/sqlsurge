@@ -2,12 +2,12 @@
   "name": "test-workspace-ts",
   "devDependencies": {
     "@types/bun": "^1.2.21",
-    "prisma": "6.16.1",
+    "prisma": "6.16.3",
     "sql-formatter": "^15.6.9",
     "ts-node": "^10.9.2"
   },
   "dependencies": {
-    "@prisma/client": "6.16.1",
+    "@prisma/client": "6.16.3",
     "bun": "^1.2.21"
   }
 }
