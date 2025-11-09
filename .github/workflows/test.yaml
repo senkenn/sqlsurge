@@ -60,10 +60,38 @@ jobs:
       - run: pnpm test:e2e
         if: runner.os != 'Linux'
 
+  all-checks-passed:
+    name: All Checks Passed
+    runs-on: ubuntu-latest
+    needs: [lint, unit-test, e2e-test]
+    if: always()
+    steps:
+      - name: Check if all required jobs succeeded
+        run: |
+          # lint is always required
+          if [[ "${{ needs.lint.result }}" != "success" ]]; then
+            echo "❌ lint failed or was skipped"
+            exit 1
+          fi
+
+          # unit-test is required only for pull requests
+          if [[ "${{ github.event_name }}" == "pull_request" && "${{ needs.unit-test.result }}" != "success" ]]; then
+            echo "❌ unit-test failed or was skipped"
+            exit 1
+          fi
+
+          # e2e-test is always required
+          if [[ "${{ needs.e2e-test.result }}" != "success" ]]; then
+            echo "❌ e2e-test failed or was skipped"
+            exit 1
+          fi
+
+          echo "✅ All required checks passed!"
+
   dependabot-auto-merge:
     runs-on: ubuntu-latest
     if: github.actor == 'dependabot[bot]'
-    needs: [lint, unit-test, e2e-test]
+    needs: [all-checks-passed]
     steps:
       - name: Dependabot metadata
         id: metadata
