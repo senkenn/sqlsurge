@@ -34,7 +34,8 @@
         "**/*.spec.tsx",
         "**/__tests__/**",
         "**/test/**",
-        "vsce-test/**"
+        "vsce-test/**",
+        "vsce/esbuild.js"
       ],
       "linter": {
         "rules": {

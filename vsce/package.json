@@ -32,10 +32,10 @@
   ],
   "main": "./out/extension.js",
   "scripts": {
-    "vscode:prepublish": "pnpm compile --mode production --devtool hidden-source-map",
+    "vscode:prepublish": "npm run clean && npm run compile -- --production",
     "clean": "node -e 'fs.rmSync(`out`, {recursive:true, force:true})'",
-    "compile": "webpack",
-    "watch": "webpack --watch",
+    "compile": "node esbuild.js",
+    "watch": "node esbuild.js --watch",
     "test": "jest",
     "watch-tests": "tsc -p . -w",
     "package": "pnpm run clean && vsce package --no-dependencies",
@@ -152,11 +152,10 @@
     "@types/vscode": "^1.105.0",
     "@vscode/vsce": "^3.6.2",
     "colorette": "^2.0.20",
+    "esbuild": "^0.24.0",
     "sql-formatter": "^15.6.10",
     "ts-jest": "^29.4.5",
-    "ts-loader": "^9.5.4",
-    "vscode-languageclient": "^9.0.1",
-    "webpack": "^5.102.1",
-    "webpack-cli": "^6.0.1"
+    "typescript": "^5.9.3",
+    "vscode-languageclient": "^9.0.1"
   }
 }
