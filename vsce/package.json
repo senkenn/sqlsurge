@@ -149,14 +149,14 @@
   "devDependencies": {
     "@senken/sql-extraction-rs": "workspace:*",
     "@senken/sql-extraction-ts": "workspace:*",
-    "@types/vscode": "^1.104.0",
+    "@types/vscode": "^1.105.0",
     "@vscode/vsce": "^3.6.2",
     "colorette": "^2.0.20",
-    "sql-formatter": "^15.6.9",
-    "ts-jest": "^29.4.4",
+    "sql-formatter": "^15.6.10",
+    "ts-jest": "^29.4.5",
     "ts-loader": "^9.5.4",
     "vscode-languageclient": "^9.0.1",
-    "webpack": "^5.102.0",
+    "webpack": "^5.102.1",
     "webpack-cli": "^6.0.1"
   }
 }
