@@ -1,23 +1,32 @@
-# EXAMPLE USAGE:
-#
-#   Refer for explanation to following link:
-#   https://github.com/evilmartians/lefthook/blob/master/docs/configuration.md
-#
-# pre-push:
-#   commands:
-#     packages-audit:
-#       tags: security
-#       run: bunx audit
-
 pre-commit:
   parallel: true
-  commands:
-    biome:
+  jobs:
+    - name: biome
       glob: "*.{js,ts,jsx,tsx,json,css,scss}"
       run: |
         pnpm biome check --write {staged_files} && git add {staged_files}
-    cspell:
+    - name: check file name spelling
       glob: "*"
       run: |
-        # check file name
+        set -euo pipefail
         git diff --name-only --cached | pnpm cspell --no-progress --show-context stdin --cache
+
+post-checkout:
+  parallel: true
+  jobs:
+    - name: always pull
+      only:
+        - ref: main
+        - ref: master
+      run: |
+        set -euo pipefail
+
+        # {3} is "branch checkout=1 / file checkout=0"
+        # Do nothing on file checkout
+        if [ "{3}" != "1" ]; then
+          echo "File checkout detected, skipping pull."
+          exit 0
+        fi
+
+        # Fast-forward the branch to keep it fresh.
+        git pull --ff-only
