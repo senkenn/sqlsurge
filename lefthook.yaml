@@ -10,3 +10,23 @@ pre-commit:
       run: |
         set -euo pipefail
         git diff --name-only --cached | pnpm cspell --no-progress --show-context stdin --cache
+
+post-checkout:
+  parallel: true
+  jobs:
+    - name: always pull
+      only:
+        - ref: main
+        - ref: master
+      run: |
+        set -euo pipefail
+
+        # {3} is "branch checkout=1 / file checkout=0"
+        # Do nothing on file checkout
+        if [ "{3}" != "1" ]; then
+          echo "File checkout detected, skipping pull."
+          exit 0
+        fi
+
+        # Fast-forward the branch to keep it fresh.
+        git pull --ff-only
