@@ -10,3 +10,5 @@ client/server
 *vsix
 
 .cspellcache
+
+.npmrc
