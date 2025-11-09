@@ -116,6 +116,11 @@ Add the following configuration to your settings.json:
 - `sqlsurge: Format SQL`: Format Raw SQL query.
 - `Format Document`: Format SQL file with sqls.
 
+## Available Platforms <!-- omit in toc -->
+
+- [VS Code Marketplace](https://marketplace.visualstudio.com/items?itemName=senken.sqlsurge)
+- [Open VSX](https://open-vsx.org/extension/senken/sqlsurge)
+
 ## TODOs <!-- omit in toc -->
 
 - [x] Support for Prisma in TypeScript
